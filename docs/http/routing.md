@@ -10,3 +10,7 @@
 
 - GET /notes/{id}
 - POST /notes
+- GET /
+- GET /feed
+- POST /follows
+- GET /users/{user_id}

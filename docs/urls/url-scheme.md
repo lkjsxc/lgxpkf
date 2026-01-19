@@ -7,6 +7,7 @@
 ## Examples
 
 - /notes/abcd1234...
+- /notes/abcd1234... (browser-friendly JSON)
 
 ## Validation
 

@@ -30,6 +30,11 @@
 
 - User profiles are retrievable by user ID.
 
+## Web UI
+
+- The server serves an HTML page for note posting.
+- The UI authenticates via Google and uses the JSON API.
+
 ## APIs
 
 - HTTP APIs for notes, associations, and user session info.

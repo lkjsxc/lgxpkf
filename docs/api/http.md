@@ -4,6 +4,7 @@
 
 - Requests: application/json
 - Responses: application/json
+- Web UI: text/html
 
 ## Status Codes
 

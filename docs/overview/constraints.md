@@ -4,6 +4,7 @@
 
 - Rust, tokio, PostgreSQL.
 - No web framework; custom HTTP server.
+- Web UI served as static HTML from the same server.
 
 ## Documentation
 

@@ -13,6 +13,7 @@ This documentation is organized as a tree. Each directory contains a README.md a
 - [docs/auth/README.md](auth/README.md)
 - [docs/storage/README.md](storage/README.md)
 - [docs/urls/README.md](urls/README.md)
+- [docs/web/README.md](web/README.md)
 - [docs/security/README.md](security/README.md)
 - [docs/operations/README.md](operations/README.md)
 - [docs/development/README.md](development/README.md)
