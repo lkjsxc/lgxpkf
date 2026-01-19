@@ -12,7 +12,7 @@ use crate::config::Config;
 use crate::handlers::configure;
 use crate::state::AppState;
 use crate::storage::Storage;
-use actix_web::{web, App, HttpServer};
+use actix_web::{web as aw, App, HttpServer};
 
 #[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -28,7 +28,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     HttpServer::new(move || {
         App::new()
-            .app_data(web::Data::new(state.clone()))
+            .app_data(aw::Data::new(state.clone()))
             .configure(configure)
     })
     .bind(bind_addr)?

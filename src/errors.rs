@@ -1,4 +1,5 @@
 use serde::Serialize;
+use std::fmt;
 
 #[derive(Serialize)]
 pub struct ErrorBody<'a, T: Serialize> {
@@ -13,6 +14,22 @@ pub struct ApiError<T: Serialize> {
     pub code: &'static str,
     pub message: &'static str,
     pub details: Option<T>,
+}
+
+impl<T: Serialize> fmt::Debug for ApiError<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ApiError")
+            .field("status", &self.status)
+            .field("code", &self.code)
+            .field("message", &self.message)
+            .finish()
+    }
+}
+
+impl<T: Serialize> fmt::Display for ApiError<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: {}", self.code, self.message)
+    }
 }
 
 impl<T: Serialize> ApiError<T> {
