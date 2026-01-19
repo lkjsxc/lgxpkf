@@ -1,4 +1,3 @@
-use rand::RngCore;
 use serde::Deserialize;
 use uuid::Uuid;
 
@@ -8,6 +7,7 @@ use crate::http::parser::Request;
 use crate::http::response::Response;
 use crate::http::router::parse_query;
 use crate::state::AppState;
+use crate::domain::generate_note_id;
 use crate::urls::base32::{decode_id, is_base32_url};
 use crate::domain::NoteId;
 
@@ -95,10 +95,4 @@ pub async fn get_notes(
         .map_err(|_| ApiError::internal())?;
     let json = serde_json::to_vec(&notes).unwrap_or_else(|_| b"[]".to_vec());
     Ok(Response::json(200, json))
-}
-
-fn generate_note_id() -> NoteId {
-    let mut bytes = [0u8; 32];
-    rand::rngs::OsRng.fill_bytes(&mut bytes);
-    NoteId(bytes)
 }

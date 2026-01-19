@@ -1,3 +1,4 @@
+use rand::RngCore;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
@@ -27,4 +28,10 @@ impl NoteId {
 pub fn format_timestamp(ts: OffsetDateTime) -> String {
     ts.format(&time::format_description::well_known::Rfc3339)
         .unwrap_or_else(|_| "1970-01-01T00:00:00Z".to_string())
+}
+
+pub fn generate_note_id() -> NoteId {
+    let mut bytes = [0u8; 32];
+    rand::rngs::OsRng.fill_bytes(&mut bytes);
+    NoteId(bytes)
 }

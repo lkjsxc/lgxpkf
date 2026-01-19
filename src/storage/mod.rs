@@ -16,7 +16,7 @@ use crate::storage::notes::{
     create_note, find_note, find_notes_by_ids, list_feed_notes, list_notes,
 };
 use crate::storage::sessions::{create_session, get_session_user};
-use crate::storage::users::{find_or_create_user, find_user_by_id};
+use crate::storage::users::{create_account_note, find_or_create_user, find_user_by_id};
 
 #[derive(Clone)]
 pub struct Storage {
@@ -172,5 +172,14 @@ impl Storage {
     ) -> Result<Option<User>, Box<dyn std::error::Error>> {
         let client = self.pool.get().await?;
         find_user_by_id(&client, user_id).await
+    }
+
+    pub async fn create_account_note(
+        &self,
+        user_id: uuid::Uuid,
+        value: &[u8],
+    ) -> Result<Note, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        create_account_note(&client, user_id, value).await
     }
 }

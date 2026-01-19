@@ -20,7 +20,9 @@ pub async fn create_note(
         .await?;
     let row = client
         .query_one(
-            "SELECT n.id, n.value, n.created_at, u.user_id, u.email FROM notes n JOIN users u ON u.user_id = n.author_id WHERE n.id = $1",
+            "SELECT n.id, n.value, n.created_at, u.user_id, u.email, u.account_note_id \
+             FROM notes n JOIN users u ON u.user_id = n.author_id \
+             WHERE n.id = $1",
             &[&id_bytes.to_vec()],
         )
         .await?;
@@ -34,7 +36,9 @@ pub async fn find_note(
     let id_bytes = note_id.to_bytes();
     let row = client
         .query_opt(
-            "SELECT n.id, n.value, n.created_at, u.user_id, u.email FROM notes n JOIN users u ON u.user_id = n.author_id WHERE n.id = $1",
+            "SELECT n.id, n.value, n.created_at, u.user_id, u.email, u.account_note_id \
+             FROM notes n JOIN users u ON u.user_id = n.author_id \
+             WHERE n.id = $1",
             &[&id_bytes.to_vec()],
         )
         .await?;
@@ -69,7 +73,9 @@ pub async fn list_notes(
         format!("WHERE {}", clauses.join(" AND "))
     };
     let query = format!(
-        "SELECT n.id, n.value, n.created_at, u.user_id, u.email FROM notes n JOIN users u ON u.user_id = n.author_id {} ORDER BY n.created_at DESC",
+        "SELECT n.id, n.value, n.created_at, u.user_id, u.email, u.account_note_id \
+         FROM notes n JOIN users u ON u.user_id = n.author_id {} \
+         ORDER BY n.created_at DESC",
         where_clause
     );
 
@@ -90,7 +96,7 @@ pub async fn find_notes_by_ids(
         .collect();
     let rows = client
         .query(
-            "SELECT n.id, n.value, n.created_at, u.user_id, u.email \
+            "SELECT n.id, n.value, n.created_at, u.user_id, u.email, u.account_note_id \
              FROM notes n \
              JOIN users u ON u.user_id = n.author_id \
              WHERE n.id = ANY($1)",
@@ -128,7 +134,7 @@ pub async fn list_feed_notes(
     params.push(&limit);
 
     let query = format!(
-        "SELECT n.id, n.value, n.created_at, u.user_id, u.email \
+        "SELECT n.id, n.value, n.created_at, u.user_id, u.email, u.account_note_id \
          FROM notes n \
          JOIN users u ON u.user_id = n.author_id \
          WHERE {} \
@@ -142,12 +148,13 @@ pub async fn list_feed_notes(
     Ok(rows.iter().map(map_note).collect())
 }
 
-fn map_note(row: &tokio_postgres::Row) -> Note {
+pub(crate) fn map_note(row: &tokio_postgres::Row) -> Note {
     let id_bytes: Vec<u8> = row.get(0);
     let value_bytes: Vec<u8> = row.get(1);
     let created_at: time::OffsetDateTime = row.get(2);
     let author_id: Uuid = row.get(3);
     let email: String = row.get(4);
+    let account_note_id = map_account_note_id(row.get(5));
 
     let mut id = [0u8; 32];
     id.copy_from_slice(&id_bytes[..32]);
@@ -156,6 +163,20 @@ fn map_note(row: &tokio_postgres::Row) -> Note {
         id: encode_id(id),
         value: String::from_utf8_lossy(&value_bytes).to_string(),
         created_at: format_timestamp(created_at),
-        author: UserProfile { user_id: author_id, email },
+        author: UserProfile {
+            user_id: author_id,
+            email,
+            account_note_id,
+        },
     }
+}
+
+fn map_account_note_id(value: Option<Vec<u8>>) -> Option<String> {
+    let bytes = value?;
+    if bytes.len() != 32 {
+        return None;
+    }
+    let mut id = [0u8; 32];
+    id.copy_from_slice(&bytes[..32]);
+    Some(encode_id(id))
 }

@@ -22,20 +22,14 @@ pub async fn post_associations(
 ) -> Result<Response, ApiError<serde_json::Value>> {
     require_user(&req, &state).await?;
     let body: CreateAssociation = parse_json(&req.body)?;
-    if body.kind.trim().is_empty() {
-        return Err(ApiError::bad_request(
-            "invalid_kind",
-            "Association kind required",
-            None,
-        ));
-    }
+    let kind = parse_kind(&body.kind)?;
 
     let from_id = parse_note_id(&body.from_id)?;
     let to_id = parse_note_id(&body.to_id)?;
 
     let association = state
         .storage
-        .create_association(&body.kind, from_id, to_id)
+        .create_association(&kind, from_id, to_id)
         .await
         .map_err(|_| ApiError::internal())?;
     let json = serde_json::to_vec(&association).unwrap_or_else(|_| b"{}".to_vec());
@@ -72,4 +66,23 @@ fn parse_note_id(value: &str) -> Result<NoteId, ApiError<serde_json::Value>> {
     decode_id(value)
         .map(NoteId::from_bytes)
         .ok_or_else(|| ApiError::bad_request("invalid_id", "Invalid note id", None))
+}
+
+fn parse_kind(value: &str) -> Result<String, ApiError<serde_json::Value>> {
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        return Err(ApiError::bad_request(
+            "invalid_kind",
+            "Association kind required",
+            None,
+        ));
+    }
+    if trimmed.chars().any(|c| c.is_whitespace()) {
+        return Err(ApiError::bad_request(
+            "invalid_kind",
+            "Association kind must be a single token",
+            None,
+        ));
+    }
+    Ok(trimmed.to_string())
 }

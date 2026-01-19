@@ -24,7 +24,9 @@ pub async fn get_session_user(
 ) -> Result<Option<User>, Box<dyn std::error::Error>> {
     let row = client
         .query_opt(
-            "SELECT u.user_id, u.google_sub, u.email FROM sessions s JOIN users u ON u.user_id = s.user_id WHERE s.token = $1 AND s.expires_at > NOW()",
+            "SELECT u.user_id, u.google_sub, u.email, u.account_note_id \
+             FROM sessions s JOIN users u ON u.user_id = s.user_id \
+             WHERE s.token = $1 AND s.expires_at > NOW()",
             &[&token],
         )
         .await?;
@@ -32,5 +34,16 @@ pub async fn get_session_user(
         user_id: r.get(0),
         google_sub: r.get(1),
         email: r.get(2),
+        account_note_id: map_account_note_id(r.get(3)),
     }))
+}
+
+fn map_account_note_id(value: Option<Vec<u8>>) -> Option<String> {
+    let bytes = value?;
+    if bytes.len() != 32 {
+        return None;
+    }
+    let mut id = [0u8; 32];
+    id.copy_from_slice(&bytes[..32]);
+    Some(crate::urls::base32::encode_id(id))
 }
