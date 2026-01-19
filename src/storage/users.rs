@@ -25,6 +25,23 @@ pub async fn find_or_create_user(
     })
 }
 
+pub async fn find_user_by_id(
+    client: &Client,
+    user_id: Uuid,
+) -> Result<Option<User>, Box<dyn std::error::Error>> {
+    let row = client
+        .query_opt(
+            "SELECT user_id, google_sub, email FROM users WHERE user_id = $1",
+            &[&user_id],
+        )
+        .await?;
+    Ok(row.map(|r| User {
+        user_id: r.get(0),
+        google_sub: r.get(1),
+        email: r.get(2),
+    }))
+}
+
 async fn find_user_by_sub(
     client: &Client,
     google_sub: &str,

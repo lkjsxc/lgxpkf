@@ -1,4 +1,5 @@
 mod associations;
+mod follows;
 mod migrations;
 mod notes;
 mod sessions;
@@ -8,11 +9,12 @@ use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::NoTls;
 
 use crate::config::Config;
-use crate::domain::{Association, Note, NoteId, User};
+use crate::domain::{Association, FollowEdge, Note, NoteId, User};
 use crate::storage::associations::{create_association, list_associations};
-use crate::storage::notes::{create_note, find_note, list_notes};
+use crate::storage::follows::{create_follow, delete_follow, list_followers, list_following};
+use crate::storage::notes::{create_note, find_note, list_feed_notes, list_notes};
 use crate::storage::sessions::{create_session, get_session_user};
-use crate::storage::users::find_or_create_user;
+use crate::storage::users::{find_or_create_user, find_user_by_id};
 
 #[derive(Clone)]
 pub struct Storage {
@@ -91,6 +93,17 @@ impl Storage {
         list_notes(&client, author, from, to).await
     }
 
+    pub async fn list_feed_notes(
+        &self,
+        user_id: uuid::Uuid,
+        from: Option<time::OffsetDateTime>,
+        to: Option<time::OffsetDateTime>,
+        limit: i64,
+    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        list_feed_notes(&client, user_id, from, to, limit).await
+    }
+
     pub async fn create_association(
         &self,
         kind: &str,
@@ -107,5 +120,47 @@ impl Storage {
     ) -> Result<Vec<Association>, Box<dyn std::error::Error>> {
         let client = self.pool.get().await?;
         list_associations(&client, note_id).await
+    }
+
+    pub async fn create_follow(
+        &self,
+        follower_id: uuid::Uuid,
+        followee_id: uuid::Uuid,
+    ) -> Result<Option<time::OffsetDateTime>, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        create_follow(&client, follower_id, followee_id).await
+    }
+
+    pub async fn delete_follow(
+        &self,
+        follower_id: uuid::Uuid,
+        followee_id: uuid::Uuid,
+    ) -> Result<bool, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        delete_follow(&client, follower_id, followee_id).await
+    }
+
+    pub async fn list_followers(
+        &self,
+        user_id: uuid::Uuid,
+    ) -> Result<Vec<FollowEdge>, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        list_followers(&client, user_id).await
+    }
+
+    pub async fn list_following(
+        &self,
+        user_id: uuid::Uuid,
+    ) -> Result<Vec<FollowEdge>, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        list_following(&client, user_id).await
+    }
+
+    pub async fn find_user_by_id(
+        &self,
+        user_id: uuid::Uuid,
+    ) -> Result<Option<User>, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        find_user_by_id(&client, user_id).await
     }
 }

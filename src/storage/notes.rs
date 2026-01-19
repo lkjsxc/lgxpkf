@@ -77,6 +77,48 @@ pub async fn list_notes(
     Ok(rows.iter().map(map_note).collect())
 }
 
+pub async fn list_feed_notes(
+    client: &Client,
+    user_id: Uuid,
+    from: Option<time::OffsetDateTime>,
+    to: Option<time::OffsetDateTime>,
+    limit: i64,
+) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    let mut clauses = Vec::new();
+    let mut params: Vec<&(dyn tokio_postgres::types::ToSql + Sync)> = Vec::new();
+    params.push(&user_id);
+    clauses.push(
+        "(n.author_id = $1 OR EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = $1 AND f.followee_id = n.author_id))"
+            .to_string(),
+    );
+
+    if let Some(from_ts) = from.as_ref() {
+        clauses.push(format!("n.created_at >= ${}", params.len() + 1));
+        params.push(from_ts);
+    }
+    if let Some(to_ts) = to.as_ref() {
+        clauses.push(format!("n.created_at <= ${}", params.len() + 1));
+        params.push(to_ts);
+    }
+
+    let limit_idx = params.len() + 1;
+    params.push(&limit);
+
+    let query = format!(
+        "SELECT n.id, n.value, n.created_at, u.user_id, u.email \
+         FROM notes n \
+         JOIN users u ON u.user_id = n.author_id \
+         WHERE {} \
+         ORDER BY n.created_at DESC \
+         LIMIT ${}",
+        clauses.join(" AND "),
+        limit_idx
+    );
+
+    let rows = client.query(&query, &params).await?;
+    Ok(rows.iter().map(map_note).collect())
+}
+
 fn map_note(row: &tokio_postgres::Row) -> Note {
     let id_bytes: Vec<u8> = row.get(0);
     let value_bytes: Vec<u8> = row.get(1);
