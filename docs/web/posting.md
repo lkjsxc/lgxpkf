@@ -6,6 +6,7 @@
 - Exchange the Google ID token for a session token.
 - Tap Post (bottom-left) to open the full-screen composer.
 - POST /notes with the session token in the Authorization header.
+- On note pages, Edit opens the same composer prefilled with the current note content.
 
 ## Payload
 

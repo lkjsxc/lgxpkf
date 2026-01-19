@@ -4,7 +4,8 @@
 
 - Fetches GET /feed after authentication.
 - Renders notes in reverse chronological order.
-- Timeline column is centered; content is focused on scanability.
+- Timeline uses a grid layout (three columns on desktop).
 - Entire cards are clickable to open a note (no inner button).
 - Overly long notes are truncated to about three lines.
-- Supports manual refresh and auto-refresh after posting.
+- Notes with newer versions are hidden from the timeline.
+- Auto-refresh runs after posting.
