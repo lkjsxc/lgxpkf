@@ -66,16 +66,16 @@ impl Storage {
         value: &[u8],
         author_id: uuid::Uuid,
     ) -> Result<Note, StorageError> {
-        let client = self.pool.get().await?;
-        create_note(&client, note_id, value, author_id).await
+        let mut client = self.pool.get().await?; let client_ref = &mut **client;
+        create_note(client_ref, note_id, value, author_id).await
     }
     pub async fn create_note_chain(
         &self,
         segments: &[Vec<u8>],
         author_id: uuid::Uuid,
     ) -> Result<(Note, Vec<String>), StorageError> {
-        let client = self.pool.get().await?;
-        let transaction = client.transaction().await?;
+        let mut client = self.pool.get().await?; let client_ref = &mut **client;
+        let transaction = client_ref.transaction().await?;
         let mut ids = Vec::with_capacity(segments.len());
         let mut root_note = None;
         let mut prev_id: Option<NoteId> = None;
@@ -139,8 +139,8 @@ impl Storage {
         from_id: NoteId,
         to_id: NoteId,
     ) -> Result<Association, StorageError> {
-        let client = self.pool.get().await?;
-        create_association(&client, kind, from_id, to_id).await
+        let client = self.pool.get().await?; let client_ref = &**client;
+        create_association(client_ref, kind, from_id, to_id).await
     }
     pub async fn list_associations(
         &self,
