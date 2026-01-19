@@ -2,6 +2,6 @@
 
 ## Behavior
 
-- Fetches GET /notes/{id}/related.
-- Displays associations alongside linked notes.
-- Keeps note IDs linkable to /{id} for quick navigation.
+- The home UI no longer surfaces related-note navigation.
+- GET /notes/{id}/related remains available for API clients and tooling.
+- The note page focuses on prev/next chains rendered as a single markdown document.

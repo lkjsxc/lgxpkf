@@ -4,4 +4,5 @@
 
 - Fetches GET /feed after authentication.
 - Renders notes in reverse chronological order.
-- Supports manual refresh.
+- Timeline column is centered; content is focused on scanability.
+- Supports manual refresh and auto-refresh after posting.

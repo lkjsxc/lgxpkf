@@ -7,5 +7,6 @@
 ## Behavior
 
 - Server renders the note content and metadata.
-- Related posts are listed with association kinds.
-- Related notes link to their own /{id} pages.
+- Markdown is rendered into HTML for the main body.
+- prev/next associations are traversed recursively and concatenated into one document.
+- The layout follows a technical blog atmosphere with metadata and utility actions.

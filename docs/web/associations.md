@@ -2,7 +2,6 @@
 
 ## Behavior
 
-- Provides a form to link two notes.
-- Calls POST /associations with kind, from_id, to_id.
-- Kind is a single token such as next, prev, parent, child.
-- Displays the created association summary.
+- The home UI no longer exposes an association form.
+- Associations are still created via POST /associations for automation or tooling.
+- next and prev are used to build recursive note chains on the note page.
