@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: lgxpkf_db
     image: postgres:16
     restart: unless-stopped
     environment:
@@ -7,11 +8,12 @@ services:
       POSTGRES_USER: lgxpkf
       POSTGRES_PASSWORD: lgxpkf
       PGDATA: /var/lib/postgresql/data/pgdata
-    ports:
-      - "5432:5432"
     volumes:
       - ./data:/var/lib/postgresql/data
+    networks:
+      - lgxpkf
   app:
+    container_name: lgxpkf_app
     build: .
     depends_on:
       - db
@@ -28,3 +30,9 @@ services:
       - "8080:8080"
     volumes:
       - ./db/migrations:/app/db/migrations:ro
+    networks:
+      - lgxpkf
+networks:
+  lgxpkf:
+    driver: bridge
+    name: lgxpkf
