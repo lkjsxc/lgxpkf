@@ -4,7 +4,8 @@
 
 - POST /notes
   - body: { value: string }
-  - returns: note with base32 id
+  - value can exceed 1024 bytes; it will be split into 1024-byte segments.
+  - returns: { root: note, segments: [base32_id] }
 
 - GET /notes/{base32_id}
   - returns: note (JSON)
@@ -18,4 +19,4 @@
 ## Note View
 
 - GET /{base32_id}
-  - returns HTML note page with related posts
+  - returns HTML note page with chained content, context, and associations

@@ -22,8 +22,10 @@
 - Timeline column is centered.
 - Post button is fixed to the bottom-left and opens a full-screen composer.
 - No association or related-note UI is presented on the home view.
+- Visual design is a bluish dark mode with bold typography.
 
 ## Note Page
 
 - Server assembles prev/next chains recursively, concatenates them into a single markdown document, and renders it.
-- Page is styled like a technical blog, with metadata and utility actions.
+- Newer version banners, context, and chain sections sit beneath the main note.
+- Page uses oversized note typography in the dark palette.

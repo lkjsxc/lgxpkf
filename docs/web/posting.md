@@ -10,10 +10,10 @@
 ## Payload
 
 - {"value": "note text"}
-- Value must be 1024 bytes or less.
+- Value can exceed 1024 bytes; it will be split into chained notes.
 - Markdown is supported and rendered on the note page.
 
 ## Result
 
-- Response includes the base32 note ID.
-- The note is accessible at /{base32_id}.
+- Response includes the base32 root note ID and segment IDs.
+- The post is accessible at /{base32_id} (the root note).
