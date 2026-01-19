@@ -16,4 +16,5 @@ Build a minimal, high-performance SNS server using Rust and tokio, with a custom
 - Authentication via Google account.
 - Notes with immutable content and identifiers.
 - Note associations for versioning, linking, and replies.
+- Follow relationships and a feed timeline.
 - Base32 URL addressing for notes.

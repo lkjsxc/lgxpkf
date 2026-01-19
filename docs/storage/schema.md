@@ -6,6 +6,7 @@
 - sessions
 - notes
 - associations
+- follows
 
 ## Notes Table
 
@@ -13,3 +14,9 @@
 - value (bytea)
 - created_at (timestamptz)
 - author_id (uuid)
+
+## Follows Table
+
+- follower_id (uuid)
+- followee_id (uuid)
+- created_at (timestamptz)

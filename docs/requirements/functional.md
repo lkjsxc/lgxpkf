@@ -16,6 +16,20 @@
 - Notes can be linked by a kind and two note IDs.
 - Associations can represent versioning, replies, or aggregation.
 
+## Follows
+
+- Users can follow and unfollow other users.
+- Followers and following lists are queryable.
+
+## Feed
+
+- Authenticated users can fetch a feed of notes from themselves and followees.
+- Feed supports time range filtering and bounded limits.
+
+## Users
+
+- User profiles are retrievable by user ID.
+
 ## APIs
 
 - HTTP APIs for notes, associations, and user session info.
