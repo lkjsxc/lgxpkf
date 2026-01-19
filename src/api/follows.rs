@@ -7,7 +7,8 @@ use crate::domain::note::format_timestamp;
 use crate::errors::ApiError;
 use crate::http::parser::Request;
 use crate::http::response::Response;
-use crate::http::router::{parse_query, AppState};
+use crate::http::router::parse_query;
+use crate::state::AppState;
 
 #[derive(Deserialize)]
 struct FollowRequest {

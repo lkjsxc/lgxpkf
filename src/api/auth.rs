@@ -5,7 +5,7 @@ use crate::auth::{google, sessions};
 use crate::errors::ApiError;
 use crate::http::parser::Request;
 use crate::http::response::Response;
-use crate::http::router::AppState;
+use crate::state::AppState;
 
 #[derive(Deserialize)]
 struct GoogleRequest {

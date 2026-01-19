@@ -1,9 +1,14 @@
 use crate::config::Config;
+use crate::http::response::Response;
 
 const HOME_TEMPLATE: &str = include_str!("home.html");
 
 pub fn home_html(config: &Config) -> String {
     render_home(&config.google_client_id)
+}
+
+pub fn home(config: &Config) -> Response {
+    Response::html(home_html(config))
 }
 
 fn render_home(client_id: &str) -> String {

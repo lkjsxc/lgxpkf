@@ -3,7 +3,7 @@ use uuid::Uuid;
 use crate::errors::ApiError;
 use crate::http::parser::Request;
 use crate::http::response::Response;
-use crate::http::router::AppState;
+use crate::state::AppState;
 
 pub async fn get_user_by_id(
     req: Request,

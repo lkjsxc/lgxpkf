@@ -6,7 +6,8 @@ use crate::api::helpers::{parse_json, parse_query_param, parse_time_param, requi
 use crate::errors::ApiError;
 use crate::http::parser::Request;
 use crate::http::response::Response;
-use crate::http::router::{parse_query, AppState};
+use crate::http::router::parse_query;
+use crate::state::AppState;
 use crate::urls::base32::{decode_id, is_base32_url};
 use crate::domain::NoteId;
 

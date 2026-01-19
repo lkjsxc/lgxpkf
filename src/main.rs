@@ -1,20 +1,19 @@
+mod api;
 mod auth;
 mod config;
 mod domain;
 mod errors;
-mod handlers;
+mod http;
 mod state;
 mod storage;
 mod urls;
 mod web;
 
 use crate::config::Config;
-use crate::handlers::configure;
-use crate::state::AppState;
+use crate::http::server::run_server;
 use crate::storage::Storage;
-use actix_web::{web as aw, App, HttpServer};
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config::from_env()?;
     let storage = Storage::connect(&config).await?;
@@ -23,17 +22,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         storage.run_migrations(&config.migrations_path).await?;
     }
 
-    let state = AppState { config, storage };
-    let bind_addr = state.config.bind_addr.clone();
-
-    HttpServer::new(move || {
-        App::new()
-            .app_data(aw::Data::new(state.clone()))
-            .configure(configure)
-    })
-    .bind(bind_addr)?
-    .run()
-    .await?;
-
-    Ok(())
+    run_server(config, storage).await
 }

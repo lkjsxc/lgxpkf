@@ -4,7 +4,7 @@ use time::OffsetDateTime;
 
 use crate::errors::ApiError;
 use crate::http::parser::Request;
-use crate::http::router::AppState;
+use crate::state::AppState;
 
 pub fn parse_json<T: DeserializeOwned>(
     body: &[u8],

@@ -3,7 +3,8 @@ use tokio::net::TcpListener;
 use crate::config::Config;
 use crate::http::parser::{read_request, write_response};
 use crate::http::response::Response;
-use crate::http::router::{route, AppState};
+use crate::http::router::route;
+use crate::state::AppState;
 use crate::storage::Storage;
 
 pub async fn run_server(

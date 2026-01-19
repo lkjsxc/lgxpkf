@@ -97,18 +97,4 @@ impl<T: Serialize> ApiError<T> {
     }
 }
 
-impl actix_web::ResponseError for ApiError<serde_json::Value> {
-    fn status_code(&self) -> actix_web::http::StatusCode {
-        actix_web::http::StatusCode::from_u16(self.status)
-            .unwrap_or(actix_web::http::StatusCode::INTERNAL_SERVER_ERROR)
-    }
-
-    fn error_response(&self) -> actix_web::HttpResponse {
-        let body = ErrorBody {
-            code: self.code,
-            message: self.message,
-            details: self.details.clone(),
-        };
-        actix_web::HttpResponse::build(self.status_code()).json(body)
-    }
-}
+// ApiError is translated into HTTP responses by the custom router.

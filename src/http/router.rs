@@ -2,18 +2,11 @@ use serde::Serialize;
 use url::form_urlencoded;
 
 use crate::api::{associations, auth, feed, follows, notes, users};
-use crate::config::Config;
 use crate::errors::{ApiError, ErrorBody};
 use crate::http::parser::Request;
 use crate::http::response::Response;
-use crate::storage::Storage;
+use crate::state::AppState;
 use crate::web;
-
-#[derive(Clone)]
-pub struct AppState {
-    pub config: Config,
-    pub storage: Storage,
-}
 
 pub async fn route(req: Request, state: AppState) -> Response {
     let method = req.method.as_str();
