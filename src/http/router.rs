@@ -7,6 +7,7 @@ use crate::errors::{ApiError, ErrorBody};
 use crate::http::parser::Request;
 use crate::http::response::Response;
 use crate::storage::Storage;
+use crate::web;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -19,6 +20,7 @@ pub async fn route(req: Request, state: AppState) -> Response {
     let path = req.path.as_str();
 
     let result = match (method, path) {
+        ("GET", "/") => Ok(web::home(&state.config)),
         ("POST", "/auth/google") => auth::post_google(req, state).await,
         ("GET", "/auth/me") => auth::get_me(req, state).await,
         ("POST", "/notes") => notes::post_notes(req, state).await,

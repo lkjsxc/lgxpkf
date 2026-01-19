@@ -7,20 +7,28 @@ pub struct Response {
 }
 
 impl Response {
-    pub fn json(status: u16, body: Vec<u8>) -> Self {
+    pub fn bytes(status: u16, content_type: &str, body: Vec<u8>) -> Self {
         let mut headers = HashMap::new();
-        headers.insert("Content-Type".to_string(), "application/json".to_string());
+        headers.insert("Content-Type".to_string(), content_type.to_string());
         headers.insert("Connection".to_string(), "keep-alive".to_string());
         headers.insert("Content-Length".to_string(), body.len().to_string());
         Self { status, headers, body }
     }
 
+    pub fn text(status: u16, content_type: &str, body: &str) -> Self {
+        Self::bytes(status, content_type, body.as_bytes().to_vec())
+    }
+
+    pub fn json(status: u16, body: Vec<u8>) -> Self {
+        Self::bytes(status, "application/json", body)
+    }
+
+    pub fn html(body: String) -> Self {
+        Self::text(200, "text/html; charset=utf-8", &body)
+    }
+
     pub fn empty(status: u16) -> Self {
-        let mut headers = HashMap::new();
-        headers.insert("Content-Type".to_string(), "application/json".to_string());
-        headers.insert("Connection".to_string(), "keep-alive".to_string());
-        headers.insert("Content-Length".to_string(), "0".to_string());
-        Self { status, headers, body: Vec::new() }
+        Self::bytes(status, "application/json", Vec::new())
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {

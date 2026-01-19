@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LGXPKF Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f3efe6;--panel:#fffaf2;--ink:#1c1915;--muted:#6b6258;--line:#d9cfc1;--accent:#e0502e;--shadow:rgba(20,16,12,0.14)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Space Grotesk","Helvetica Neue",sans-serif;color:var(--ink);background:radial-gradient(circle at top,#fff3d6,transparent 55%),linear-gradient(160deg,#f1e9d9 0%,#f7f4ee 55%,#f0e6d4 100%);min-height:100vh}
+main{max-width:920px;margin:0 auto;padding:48px 24px 80px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:16px}
+h1{margin:0;font-size:clamp(2.3rem,4vw,3.4rem);letter-spacing:-0.02em}
+header p{margin:0;color:var(--muted);font-size:1rem}
+.panel{margin-top:24px;padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 40px var(--shadow);animation:rise 500ms ease}
+.row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.status{margin-top:12px;color:var(--muted);font-size:0.95rem}
+.hint{color:var(--muted);font-size:0.85rem}
+textarea{width:100%;min-height:160px;margin-top:12px;padding:14px;border-radius:14px;border:1px solid var(--line);font-family:"JetBrains Mono","Courier New",monospace;font-size:0.95rem;resize:vertical;background:#fff}
+button{border:none;border-radius:999px;padding:10px 18px;font-weight:600;font-size:0.95rem;cursor:pointer;background:var(--accent);color:#fff}
+button.secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:disabled{opacity:0.6;cursor:not-allowed}
+.result{margin-top:16px;font-size:0.95rem}
+.result a{color:var(--accent);text-decoration:none;font-weight:600}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body data-client-id="{{CLIENT_ID}}">
+<main>
+<header>
+<h1>LGXPKF Notes</h1>
+<p>Post immutable notes straight from the browser.</p>
+</header>
+<section class="panel">
+<div class="row">
+<div id="signin"></div>
+<button class="secondary" id="signout" type="button">Sign out</button>
+</div>
+<div class="status" id="status">Sign in with Google to start posting.</div>
+</section>
+<section class="panel">
+<form id="note-form">
+<label for="note-value">New note</label>
+<textarea id="note-value" maxlength="1024" placeholder="Write up to 1024 bytes..."></textarea>
+<div class="row" style="margin-top:12px;">
+<div class="hint">Notes are immutable and capped at 1024 bytes.</div>
+<button id="submit" type="submit">Post note</button>
+</div>
+</form>
+<div class="result" id="result"></div>
+</section>
+</main>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+(() => {
+  const clientId = document.body.dataset.clientId || "";
+  const statusEl = document.getElementById("status");
+  const resultEl = document.getElementById("result");
+  const form = document.getElementById("note-form");
+  const noteEl = document.getElementById("note-value");
+  const submitBtn = document.getElementById("submit");
+  const signoutBtn = document.getElementById("signout");
+  const tokenKey = "lgxpkf.session";
+  let sessionToken = localStorage.getItem(tokenKey);
+  const setStatus = (text) => { statusEl.textContent = text; };
+  const setResult = (text) => { resultEl.textContent = text; };
+  const setSignedIn = (signedIn) => {
+    submitBtn.disabled = !signedIn;
+    noteEl.disabled = !signedIn;
+    signoutBtn.disabled = !signedIn;
+  };
+  const storeToken = (token) => {
+    sessionToken = token;
+    if (token) { localStorage.setItem(tokenKey, token); }
+    else { localStorage.removeItem(tokenKey); }
+    setSignedIn(Boolean(token));
+  };
+  const jsonRequest = async (path, options) => {
+    const response = await fetch(path, options);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) { throw new Error(data.message || "Request failed"); }
+    return data;
+  };
+  const refreshSession = async () => {
+    if (!sessionToken) { setSignedIn(false); return; }
+    setStatus("Restoring session...");
+    try {
+      const data = await jsonRequest("/auth/me", { headers: { Authorization: `Bearer ${sessionToken}` } });
+      setStatus(`Signed in as ${data.user.email}`);
+      setSignedIn(true);
+    } catch (_) {
+      storeToken(null);
+      setStatus("Session expired. Sign in again.");
+    }
+  };
+  const handleCredential = async (payload) => {
+    setStatus("Signing in...");
+    try {
+      const data = await jsonRequest("/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_token: payload.credential })
+      });
+      storeToken(data.token);
+      setStatus(`Signed in as ${data.user.email}`);
+    } catch (err) {
+      storeToken(null);
+      setStatus(err.message);
+    }
+  };
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!sessionToken) { setStatus("Sign in before posting."); return; }
+    const value = noteEl.value.trim();
+    if (!value) { setStatus("Note text required."); return; }
+    setStatus("Posting note...");
+    try {
+      const note = await jsonRequest("/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${sessionToken}` },
+        body: JSON.stringify({ value })
+      });
+      noteEl.value = "";
+      const url = `/notes/${note.id}`;
+      resultEl.textContent = "";
+      const link = document.createElement("a");
+      link.href = url;
+      link.textContent = `Open note ${note.id}`;
+      resultEl.appendChild(link);
+      setStatus("Note posted.");
+    } catch (err) {
+      setStatus(err.message);
+    }
+  });
+  signoutBtn.addEventListener("click", () => {
+    storeToken(null);
+    setResult("");
+    setStatus("Signed out.");
+  });
+  window.addEventListener("load", () => {
+    if (!clientId) { setSignedIn(false); setStatus("Missing GOOGLE_CLIENT_ID configuration."); return; }
+    if (!window.google || !google.accounts || !google.accounts.id) {
+      setSignedIn(false); setStatus("Google auth library failed to load."); return;
+    }
+    google.accounts.id.initialize({ client_id: clientId, callback: handleCredential });
+    google.accounts.id.renderButton(document.getElementById("signin"), { theme: "outline", size: "large", text: "signin_with" });
+    refreshSession();
+  });
+})();
+</script>
+</body>
+</html>

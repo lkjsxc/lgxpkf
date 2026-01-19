@@ -6,6 +6,7 @@ mod errors;
 mod http;
 mod storage;
 mod urls;
+mod web;
 
 use crate::config::Config;
 use crate::http::server::run_server;
