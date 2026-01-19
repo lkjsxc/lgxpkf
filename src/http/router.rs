@@ -1,7 +1,7 @@
 use serde::Serialize;
 use url::form_urlencoded;
 
-use crate::api::{associations, auth, notes};
+use crate::api::{associations, auth, feed, follows, notes, users};
 use crate::config::Config;
 use crate::errors::{ApiError, ErrorBody};
 use crate::http::parser::Request;
@@ -23,10 +23,17 @@ pub async fn route(req: Request, state: AppState) -> Response {
         ("GET", "/auth/me") => auth::get_me(req, state).await,
         ("POST", "/notes") => notes::post_notes(req, state).await,
         ("GET", "/notes") => notes::get_notes(req, state).await,
+        ("GET", "/feed") => feed::get_feed(req, state).await,
         ("POST", "/associations") => associations::post_associations(req, state).await,
         ("GET", "/associations") => associations::get_associations(req, state).await,
+        ("POST", "/follows") => follows::post_follows(req, state).await,
+        ("DELETE", "/follows") => follows::delete_follows(req, state).await,
+        ("GET", "/follows") => follows::get_follows(req, state).await,
         _ if method == "GET" && path.starts_with("/notes/") => {
             notes::get_note_by_id(req, state).await
+        }
+        _ if method == "GET" && path.starts_with("/users/") => {
+            users::get_user_by_id(req, state).await
         }
         _ => Err(ApiError::<serde_json::Value>::not_found(
             "not_found",

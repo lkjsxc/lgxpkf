@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::api::helpers::{parse_json, parse_query_param, require_user};
 use crate::domain::NoteId;
 use crate::errors::ApiError;
 use crate::http::parser::Request;
@@ -45,11 +46,10 @@ pub async fn get_associations(
     state: AppState,
 ) -> Result<Response, ApiError<serde_json::Value>> {
     let params = parse_query(req.query.as_deref());
-    let note = params.iter().find(|(k, _)| k == "note").map(|(_, v)| v.clone());
-    let note_id = note.ok_or_else(|| {
+    let note_id = parse_query_param(&params, "note").ok_or_else(|| {
         ApiError::bad_request("missing_note", "Missing note parameter", None)
     })?;
-    let note_id = parse_note_id(&note_id)?;
+    let note_id = parse_note_id(note_id)?;
 
     let associations = state
         .storage
@@ -71,40 +71,4 @@ fn parse_note_id(value: &str) -> Result<NoteId, ApiError<serde_json::Value>> {
     decode_id(value)
         .map(NoteId::from_bytes)
         .ok_or_else(|| ApiError::bad_request("invalid_id", "Invalid note id", None))
-}
-
-async fn require_user(
-    req: &Request,
-    state: &AppState,
-) -> Result<crate::domain::User, ApiError<serde_json::Value>> {
-    let header = req
-        .headers
-        .get("authorization")
-        .ok_or_else(|| ApiError::unauthorized("unauthorized", "Missing authorization token"))?;
-    let mut parts = header.split_whitespace();
-    let token = match (parts.next(), parts.next()) {
-        (Some(scheme), Some(token)) if scheme.eq_ignore_ascii_case("bearer") => token.to_string(),
-        _ => {
-            return Err(ApiError::unauthorized(
-                "unauthorized",
-                "Missing authorization token",
-            ))
-        }
-    };
-
-    let user = state
-        .storage
-        .get_session_user(&token)
-        .await
-        .map_err(|_| ApiError::internal())?;
-
-    user.ok_or_else(|| ApiError::unauthorized("unauthorized", "Invalid session"))
-}
-
-fn parse_json<T: serde::de::DeserializeOwned>(
-    body: &[u8],
-) -> Result<T, ApiError<serde_json::Value>> {
-    serde_json::from_slice(body).map_err(|_| {
-        ApiError::bad_request("invalid_json", "Invalid JSON body", None)
-    })
 }

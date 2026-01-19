@@ -1,5 +1,6 @@
 use serde::Deserialize;
 
+use crate::api::helpers::{parse_json, require_user};
 use crate::auth::{google, sessions};
 use crate::errors::ApiError;
 use crate::http::parser::Request;
@@ -46,37 +47,8 @@ pub async fn get_me(
     req: Request,
     state: AppState,
 ) -> Result<Response, ApiError<serde_json::Value>> {
-    let token = bearer_token(&req).ok_or_else(|| {
-        ApiError::unauthorized("unauthorized", "Missing authorization token")
-    })?;
-
-    let user = state
-        .storage
-        .get_session_user(&token)
-        .await
-        .map_err(|_| ApiError::internal())?;
-
-    let user = user.ok_or_else(|| ApiError::unauthorized("unauthorized", "Invalid session"))?;
+    let user = require_user(&req, &state).await?;
     let payload = serde_json::json!({"user": user.profile()});
     let json = serde_json::to_vec(&payload).unwrap_or_else(|_| b"{}".to_vec());
     Ok(Response::json(200, json))
-}
-
-fn bearer_token(req: &Request) -> Option<String> {
-    let header = req.headers.get("authorization")?;
-    let mut parts = header.split_whitespace();
-    match (parts.next(), parts.next()) {
-        (Some(scheme), Some(token)) if scheme.eq_ignore_ascii_case("bearer") => {
-            Some(token.to_string())
-        }
-        _ => None,
-    }
-}
-
-fn parse_json<T: serde::de::DeserializeOwned>(
-    body: &[u8],
-) -> Result<T, ApiError<serde_json::Value>> {
-    serde_json::from_slice(body).map_err(|_| {
-        ApiError::bad_request("invalid_json", "Invalid JSON body", None)
-    })
 }

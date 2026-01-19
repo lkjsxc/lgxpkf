@@ -1,9 +1,8 @@
 use rand::RngCore;
 use serde::Deserialize;
-use time::format_description::well_known::Rfc3339;
-use time::OffsetDateTime;
 use uuid::Uuid;
 
+use crate::api::helpers::{parse_json, parse_query_param, parse_time_param, require_user};
 use crate::errors::ApiError;
 use crate::http::parser::Request;
 use crate::http::response::Response;
@@ -74,10 +73,10 @@ pub async fn get_notes(
     state: AppState,
 ) -> Result<Response, ApiError<serde_json::Value>> {
     let params = parse_query(req.query.as_deref());
-    let author = parse_param(&params, "author")
+    let author = parse_query_param(&params, "author")
         .map(|v| v.parse::<Uuid>().ok())
         .unwrap_or(None);
-    if parse_param(&params, "author").is_some() && author.is_none() {
+    if parse_query_param(&params, "author").is_some() && author.is_none() {
         return Err(ApiError::bad_request(
             "invalid_author",
             "Invalid author id",
@@ -97,62 +96,8 @@ pub async fn get_notes(
     Ok(Response::json(200, json))
 }
 
-fn parse_param<'a>(params: &'a [(String, String)], key: &str) -> Option<&'a str> {
-    params.iter().find(|(k, _)| k == key).map(|(_, v)| v.as_str())
-}
-
-fn parse_time_param(
-    params: &[(String, String)],
-    key: &str,
-) -> Result<Option<OffsetDateTime>, ApiError<serde_json::Value>> {
-    if let Some(value) = parse_param(params, key) {
-        let parsed = OffsetDateTime::parse(value, &Rfc3339).map_err(|_| {
-            ApiError::bad_request("invalid_timestamp", "Invalid timestamp", None)
-        })?;
-        Ok(Some(parsed))
-    } else {
-        Ok(None)
-    }
-}
-
 fn generate_note_id() -> NoteId {
     let mut bytes = [0u8; 32];
     rand::rngs::OsRng.fill_bytes(&mut bytes);
     NoteId(bytes)
-}
-
-async fn require_user(
-    req: &Request,
-    state: &AppState,
-) -> Result<crate::domain::User, ApiError<serde_json::Value>> {
-    let header = req
-        .headers
-        .get("authorization")
-        .ok_or_else(|| ApiError::unauthorized("unauthorized", "Missing authorization token"))?;
-    let mut parts = header.split_whitespace();
-    let token = match (parts.next(), parts.next()) {
-        (Some(scheme), Some(token)) if scheme.eq_ignore_ascii_case("bearer") => token.to_string(),
-        _ => {
-            return Err(ApiError::unauthorized(
-                "unauthorized",
-                "Missing authorization token",
-            ))
-        }
-    };
-
-    let user = state
-        .storage
-        .get_session_user(&token)
-        .await
-        .map_err(|_| ApiError::internal())?;
-
-    user.ok_or_else(|| ApiError::unauthorized("unauthorized", "Invalid session"))
-}
-
-fn parse_json<T: serde::de::DeserializeOwned>(
-    body: &[u8],
-) -> Result<T, ApiError<serde_json::Value>> {
-    serde_json::from_slice(body).map_err(|_| {
-        ApiError::bad_request("invalid_json", "Invalid JSON body", None)
-    })
 }
