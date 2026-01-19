@@ -5,6 +5,7 @@
 - [docs/api/http.md](http.md)
 - [docs/api/auth.md](auth.md)
 - [docs/api/notes.md](notes.md)
+- [docs/api/related.md](related.md)
 - [docs/api/associations.md](associations.md)
 - [docs/api/follows.md](follows.md)
 - [docs/api/feed.md](feed.md)

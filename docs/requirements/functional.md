@@ -32,8 +32,9 @@
 
 ## Web UI
 
-- The server serves an HTML page for note posting.
+- The server serves an HTML page for note posting, timeline, and associations.
 - The UI authenticates via Google and uses the JSON API.
+- Related notes are displayed for a selected note.
 
 ## APIs
 

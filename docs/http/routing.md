@@ -2,9 +2,9 @@
 
 ## Strategy
 
-- Match by method and path.
-- Keep a static routing table.
-- Avoid regex or dynamic routing for performance.
+- Use Actix Web routing with explicit handlers.
+- Prefer static paths and clear parameter extraction.
+- Keep handler modules small and functional.
 
 ## Examples
 
@@ -14,3 +14,4 @@
 - GET /feed
 - POST /follows
 - GET /users/{user_id}
+- GET /notes/{id}/related

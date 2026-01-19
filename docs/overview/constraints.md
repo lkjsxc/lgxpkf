@@ -3,7 +3,7 @@
 ## Technology
 
 - Rust, tokio, PostgreSQL.
-- No web framework; custom HTTP server.
+- Actix Web for HTTP routing and middleware.
 - Web UI served as static HTML from the same server.
 
 ## Documentation
