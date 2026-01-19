@@ -2,7 +2,9 @@ use crate::config::Config;
 use crate::domain::NoteId;
 use crate::errors::ApiError;
 use crate::http::response::Response;
-use crate::related::{fetch_related, RelatedEntry};
+use pulldown_cmark::{html, Event, Options, Parser};
+
+use crate::related::{fetch_chain, NoteChain};
 use crate::state::AppState;
 use crate::urls::base32::decode_id;
 
@@ -23,8 +25,8 @@ pub async fn note_page(
 ) -> Result<Response, ApiError<serde_json::Value>> {
     let id_bytes = decode_id(note_id)
         .ok_or_else(|| ApiError::bad_request("invalid_id", "Invalid note id", None))?;
-    let payload = fetch_related(&state, NoteId::from_bytes(id_bytes)).await?;
-    Ok(Response::html(note_html(&payload.center, &payload.related)))
+    let payload = fetch_chain(&state, NoteId::from_bytes(id_bytes)).await?;
+    Ok(Response::html(note_html(&state.config, &payload)))
 }
 
 fn render_home(client_id: &str) -> String {
@@ -32,41 +34,101 @@ fn render_home(client_id: &str) -> String {
     HOME_TEMPLATE.replace("{{CLIENT_ID}}", &client_id)
 }
 
-fn note_html(note: &crate::domain::Note, related: &[RelatedEntry]) -> String {
-    let related_html = if related.is_empty() {
-        "<div class=\"empty\">No related posts yet.</div>".to_string()
-    } else {
-        related
-            .iter()
-            .map(render_related_item)
-            .collect::<Vec<String>>()
-            .join("")
-    };
-
-    NOTE_TEMPLATE
-        .replace("{{NOTE_ID}}", &escape_attr(&note.id))
-        .replace("{{NOTE_CREATED_AT}}", &escape_html(&note.created_at))
-        .replace("{{NOTE_AUTHOR}}", &escape_html(&note.author.email))
-        .replace("{{NOTE_VALUE}}", &escape_html(&note.value))
-        .replace("{{RELATED_ITEMS}}", &related_html)
+fn note_html(config: &Config, chain: &NoteChain) -> String {
+    let title = note_title(&chain.center.value);
+    let markdown = chain_markdown(chain);
+    let body_html = render_markdown(&markdown);
+    let chain_items = render_chain_items(&chain.prev, &chain.next);
+    let chain_summary = format!("{} prev, {} next", chain.prev.len(), chain.next.len());
+    let client_id = escape_attr(&config.google_client_id);
+    let base = NOTE_TEMPLATE
+        .replace("{{CLIENT_ID}}", &client_id)
+        .replace("{{NOTE_TITLE}}", &escape_html(&title))
+        .replace("{{NOTE_ID}}", &escape_attr(&chain.center.id))
+        .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
+        .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
+        .replace("{{CHAIN_SUMMARY}}", &escape_html(&chain_summary))
+        .replace("{{CHAIN_ITEMS}}", "__LGXPKF_CHAIN_ITEMS__")
+        .replace("{{NOTE_BODY}}", "__LGXPKF_NOTE_BODY__");
+    base.replace("__LGXPKF_CHAIN_ITEMS__", &chain_items)
+        .replace("__LGXPKF_NOTE_BODY__", &body_html)
 }
 
-fn render_related_item(entry: &RelatedEntry) -> String {
-    let note_id = escape_attr(&entry.note.id);
-    let note_value = escape_html(&entry.note.value);
-    let kind = escape_html(&entry.association.kind);
-    let created_at = escape_html(&entry.note.created_at);
+fn chain_markdown(chain: &NoteChain) -> String {
+    let mut parts = Vec::new();
+    for note in &chain.prev {
+        parts.push(note.value.as_str());
+    }
+    parts.push(chain.center.value.as_str());
+    for note in &chain.next {
+        parts.push(note.value.as_str());
+    }
+    parts.join("\n\n---\n\n")
+}
+
+fn render_chain_items(prev: &[crate::domain::Note], next: &[crate::domain::Note]) -> String {
+    if prev.is_empty() && next.is_empty() {
+        return "<div class=\"empty\">No chained notes.</div>".to_string();
+    }
+    let mut items = Vec::new();
+    items.extend(prev.iter().map(|note| render_chain_item(note, "Prev")));
+    items.extend(next.iter().map(|note| render_chain_item(note, "Next")));
+    items.join("")
+}
+
+fn render_chain_item(note: &crate::domain::Note, label: &str) -> String {
+    let note_id = escape_attr(&note.id);
+    let summary = escape_html(&note_excerpt(&note.value, 120));
+    let label = escape_html(label);
     format!(
-        "<article class=\"note-card\">\
-         <div class=\"note-meta\">\
-         <span class=\"pill\">{kind}</span>\
-         <span>{created_at}</span>\
-         <span class=\"mono\">{note_id}</span>\
-         </div>\
-         <div class=\"note-value\">{note_value}</div>\
-         <div class=\"note-link\"><a href=\"/{note_id}\">Open note</a></div>\
-         </article>"
+        "<a class=\"chain-item\" href=\"/{note_id}\">\
+         <span class=\"chain-label\">{label}</span>\
+         <span class=\"chain-text\">{summary}</span>\
+         </a>"
     )
+}
+
+fn note_title(value: &str) -> String {
+    let first_line = value
+        .lines()
+        .find(|line| !line.trim().is_empty())
+        .unwrap_or("LGXPKF Note");
+    let trimmed = first_line.trim().trim_start_matches('#').trim();
+    let title = if trimmed.is_empty() { "LGXPKF Note" } else { trimmed };
+    note_excerpt(title, 64)
+}
+
+fn note_excerpt(value: &str, max_len: usize) -> String {
+    let mut excerpt = String::new();
+    let mut count = 0;
+    for ch in value.chars().filter(|ch| *ch != '\n' && *ch != '\r') {
+        if count >= max_len {
+            break;
+        }
+        excerpt.push(ch);
+        count += 1;
+    }
+    if excerpt.is_empty() {
+        return "Empty note".to_string();
+    }
+    if value.chars().count() > max_len {
+        excerpt.push_str("...");
+    }
+    excerpt
+}
+
+fn render_markdown(value: &str) -> String {
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_TABLES);
+    options.insert(Options::ENABLE_STRIKETHROUGH);
+    options.insert(Options::ENABLE_TASKLISTS);
+    let parser = Parser::new_ext(value, options).map(|event| match event {
+        Event::Html(html) | Event::InlineHtml(html) => Event::Text(html),
+        other => other,
+    });
+    let mut output = String::new();
+    html::push_html(&mut output, parser);
+    output
 }
 
 fn escape_attr(value: &str) -> String {
