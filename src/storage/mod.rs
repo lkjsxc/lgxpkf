@@ -12,7 +12,9 @@ use crate::config::Config;
 use crate::domain::{Association, FollowEdge, Note, NoteId, User};
 use crate::storage::associations::{create_association, list_associations};
 use crate::storage::follows::{create_follow, delete_follow, list_followers, list_following};
-use crate::storage::notes::{create_note, find_note, list_feed_notes, list_notes};
+use crate::storage::notes::{
+    create_note, find_note, find_notes_by_ids, list_feed_notes, list_notes,
+};
 use crate::storage::sessions::{create_session, get_session_user};
 use crate::storage::users::{find_or_create_user, find_user_by_id};
 
@@ -81,6 +83,14 @@ impl Storage {
     ) -> Result<Option<Note>, Box<dyn std::error::Error>> {
         let client = self.pool.get().await?;
         find_note(&client, note_id).await
+    }
+
+    pub async fn find_notes_by_ids(
+        &self,
+        note_ids: &[NoteId],
+    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+        let client = self.pool.get().await?;
+        find_notes_by_ids(&client, note_ids).await
     }
 
     pub async fn list_notes(

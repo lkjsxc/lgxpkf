@@ -77,6 +77,29 @@ pub async fn list_notes(
     Ok(rows.iter().map(map_note).collect())
 }
 
+pub async fn find_notes_by_ids(
+    client: &Client,
+    note_ids: &[NoteId],
+) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    if note_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+    let ids: Vec<Vec<u8>> = note_ids
+        .iter()
+        .map(|note_id| note_id.to_bytes().to_vec())
+        .collect();
+    let rows = client
+        .query(
+            "SELECT n.id, n.value, n.created_at, u.user_id, u.email \
+             FROM notes n \
+             JOIN users u ON u.user_id = n.author_id \
+             WHERE n.id = ANY($1)",
+            &[&ids],
+        )
+        .await?;
+    Ok(rows.iter().map(map_note).collect())
+}
+
 pub async fn list_feed_notes(
     client: &Client,
     user_id: Uuid,
