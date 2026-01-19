@@ -1,13 +1,13 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::api::helpers::{parse_json, parse_query_param, parse_time_param, require_user};
+use crate::domain::Note;
 use crate::errors::ApiError;
 use crate::http::parser::Request;
 use crate::http::response::Response;
 use crate::http::router::parse_query;
 use crate::state::AppState;
-use crate::domain::generate_note_id;
 use crate::urls::base32::{decode_id, is_base32_url};
 use crate::domain::NoteId;
 
@@ -16,29 +16,28 @@ struct CreateNote {
     value: String,
 }
 
+#[derive(Serialize)]
+struct PostResponse {
+    root: Note,
+    segments: Vec<String>,
+}
+
 pub async fn post_notes(
     req: Request,
     state: AppState,
 ) -> Result<Response, ApiError<serde_json::Value>> {
     let user = require_user(&req, &state).await?;
     let body: CreateNote = parse_json(&req.body)?;
-    let bytes = body.value.as_bytes();
-    if bytes.len() > 1024 {
-        return Err(ApiError::unprocessable(
-            "value_too_large",
-            "Note value exceeds 1024 bytes",
-            None,
-        ));
-    }
-
-    let note_id = generate_note_id();
-    let note = state
+    let segments = split_note_value(&body.value, 1024);
+    let bytes: Vec<Vec<u8>> = segments.iter().map(|value| value.as_bytes().to_vec()).collect();
+    let (root, segments) = state
         .storage
-        .create_note(note_id, bytes, user.user_id)
+        .create_note_chain(&bytes, user.user_id)
         .await
         .map_err(|_| ApiError::internal())?;
 
-    let json = serde_json::to_vec(&note).unwrap_or_else(|_| b"{}".to_vec());
+    let response = PostResponse { root, segments };
+    let json = serde_json::to_vec(&response).unwrap_or_else(|_| b"{}".to_vec());
     Ok(Response::json(201, json))
 }
 
@@ -95,4 +94,28 @@ pub async fn get_notes(
         .map_err(|_| ApiError::internal())?;
     let json = serde_json::to_vec(&notes).unwrap_or_else(|_| b"[]".to_vec());
     Ok(Response::json(200, json))
+}
+
+fn split_note_value(value: &str, max_bytes: usize) -> Vec<String> {
+    if value.is_empty() {
+        return vec![String::new()];
+    }
+    let mut chunks = Vec::new();
+    let mut start = 0;
+    let mut current = 0;
+    for (idx, ch) in value.char_indices() {
+        let ch_len = ch.len_utf8();
+        if current + ch_len > max_bytes {
+            if start < idx {
+                chunks.push(value[start..idx].to_string());
+            }
+            start = idx;
+            current = 0;
+        }
+        current += ch_len;
+    }
+    if start < value.len() {
+        chunks.push(value[start..].to_string());
+    }
+    chunks
 }

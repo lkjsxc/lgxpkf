@@ -136,8 +136,6 @@ pub async fn fetch_chain(
     Ok(NoteChain { center, prev, next })
 }
 
-const MAX_CHAIN_DEPTH: usize = 48;
-
 #[derive(Clone, Copy)]
 enum Direction {
     Prev,
@@ -154,7 +152,7 @@ async fn walk_chain_ids(
     let mut current_id = start_id.to_string();
     seen.insert(current_id.clone());
 
-    for _ in 0..MAX_CHAIN_DEPTH {
+    loop {
         let Some(bytes) = decode_id(&current_id) else { break };
         let associations = state
             .storage

@@ -4,27 +4,23 @@ mod migrations;
 mod notes;
 mod sessions;
 mod users;
-
 use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::NoTls;
-
 use crate::config::Config;
-use crate::domain::{Association, FollowEdge, Note, NoteId, User};
+use crate::domain::{generate_note_id, Association, FollowEdge, Note, NoteId, User};
 use crate::storage::associations::{create_association, list_associations};
 use crate::storage::follows::{create_follow, delete_follow, list_followers, list_following};
 use crate::storage::notes::{
-    create_note, find_note, find_notes_by_ids, list_feed_notes, list_notes,
+    create_note, find_note, find_notes_by_ids, insert_note, list_feed_notes, list_notes,
 };
 use crate::storage::sessions::{create_session, get_session_user};
 use crate::storage::users::{create_account_note, find_or_create_user, find_user_by_id};
-
+use crate::urls::base32::encode_id;
 pub type StorageError = Box<dyn std::error::Error + Send + Sync>;
-
 #[derive(Clone)]
 pub struct Storage {
     pool: Pool,
 }
-
 impl Storage {
     pub async fn connect(config: &Config) -> Result<Self, StorageError> {
         let manager = Manager::from_config(
@@ -37,11 +33,9 @@ impl Storage {
         let pool = Pool::builder(manager).max_size(16).build().unwrap();
         Ok(Self { pool })
     }
-
     pub async fn run_migrations(&self, path: &str) -> Result<(), StorageError> {
         migrations::run(&self.pool, path).await
     }
-
     pub async fn find_or_create_user(
         &self,
         google_sub: &str,
@@ -50,7 +44,6 @@ impl Storage {
         let client = self.pool.get().await?;
         find_or_create_user(&client, google_sub, email).await
     }
-
     pub async fn create_session(
         &self,
         user_id: uuid::Uuid,
@@ -60,7 +53,6 @@ impl Storage {
         let client = self.pool.get().await?;
         create_session(&client, user_id, token, expires_at).await
     }
-
     pub async fn get_session_user(
         &self,
         token: &str,
@@ -68,7 +60,6 @@ impl Storage {
         let client = self.pool.get().await?;
         get_session_user(&client, token).await
     }
-
     pub async fn create_note(
         &self,
         note_id: NoteId,
@@ -78,7 +69,37 @@ impl Storage {
         let client = self.pool.get().await?;
         create_note(&client, note_id, value, author_id).await
     }
-
+    pub async fn create_note_chain(
+        &self,
+        segments: &[Vec<u8>],
+        author_id: uuid::Uuid,
+    ) -> Result<(Note, Vec<String>), StorageError> {
+        let client = self.pool.get().await?;
+        let transaction = client.transaction().await?;
+        let mut ids = Vec::with_capacity(segments.len());
+        let mut root_note = None;
+        let mut prev_id: Option<NoteId> = None;
+        for (index, segment) in segments.iter().enumerate() {
+            let note_id = generate_note_id();
+            if index == 0 {
+                let note = create_note(&transaction, note_id, segment, author_id).await?;
+                root_note = Some(note);
+            } else {
+                insert_note(&transaction, note_id, segment, author_id).await?;
+            }
+            if let Some(prev) = prev_id {
+                create_association(&transaction, "next", prev, note_id).await?;
+            }
+            prev_id = Some(note_id);
+            ids.push(note_id);
+        }
+        transaction.commit().await?;
+        let root = root_note.ok_or_else(|| {
+            std::io::Error::new(std::io::ErrorKind::Other, "missing_root_note")
+        })?;
+        let segments = ids.iter().map(|id| encode_id(id.to_bytes())).collect();
+        Ok((root, segments))
+    }
     pub async fn find_note(
         &self,
         note_id: NoteId,
@@ -86,7 +107,6 @@ impl Storage {
         let client = self.pool.get().await?;
         find_note(&client, note_id).await
     }
-
     pub async fn find_notes_by_ids(
         &self,
         note_ids: &[NoteId],
@@ -94,7 +114,6 @@ impl Storage {
         let client = self.pool.get().await?;
         find_notes_by_ids(&client, note_ids).await
     }
-
     pub async fn list_notes(
         &self,
         author: Option<uuid::Uuid>,
@@ -104,7 +123,6 @@ impl Storage {
         let client = self.pool.get().await?;
         list_notes(&client, author, from, to).await
     }
-
     pub async fn list_feed_notes(
         &self,
         user_id: uuid::Uuid,
@@ -115,7 +133,6 @@ impl Storage {
         let client = self.pool.get().await?;
         list_feed_notes(&client, user_id, from, to, limit).await
     }
-
     pub async fn create_association(
         &self,
         kind: &str,
@@ -125,7 +142,6 @@ impl Storage {
         let client = self.pool.get().await?;
         create_association(&client, kind, from_id, to_id).await
     }
-
     pub async fn list_associations(
         &self,
         note_id: NoteId,
@@ -133,7 +149,6 @@ impl Storage {
         let client = self.pool.get().await?;
         list_associations(&client, note_id).await
     }
-
     pub async fn create_follow(
         &self,
         follower_id: uuid::Uuid,
@@ -142,7 +157,6 @@ impl Storage {
         let client = self.pool.get().await?;
         create_follow(&client, follower_id, followee_id).await
     }
-
     pub async fn delete_follow(
         &self,
         follower_id: uuid::Uuid,
@@ -151,7 +165,6 @@ impl Storage {
         let client = self.pool.get().await?;
         delete_follow(&client, follower_id, followee_id).await
     }
-
     pub async fn list_followers(
         &self,
         user_id: uuid::Uuid,
@@ -159,7 +172,6 @@ impl Storage {
         let client = self.pool.get().await?;
         list_followers(&client, user_id).await
     }
-
     pub async fn list_following(
         &self,
         user_id: uuid::Uuid,
@@ -167,7 +179,6 @@ impl Storage {
         let client = self.pool.get().await?;
         list_following(&client, user_id).await
     }
-
     pub async fn find_user_by_id(
         &self,
         user_id: uuid::Uuid,
@@ -175,7 +186,6 @@ impl Storage {
         let client = self.pool.get().await?;
         find_user_by_id(&client, user_id).await
     }
-
     pub async fn create_account_note(
         &self,
         user_id: uuid::Uuid,

@@ -1,4 +1,4 @@
-use tokio_postgres::Client;
+use tokio_postgres::{Client, GenericClient};
 use uuid::Uuid;
 
 use crate::domain::{Association, NoteId};
@@ -6,12 +6,15 @@ use crate::domain::note::format_timestamp;
 use crate::storage::StorageError;
 use crate::urls::base32::encode_id;
 
-pub async fn create_association(
-    client: &Client,
+pub async fn create_association<C>(
+    client: &C,
     kind: &str,
     from_id: NoteId,
     to_id: NoteId,
-) -> Result<Association, StorageError> {
+) -> Result<Association, StorageError>
+where
+    C: GenericClient + Sync,
+{
     let from_bytes = from_id.to_bytes();
     let to_bytes = to_id.to_bytes();
     client
