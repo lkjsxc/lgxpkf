@@ -14,4 +14,4 @@
 ## Result
 
 - Response includes the base32 note ID.
-- The note is accessible at /notes/{base32_id}.
+- The note is accessible at /{base32_id}.

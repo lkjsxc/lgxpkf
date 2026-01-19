@@ -11,3 +11,5 @@
 - Web UI: Static HTML interface served by the server.
 - Base32 URL: URL-safe representation of a note identifier.
 - Author: The user identity associated with a note.
+- Account note: Note linked to a user account profile.
+- Note view: HTML page at /{id} showing a note and related posts.

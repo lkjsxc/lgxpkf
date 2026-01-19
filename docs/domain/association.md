@@ -2,15 +2,17 @@
 
 ## Definition
 
-An association links two notes with a semantic kind.
+An association links two notes with a single semantic kind token.
 
-- kind: enum-like string.
+- kind: single-token string.
 - from_id: source note id.
 - to_id: target note id.
 - created_at: timestamp.
 
 ## Semantics
 
-- version: new version of a note.
+- next / prev: ordering links.
+- new / old: replacement links.
+- parent / child: hierarchy links.
 - reply: direct reply or quote.
-- aggregate: larger content formed by linking notes.
+- version: new version of a note.

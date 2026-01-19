@@ -4,4 +4,4 @@
 
 - Fetches GET /notes/{id}/related.
 - Displays associations alongside linked notes.
-- Keeps note IDs linkable for quick navigation.
+- Keeps note IDs linkable to /{id} for quick navigation.

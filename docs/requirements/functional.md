@@ -8,13 +8,13 @@
 ## Notes
 
 - Users can create notes with immutable content.
-- Notes are retrievable by base32 URL.
+- Notes are retrievable at /{id} for HTML view and /notes/{id} for JSON.
 - Notes list is queryable by author and time range.
 
 ## Associations
 
 - Notes can be linked by a kind and two note IDs.
-- Associations can represent versioning, replies, or aggregation.
+- Associations can represent ordering, versioning, replies, and hierarchy.
 
 ## Follows
 
@@ -34,7 +34,7 @@
 
 - The server serves an HTML page for note posting, timeline, and associations.
 - The UI authenticates via Google and uses the JSON API.
-- Related notes are displayed for a selected note.
+- Related notes are displayed for a selected note and the note view.
 
 ## APIs
 

@@ -8,6 +8,14 @@
 - associations
 - follows
 
+## Users Table
+
+- user_id (uuid)
+- google_sub (text)
+- email (text)
+- account_note_id (bytea, nullable)
+- created_at (timestamptz)
+
 ## Notes Table
 
 - id (bytea)

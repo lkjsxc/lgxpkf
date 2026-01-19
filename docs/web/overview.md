@@ -3,6 +3,7 @@
 ## Entry Point
 
 - GET / serves the HTML UI.
+- GET /{id} serves the note view with related posts.
 - The UI is static HTML and inline JavaScript.
 
 ## Authentication
@@ -14,3 +15,4 @@
 ## Features
 
 - Note posting, timeline browsing, association creation, related note browsing.
+- Dark-mode-only visual theme.

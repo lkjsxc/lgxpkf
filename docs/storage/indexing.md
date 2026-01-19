@@ -5,6 +5,10 @@
 - Primary key on id.
 - Index on author_id and created_at.
 
+## Users
+
+- Index on account_note_id.
+
 ## Associations
 
 - Composite index on (from_id, to_id).

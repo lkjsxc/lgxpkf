@@ -8,3 +8,4 @@
 
 - GET /auth/me
   - Returns current user profile.
+  - Profile includes account_note_id when set.

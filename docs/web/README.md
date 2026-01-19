@@ -3,6 +3,7 @@
 ## Contents
 
 - [docs/web/overview.md](overview.md)
+- [docs/web/note-view.md](note-view.md)
 - [docs/web/posting.md](posting.md)
 - [docs/web/timeline.md](timeline.md)
 - [docs/web/associations.md](associations.md)
