@@ -4,7 +4,8 @@ COPY Cargo.toml ./
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 COPY src ./src
-RUN cargo build --release
+RUN find src -type f -exec touch {} + \
+	&& cargo build --release
 
 FROM debian:bookworm-slim
 RUN apt-get update \
