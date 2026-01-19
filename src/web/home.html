@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b111c">
 <title>LGXPKF</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
-<style>:root{--bg:#0b111c;--ink:#e7eef8;--muted:#98a7bf;--panel:#111a2b;--line:#1f2a3d;--accent:#4aa3ff;--accent-2:#6ae3ff;--accent-3:#f0b35a;--shadow:rgba(5,9,20,0.6);--mono:"JetBrains Mono",monospace;--sans:"Space Grotesk",sans-serif}*{box-sizing:border-box}body{margin:0;font-family:var(--sans);color:var(--ink);background:radial-gradient(circle at 10% 15%,rgba(74,163,255,0.2),transparent 55%),radial-gradient(circle at 88% 20%,rgba(106,227,255,0.14),transparent 52%),linear-gradient(135deg,#0b111c 0%,#0a0f18 55%,#090d16 100%);min-height:100vh}body.modal-open{overflow:hidden}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:rgba(11,17,28,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.brand{font-size:1.1rem;letter-spacing:0.32em;font-weight:700}.account{display:flex;align-items:center;gap:12px}.account-info{display:flex;align-items:center;gap:10px;font-size:0.85rem}.account-info span{font-family:var(--mono);font-size:0.75rem;color:var(--muted)}button{border:none;border-radius:999px;padding:8px 16px;font-weight:600;background:var(--accent);color:#071019;cursor:pointer}button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}button:disabled{opacity:0.6;cursor:not-allowed}main{max-width:980px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;align-items:center;gap:28px}.hero{width:100%;display:flex;flex-direction:column;gap:12px;animation:rise 0.6s ease both}.hero h1{margin:0;font-size:clamp(2.2rem,6vw,4rem);letter-spacing:-0.03em}.hero p{margin:0;color:var(--muted);max-width:640px}.status{margin-top:12px;color:var(--accent-2);font-size:0.9rem}.panel{width:min(840px,100%);background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 24px 60px var(--shadow);animation:rise 0.6s ease both;animation-delay:0.1s}.panel-header{display:flex;align-items:center;justify-content:space-between;gap:12px}.panel-header h2{margin:0;font-size:1.4rem}.helper{font-size:0.8rem;color:var(--muted)}.timeline{display:flex;flex-direction:column;gap:14px;margin-top:18px}.note{border:1px solid var(--line);border-radius:18px;padding:16px;background:#0f1728;display:flex;flex-direction:column;gap:10px;transition:transform 0.2s ease,border-color 0.2s ease;cursor:pointer}.note:hover{transform:translateY(-2px);border-color:rgba(106,227,255,0.6)}.note-meta{display:flex;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:0.78rem}.note-value{font-family:var(--mono);font-size:0.9rem;line-height:1.5;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.fab{position:fixed;left:20px;bottom:20px;z-index:20;box-shadow:0 18px 40px rgba(74,163,255,0.35)}.composer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,9,20,0.7);opacity:0;pointer-events:none;transition:opacity 0.2s ease}.composer.open{opacity:1;pointer-events:auto}.composer-panel{width:min(720px,92vw);background:#0f1728;border:1px solid var(--line);border-radius:28px;padding:24px;box-shadow:0 30px 80px rgba(5,9,20,0.55);animation:rise 0.4s ease both}.composer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.composer-head h2{margin:0;font-size:1.6rem}label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted)}textarea{width:100%;margin-top:12px;min-height:220px;border-radius:18px;border:1px solid var(--line);padding:14px 16px;font-family:var(--mono);font-size:0.95rem;background:#0a101b;color:var(--ink)}.composer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media (max-width:720px){.topbar{flex-direction:column;align-items:flex-start;gap:12px}.panel-header{flex-direction:column;align-items:flex-start}.fab{left:16px;bottom:16px}}</style>
+<style>:root{--bg:#0b111c;--ink:#e7eef8;--muted:#98a7bf;--panel:#111a2b;--line:#1f2a3d;--accent:#4aa3ff;--accent-2:#6ae3ff;--accent-3:#f0b35a;--shadow:rgba(5,9,20,0.6);--mono:"JetBrains Mono",monospace;--sans:"Space Grotesk",sans-serif}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;font-family:var(--sans);color:var(--ink);background:radial-gradient(circle at 10% 15%,rgba(74,163,255,0.2),transparent 55%),radial-gradient(circle at 88% 20%,rgba(106,227,255,0.14),transparent 52%),linear-gradient(135deg,#0b111c 0%,#0a0f18 55%,#090d16 100%);min-height:100vh}body.modal-open{overflow:hidden}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:rgba(11,17,28,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.brand{font-size:1.1rem;letter-spacing:0.32em;font-weight:700}.account{display:flex;align-items:center;gap:12px}.account-info{display:flex;align-items:center;gap:10px;font-size:0.85rem}.account-info span{font-family:var(--mono);font-size:0.75rem;color:var(--muted)}button{border:none;border-radius:12px;padding:8px 16px;font-weight:600;background:var(--accent);color:#071019;cursor:pointer}button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}button:disabled{opacity:0.6;cursor:not-allowed}main{max-width:1200px;margin:0 auto;padding:32px 24px 120px;width:100%;animation:rise 0.5s ease both}.helper{font-size:0.8rem;color:var(--muted)}.timeline{display:grid;grid-template-columns:1fr;gap:16px;width:100%}.note{border:1px solid var(--line);border-radius:12px;padding:16px;background:#0f1728;display:flex;flex-direction:column;gap:10px;transition:transform 0.2s ease,border-color 0.2s ease;cursor:pointer}.note:hover{transform:translateY(-2px);border-color:rgba(106,227,255,0.6)}.note-meta{display:flex;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:0.78rem}.note-value{font-family:var(--mono);font-size:0.9rem;line-height:1.5;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.fab{position:fixed;left:20px;bottom:20px;z-index:20;box-shadow:0 18px 40px rgba(74,163,255,0.35)}.composer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,9,20,0.7);opacity:0;pointer-events:none;transition:opacity 0.2s ease}.composer.open{opacity:1;pointer-events:auto}.composer-panel{width:min(720px,92vw);background:#0f1728;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 30px 80px rgba(5,9,20,0.55);animation:rise 0.4s ease both}.composer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.composer-head h2{margin:0;font-size:1.6rem}label{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted)}textarea{width:100%;margin-top:12px;min-height:220px;border-radius:12px;border:1px solid var(--line);padding:14px 16px;font-family:var(--mono);font-size:0.95rem;background:#0a101b;color:var(--ink)}.composer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media (min-width:900px){.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (min-width:1200px){.timeline{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:720px){.topbar{flex-direction:column;align-items:flex-start;gap:12px}.fab{left:16px;bottom:16px}}</style>
 </head>
 <body data-client-id="{{CLIENT_ID}}">
 <header class="topbar"><a class="brand" href="/">LGXPKF</a><div class="account"><div id="signin"></div><div class="account-info" id="account-info" hidden><span id="account-email"></span><button class="ghost" id="signout" type="button">Sign out</button></div></div></header>
 <main>
-<section class="hero"><h1>Signal grid for immutable notes.</h1><p>Post long-form updates, review the central timeline, and jump into linked notes from a focused command desk.</p><div class="status" id="status">Sign in to unlock posting and timeline access.</div></section>
-<section class="panel"><div class="panel-header"><div><h2>Timeline</h2><div class="helper">Centered feed of notes from you and people you follow.</div></div><button class="ghost" id="feed-refresh" type="button">Refresh</button></div><div id="feed-list" class="timeline"></div></section>
+<div id="feed-list" class="timeline"></div>
 </main>
 <button class="fab" id="open-composer" type="button">Post</button>
 <div class="composer" id="composer" aria-hidden="true"><div class="composer-panel"><div class="composer-head"><h2>Compose note</h2><button class="ghost" id="close-composer" type="button">Close</button></div><form id="note-form"><label for="note-value">Note text</label><textarea id="note-value" placeholder="Markdown supported. Unlimited length; chained automatically."></textarea><div class="composer-actions"><div class="helper" id="note-status">Idle.</div><button id="submit" type="submit">Post now</button></div></form></div></div>
@@ -23,7 +23,6 @@
   const el = (id) => document.getElementById(id);
   const state = { token: localStorage.getItem("lgxpkf.session"), user: null };
   const clientId = document.body.dataset.clientId || "";
-  const statusEl = el("status");
   const noteStatus = el("note-status");
   const feedList = el("feed-list");
   const submitBtn = el("submit");
@@ -33,8 +32,8 @@
   const composer = el("composer");
   const openBtn = el("open-composer");
   const closeBtn = el("close-composer");
-  const setStatus = (text) => { statusEl.textContent = text; };
   const setNoteStatus = (text) => { noteStatus.textContent = text; };
+  const setFeedMessage = (text) => { feedList.innerHTML = `<div class="helper">${esc(text)}</div>`; };
   const setSignedIn = (signedIn) => {
     submitBtn.disabled = !signedIn;
     el("note-value").disabled = !signedIn;
@@ -65,7 +64,7 @@
     return card;
   };
   const loadFeed = async () => {
-    if (!state.token) { feedList.innerHTML = ""; return; }
+    if (!state.token) { setFeedMessage("Sign in to view the timeline."); return; }
     feedList.innerHTML = "<div class=\"helper\">Loading timeline...</div>";
     try {
       const feed = await api("/feed");
@@ -77,32 +76,28 @@
     }
   };
   const refreshSession = async () => {
-    if (!state.token) { setSignedIn(false); return; }
-    setStatus("Restoring session...");
+    if (!state.token) { setSignedIn(false); setFeedMessage("Sign in to view the timeline."); return; }
     try {
       const data = await api("/auth/me", { headers: {} });
       state.user = data.user;
       el("account-email").textContent = data.user.email;
-      setStatus(`Signed in as ${data.user.email}`);
       setSignedIn(true);
       loadFeed();
     } catch (_) {
       storeToken(null);
-      setStatus("Session expired. Sign in again.");
+      setFeedMessage("Session expired. Sign in again.");
     }
   };
   const handleCredential = async (payload) => {
-    setStatus("Signing in...");
     try {
       const data = await api("/auth/google", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id_token: payload.credential }) });
       storeToken(data.token);
       state.user = data.user;
       el("account-email").textContent = data.user.email;
-      setStatus(`Signed in as ${data.user.email}`);
       loadFeed();
     } catch (err) {
       storeToken(null);
-      setStatus(err.message);
+      setFeedMessage(err.message);
     }
   };
   const openComposer = () => {
@@ -135,14 +130,13 @@
   });
   composer.addEventListener("click", (event) => { if (event.target === composer) { closeComposer(); } });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && composer.classList.contains("open")) { closeComposer(); } });
-  el("feed-refresh").addEventListener("click", loadFeed);
   openBtn.addEventListener("click", openComposer);
   closeBtn.addEventListener("click", closeComposer);
-  signoutBtn.addEventListener("click", () => { storeToken(null); state.user = null; el("account-email").textContent = ""; setStatus("Signed out."); feedList.innerHTML = ""; });
+  signoutBtn.addEventListener("click", () => { storeToken(null); state.user = null; el("account-email").textContent = ""; setFeedMessage("Signed out."); });
   window.addEventListener("load", () => {
-    if (!clientId) { setSignedIn(false); setStatus("Missing GOOGLE_CLIENT_ID configuration."); return; }
-    if (!window.google || !google.accounts || !google.accounts.id) { setSignedIn(false); setStatus("Google auth library failed to load."); return; }
-    google.accounts.id.initialize({ client_id: clientId, callback: handleCredential });
+    if (!clientId) { setSignedIn(false); setFeedMessage("Missing GOOGLE_CLIENT_ID configuration."); return; }
+    if (!window.google || !google.accounts || !google.accounts.id) { setSignedIn(false); setFeedMessage("Google auth library failed to load."); return; }
+    google.accounts.id.initialize({ client_id: clientId, callback: handleCredential, ux_mode: "redirect", login_uri: `${window.location.origin}/auth/google/redirect`, state: `${window.location.pathname}${window.location.search}` });
     google.accounts.id.renderButton(signinWrap, { theme: "outline", size: "large", text: "signin_with" });
     refreshSession();
   });

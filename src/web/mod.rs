@@ -30,7 +30,6 @@ fn render_home(client_id: &str) -> String {
     HOME_TEMPLATE.replace("{{CLIENT_ID}}", &client_id)
 }
 fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> String {
-    let title = note_title(&chain.center.value);
     let markdown = chain_markdown(chain);
     let body_html = render_markdown(&markdown);
     let chain_items = render_chain_items(&chain.prev, &chain.next);
@@ -40,7 +39,6 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
     let client_id = escape_attr(&config.google_client_id);
     let base = NOTE_TEMPLATE
         .replace("{{CLIENT_ID}}", &client_id)
-        .replace("{{NOTE_TITLE}}", &escape_html(&title))
         .replace("{{NOTE_ID}}", &escape_attr(&chain.center.id))
         .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
@@ -48,11 +46,13 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
         .replace("{{CHAIN_ITEMS}}", "__LGXPKF_CHAIN_ITEMS__")
         .replace("{{RELATED_ITEMS}}", "__LGXPKF_RELATED_ITEMS__")
         .replace("{{NEWER_VERSION}}", "__LGXPKF_NEWER_VERSION__")
-        .replace("{{NOTE_BODY}}", "__LGXPKF_NOTE_BODY__");
+        .replace("{{NOTE_BODY}}", "__LGXPKF_NOTE_BODY__")
+        .replace("{{NOTE_RAW}}", "__LGXPKF_NOTE_RAW__");
     base.replace("__LGXPKF_CHAIN_ITEMS__", &chain_items)
         .replace("__LGXPKF_RELATED_ITEMS__", &related_items)
         .replace("__LGXPKF_NEWER_VERSION__", &newer_version)
         .replace("__LGXPKF_NOTE_BODY__", &body_html)
+        .replace("__LGXPKF_NOTE_RAW__", &escape_html(&markdown))
 }
 fn chain_markdown(chain: &NoteChain) -> String {
     let mut parts = Vec::new();
@@ -63,7 +63,7 @@ fn chain_markdown(chain: &NoteChain) -> String {
     for note in &chain.next {
         parts.push(note.value.as_str());
     }
-    parts.join("\n\n---\n\n")
+    parts.join("\n\n")
 }
 fn render_chain_items(prev: &[crate::domain::Note], next: &[crate::domain::Note]) -> String {
     if prev.is_empty() && next.is_empty() {
@@ -128,15 +128,6 @@ fn render_newer_version(related: &[RelatedEntry], center_id: &str) -> String {
          <div class=\"helper mono\">{created} · {note_id}</div>\
          </div>"
     )
-}
-fn note_title(value: &str) -> String {
-    let first_line = value
-        .lines()
-        .find(|line| !line.trim().is_empty())
-        .unwrap_or("LGXPKF Note");
-    let trimmed = first_line.trim().trim_start_matches('#').trim();
-    let title = if trimmed.is_empty() { "LGXPKF Note" } else { trimmed };
-    note_excerpt(title, 64)
 }
 fn note_excerpt(value: &str, max_len: usize) -> String {
     let mut excerpt = String::new();
