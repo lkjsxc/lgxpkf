@@ -18,13 +18,15 @@ use crate::storage::notes::{
 use crate::storage::sessions::{create_session, get_session_user};
 use crate::storage::users::{create_account_note, find_or_create_user, find_user_by_id};
 
+pub type StorageError = Box<dyn std::error::Error + Send + Sync>;
+
 #[derive(Clone)]
 pub struct Storage {
     pool: Pool,
 }
 
 impl Storage {
-    pub async fn connect(config: &Config) -> Result<Self, Box<dyn std::error::Error>> {
+    pub async fn connect(config: &Config) -> Result<Self, StorageError> {
         let manager = Manager::from_config(
             config.database_url.parse()?,
             NoTls,
@@ -36,7 +38,7 @@ impl Storage {
         Ok(Self { pool })
     }
 
-    pub async fn run_migrations(&self, path: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn run_migrations(&self, path: &str) -> Result<(), StorageError> {
         migrations::run(&self.pool, path).await
     }
 
@@ -44,7 +46,7 @@ impl Storage {
         &self,
         google_sub: &str,
         email: &str,
-    ) -> Result<User, Box<dyn std::error::Error>> {
+    ) -> Result<User, StorageError> {
         let client = self.pool.get().await?;
         find_or_create_user(&client, google_sub, email).await
     }
@@ -54,7 +56,7 @@ impl Storage {
         user_id: uuid::Uuid,
         token: &str,
         expires_at: time::OffsetDateTime,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), StorageError> {
         let client = self.pool.get().await?;
         create_session(&client, user_id, token, expires_at).await
     }
@@ -62,7 +64,7 @@ impl Storage {
     pub async fn get_session_user(
         &self,
         token: &str,
-    ) -> Result<Option<User>, Box<dyn std::error::Error>> {
+    ) -> Result<Option<User>, StorageError> {
         let client = self.pool.get().await?;
         get_session_user(&client, token).await
     }
@@ -72,7 +74,7 @@ impl Storage {
         note_id: NoteId,
         value: &[u8],
         author_id: uuid::Uuid,
-    ) -> Result<Note, Box<dyn std::error::Error>> {
+    ) -> Result<Note, StorageError> {
         let client = self.pool.get().await?;
         create_note(&client, note_id, value, author_id).await
     }
@@ -80,7 +82,7 @@ impl Storage {
     pub async fn find_note(
         &self,
         note_id: NoteId,
-    ) -> Result<Option<Note>, Box<dyn std::error::Error>> {
+    ) -> Result<Option<Note>, StorageError> {
         let client = self.pool.get().await?;
         find_note(&client, note_id).await
     }
@@ -88,7 +90,7 @@ impl Storage {
     pub async fn find_notes_by_ids(
         &self,
         note_ids: &[NoteId],
-    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Note>, StorageError> {
         let client = self.pool.get().await?;
         find_notes_by_ids(&client, note_ids).await
     }
@@ -98,7 +100,7 @@ impl Storage {
         author: Option<uuid::Uuid>,
         from: Option<time::OffsetDateTime>,
         to: Option<time::OffsetDateTime>,
-    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Note>, StorageError> {
         let client = self.pool.get().await?;
         list_notes(&client, author, from, to).await
     }
@@ -109,7 +111,7 @@ impl Storage {
         from: Option<time::OffsetDateTime>,
         to: Option<time::OffsetDateTime>,
         limit: i64,
-    ) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Note>, StorageError> {
         let client = self.pool.get().await?;
         list_feed_notes(&client, user_id, from, to, limit).await
     }
@@ -119,7 +121,7 @@ impl Storage {
         kind: &str,
         from_id: NoteId,
         to_id: NoteId,
-    ) -> Result<Association, Box<dyn std::error::Error>> {
+    ) -> Result<Association, StorageError> {
         let client = self.pool.get().await?;
         create_association(&client, kind, from_id, to_id).await
     }
@@ -127,7 +129,7 @@ impl Storage {
     pub async fn list_associations(
         &self,
         note_id: NoteId,
-    ) -> Result<Vec<Association>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<Association>, StorageError> {
         let client = self.pool.get().await?;
         list_associations(&client, note_id).await
     }
@@ -136,7 +138,7 @@ impl Storage {
         &self,
         follower_id: uuid::Uuid,
         followee_id: uuid::Uuid,
-    ) -> Result<Option<time::OffsetDateTime>, Box<dyn std::error::Error>> {
+    ) -> Result<Option<time::OffsetDateTime>, StorageError> {
         let client = self.pool.get().await?;
         create_follow(&client, follower_id, followee_id).await
     }
@@ -145,7 +147,7 @@ impl Storage {
         &self,
         follower_id: uuid::Uuid,
         followee_id: uuid::Uuid,
-    ) -> Result<bool, Box<dyn std::error::Error>> {
+    ) -> Result<bool, StorageError> {
         let client = self.pool.get().await?;
         delete_follow(&client, follower_id, followee_id).await
     }
@@ -153,7 +155,7 @@ impl Storage {
     pub async fn list_followers(
         &self,
         user_id: uuid::Uuid,
-    ) -> Result<Vec<FollowEdge>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<FollowEdge>, StorageError> {
         let client = self.pool.get().await?;
         list_followers(&client, user_id).await
     }
@@ -161,7 +163,7 @@ impl Storage {
     pub async fn list_following(
         &self,
         user_id: uuid::Uuid,
-    ) -> Result<Vec<FollowEdge>, Box<dyn std::error::Error>> {
+    ) -> Result<Vec<FollowEdge>, StorageError> {
         let client = self.pool.get().await?;
         list_following(&client, user_id).await
     }
@@ -169,7 +171,7 @@ impl Storage {
     pub async fn find_user_by_id(
         &self,
         user_id: uuid::Uuid,
-    ) -> Result<Option<User>, Box<dyn std::error::Error>> {
+    ) -> Result<Option<User>, StorageError> {
         let client = self.pool.get().await?;
         find_user_by_id(&client, user_id).await
     }
@@ -178,7 +180,7 @@ impl Storage {
         &self,
         user_id: uuid::Uuid,
         value: &[u8],
-    ) -> Result<Note, Box<dyn std::error::Error>> {
+    ) -> Result<Note, StorageError> {
         let client = self.pool.get().await?;
         create_account_note(&client, user_id, value).await
     }

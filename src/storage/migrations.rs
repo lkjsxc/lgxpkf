@@ -2,7 +2,9 @@ use deadpool_postgres::Pool;
 use tokio::fs;
 use tokio_postgres::Client;
 
-pub async fn run(pool: &Pool, path: &str) -> Result<(), Box<dyn std::error::Error>> {
+use crate::storage::StorageError;
+
+pub async fn run(pool: &Pool, path: &str) -> Result<(), StorageError> {
     let mut entries = fs::read_dir(path).await?;
     let mut files = Vec::new();
     while let Some(entry) = entries.next_entry().await? {
@@ -31,7 +33,7 @@ pub async fn run(pool: &Pool, path: &str) -> Result<(), Box<dyn std::error::Erro
     Ok(())
 }
 
-async fn ensure_table(client: &Client) -> Result<(), Box<dyn std::error::Error>> {
+async fn ensure_table(client: &Client) -> Result<(), StorageError> {
     client
         .batch_execute(
             "CREATE TABLE IF NOT EXISTS schema_migrations (name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
@@ -40,14 +42,14 @@ async fn ensure_table(client: &Client) -> Result<(), Box<dyn std::error::Error>>
     Ok(())
 }
 
-async fn is_applied(client: &Client, name: &str) -> Result<bool, Box<dyn std::error::Error>> {
+async fn is_applied(client: &Client, name: &str) -> Result<bool, StorageError> {
     let row = client
         .query_opt("SELECT name FROM schema_migrations WHERE name = $1", &[&name])
         .await?;
     Ok(row.is_some())
 }
 
-async fn mark_applied(client: &Client, name: &str) -> Result<(), Box<dyn std::error::Error>> {
+async fn mark_applied(client: &Client, name: &str) -> Result<(), StorageError> {
     client
         .execute(
             "INSERT INTO schema_migrations (name) VALUES ($1)",

@@ -2,13 +2,14 @@ use tokio_postgres::Client;
 use uuid::Uuid;
 
 use crate::domain::User;
+use crate::storage::StorageError;
 
 pub async fn create_session(
     client: &Client,
     user_id: Uuid,
     token: &str,
     expires_at: time::OffsetDateTime,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), StorageError> {
     client
         .execute(
             "INSERT INTO sessions (token, user_id, expires_at, created_at) VALUES ($1, $2, $3, NOW())",
@@ -21,7 +22,7 @@ pub async fn create_session(
 pub async fn get_session_user(
     client: &Client,
     token: &str,
-) -> Result<Option<User>, Box<dyn std::error::Error>> {
+) -> Result<Option<User>, StorageError> {
     let row = client
         .query_opt(
             "SELECT u.user_id, u.google_sub, u.email, u.account_note_id \

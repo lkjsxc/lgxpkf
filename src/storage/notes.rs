@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 use crate::domain::{Note, NoteId, UserProfile};
 use crate::domain::note::format_timestamp;
+use crate::storage::StorageError;
 use crate::urls::base32::encode_id;
 
 pub async fn create_note(
@@ -10,7 +11,7 @@ pub async fn create_note(
     note_id: NoteId,
     value: &[u8],
     author_id: Uuid,
-) -> Result<Note, Box<dyn std::error::Error>> {
+) -> Result<Note, StorageError> {
     let id_bytes = note_id.to_bytes();
     client
         .execute(
@@ -32,7 +33,7 @@ pub async fn create_note(
 pub async fn find_note(
     client: &Client,
     note_id: NoteId,
-) -> Result<Option<Note>, Box<dyn std::error::Error>> {
+) -> Result<Option<Note>, StorageError> {
     let id_bytes = note_id.to_bytes();
     let row = client
         .query_opt(
@@ -50,7 +51,7 @@ pub async fn list_notes(
     author: Option<Uuid>,
     from: Option<time::OffsetDateTime>,
     to: Option<time::OffsetDateTime>,
-) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Note>, StorageError> {
     let mut clauses = Vec::new();
     let mut params: Vec<&(dyn tokio_postgres::types::ToSql + Sync)> = Vec::new();
 
@@ -86,7 +87,7 @@ pub async fn list_notes(
 pub async fn find_notes_by_ids(
     client: &Client,
     note_ids: &[NoteId],
-) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Note>, StorageError> {
     if note_ids.is_empty() {
         return Ok(Vec::new());
     }
@@ -112,7 +113,7 @@ pub async fn list_feed_notes(
     from: Option<time::OffsetDateTime>,
     to: Option<time::OffsetDateTime>,
     limit: i64,
-) -> Result<Vec<Note>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Note>, StorageError> {
     let mut clauses = Vec::new();
     let mut params: Vec<&(dyn tokio_postgres::types::ToSql + Sync)> = Vec::new();
     params.push(&user_id);

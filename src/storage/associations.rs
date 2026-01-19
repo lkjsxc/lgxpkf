@@ -3,6 +3,7 @@ use uuid::Uuid;
 
 use crate::domain::{Association, NoteId};
 use crate::domain::note::format_timestamp;
+use crate::storage::StorageError;
 use crate::urls::base32::encode_id;
 
 pub async fn create_association(
@@ -10,7 +11,7 @@ pub async fn create_association(
     kind: &str,
     from_id: NoteId,
     to_id: NoteId,
-) -> Result<Association, Box<dyn std::error::Error>> {
+) -> Result<Association, StorageError> {
     let from_bytes = from_id.to_bytes();
     let to_bytes = to_id.to_bytes();
     client
@@ -32,7 +33,7 @@ pub async fn create_association(
 pub async fn list_associations(
     client: &Client,
     note_id: NoteId,
-) -> Result<Vec<Association>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Association>, StorageError> {
     let id_bytes = note_id.to_bytes();
     let rows = client
         .query(

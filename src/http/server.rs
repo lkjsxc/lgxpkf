@@ -10,7 +10,7 @@ use crate::storage::Storage;
 pub async fn run_server(
     config: Config,
     storage: Storage,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let listener = TcpListener::bind(&config.bind_addr).await?;
     let state = AppState { config, storage };
 
