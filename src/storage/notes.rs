@@ -132,6 +132,10 @@ pub async fn list_feed_notes(
         "NOT EXISTS (SELECT 1 FROM associations a WHERE (a.kind = 'next' AND a.to_id = n.id) OR (a.kind = 'prev' AND a.from_id = n.id))"
             .to_string(),
     );
+    clauses.push(
+        "NOT EXISTS (SELECT 1 FROM associations a WHERE a.kind = 'version' AND a.from_id = n.id)"
+            .to_string(),
+    );
     if let Some(from_ts) = from.as_ref() {
         clauses.push(format!("n.created_at >= ${}", params.len() + 1));
         params.push(from_ts);

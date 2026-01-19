@@ -16,6 +16,7 @@ pub async fn route(req: Request, state: AppState) -> Response {
     let result = match (method, path) {
         ("GET", "/") => Ok(web::home(&state.config)),
         ("POST", "/auth/google") => auth::post_google(req, state).await,
+        ("POST", "/auth/google/redirect") => auth::post_google_redirect(req, state).await,
         ("GET", "/auth/me") => auth::get_me(req, state).await,
         ("POST", "/account/note") => account::post_account_note(req, state).await,
         ("POST", "/notes") => notes::post_notes(req, state).await,
