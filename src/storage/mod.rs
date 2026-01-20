@@ -10,7 +10,7 @@ use crate::config::Config;
 use crate::domain::{generate_note_id, Association, FollowEdge, Note, NoteId, User};
 use crate::storage::associations::{create_association, list_associations};
 use crate::storage::follows::{create_follow, delete_follow, list_followers, list_following};
-use crate::storage::notes::{create_note, find_note, find_notes_by_ids, insert_note, list_feed_notes, list_notes};
+use crate::storage::notes::{create_note, find_note, find_notes_by_ids, insert_note, list_feed_notes, list_notes, list_random_notes};
 use crate::storage::sessions::{create_session, get_session_user};
 use crate::storage::users::{create_account_note, find_or_create_user, find_user_by_id};
 use crate::urls::base32::encode_id;
@@ -137,6 +137,13 @@ impl Storage {
     ) -> Result<Vec<Note>, StorageError> {
         let client = self.pool.get().await?;
         list_feed_notes(&client, user_id, from, to, limit).await
+    }
+    pub async fn list_random_notes(
+        &self,
+        limit: i64,
+    ) -> Result<Vec<Note>, StorageError> {
+        let client = self.pool.get().await?;
+        list_random_notes(&client, limit).await
     }
     pub async fn create_association(
         &self,

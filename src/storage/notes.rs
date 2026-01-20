@@ -92,6 +92,23 @@ pub async fn list_notes(
     let rows = client.query(&query, &params).await?;
     Ok(rows.iter().map(map_note).collect())
 }
+pub async fn list_random_notes(
+    client: &Client,
+    limit: i64,
+) -> Result<Vec<Note>, StorageError> {
+    let rows = client
+        .query(
+            "SELECT n.id, n.value, n.created_at, u.user_id, u.email, u.account_note_id \
+             FROM notes n JOIN users u ON u.user_id = n.author_id \
+             WHERE NOT EXISTS (SELECT 1 FROM associations a WHERE (a.kind = 'next' AND a.to_id = n.id) OR (a.kind = 'prev' AND a.from_id = n.id)) \
+             AND NOT EXISTS (SELECT 1 FROM associations a WHERE a.kind = 'version' AND a.from_id = n.id) \
+             ORDER BY RANDOM() \
+             LIMIT $1",
+            &[&limit],
+        )
+        .await?;
+    Ok(rows.iter().map(map_note).collect())
+}
 pub async fn find_notes_by_ids(
     client: &Client,
     note_ids: &[NoteId],

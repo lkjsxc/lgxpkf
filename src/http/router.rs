@@ -15,10 +15,15 @@ pub async fn route(req: Request, state: AppState) -> Response {
 
     let result = match (method, path) {
         ("GET", "/") => Ok(web::home(&state.config)),
+        ("GET", "/me") => Ok(web::me(&state.config)),
+        ("GET", "/signin") => Ok(web::signin(&state.config)),
         ("GET", "/terms") => Ok(web::terms()),
         ("GET", "/privacy") => Ok(web::privacy()),
         ("GET", "/community") => Ok(web::community()),
         ("GET", "/favicon.ico") => Ok(web::favicon()),
+        ("GET", "/assets/app.js") => Ok(web::app_js()),
+        ("GET", "/assets/home.js") => Ok(web::home_js()),
+        ("GET", "/assets/signin.js") => Ok(web::signin_js()),
         ("GET", "/assets/note.js") => Ok(web::note_js()),
         ("GET", "/health") => health::get_health(req, state).await,
         ("GET", "/ready") => health::get_ready(req, state).await,
@@ -28,6 +33,7 @@ pub async fn route(req: Request, state: AppState) -> Response {
         ("POST", "/account/note") => account::post_account_note(req, state).await,
         ("POST", "/notes") => notes::post_notes(req, state).await,
         ("GET", "/notes") => notes::get_notes(req, state).await,
+        ("GET", "/notes/random") => notes::get_random_notes(req, state).await,
         ("GET", "/feed") => feed::get_feed(req, state).await,
         ("POST", "/associations") => associations::post_associations(req, state).await,
         ("GET", "/associations") => associations::get_associations(req, state).await,

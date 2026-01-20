@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::api::helpers::{parse_json, parse_query_param, parse_time_param, require_user};
+use crate::api::helpers::{parse_json, parse_limit_param, parse_query_param, parse_time_param, require_user};
 use crate::domain::Note;
 use crate::errors::ApiError;
 use crate::http::parser::Request;
@@ -96,6 +96,21 @@ pub async fn get_notes(
     let notes = state
         .storage
         .list_notes(author, from, to)
+        .await
+        .map_err(|_| ApiError::internal())?;
+    let json = serde_json::to_vec(&notes).unwrap_or_else(|_| b"[]".to_vec());
+    Ok(Response::json(200, json))
+}
+
+pub async fn get_random_notes(
+    req: Request,
+    state: AppState,
+) -> Result<Response, ApiError<serde_json::Value>> {
+    let params = parse_query(req.query.as_deref());
+    let limit = parse_limit_param(&params, "limit", 9, 30)? as i64;
+    let notes = state
+        .storage
+        .list_random_notes(limit)
         .await
         .map_err(|_| ApiError::internal())?;
     let json = serde_json::to_vec(&notes).unwrap_or_else(|_| b"[]".to_vec());
