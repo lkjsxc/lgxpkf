@@ -26,6 +26,20 @@ pub async fn post_associations(
 
     let from_id = parse_note_id(&body.from_id)?;
     let to_id = parse_note_id(&body.to_id)?;
+    if kind == "version" {
+        let locked = state
+            .storage
+            .is_account_note_id(from_id)
+            .await
+            .map_err(|_| ApiError::internal())?;
+        if locked {
+            return Err(ApiError::unprocessable(
+                "account_note_locked",
+                "Account bootstrap notes cannot be versioned",
+                None,
+            ));
+        }
+    }
 
     let association = state
         .storage

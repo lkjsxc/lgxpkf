@@ -1,7 +1,7 @@
 use tokio_postgres::Client;
 use uuid::Uuid;
 
-use crate::domain::{generate_note_id, Note, User};
+use crate::domain::{generate_note_id, Note, NoteId, User};
 use crate::storage::StorageError;
 use crate::storage::notes::map_note;
 use crate::urls::base32::encode_id;
@@ -103,6 +103,19 @@ pub async fn create_account_note(
             Err(err)
         }
     }
+}
+pub async fn is_account_note_id(
+    client: &Client,
+    note_id: NoteId,
+) -> Result<bool, StorageError> {
+    let id_bytes = note_id.to_bytes();
+    let row = client
+        .query_opt(
+            "SELECT 1 FROM users WHERE account_note_id = $1",
+            &[&id_bytes.to_vec()],
+        )
+        .await?;
+    Ok(row.is_some())
 }
 
 fn map_user(row: tokio_postgres::Row) -> User {
