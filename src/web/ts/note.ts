@@ -1,11 +1,15 @@
-import { apiJson } from "./shared/api";
+import { apiJson, apiJsonDecoded } from "./shared/api";
 import { escapeHtml, getById, setMessage, setModalState } from "./shared/dom";
 import { readStorage } from "./shared/storage";
+import { decodeFollowUserIds, decodePostNote } from "./shared/types";
+
+type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
 (() => {
-  const state: { token: string | null; user: LgxpkfUserProfile | null } = { token: readStorage("lgxpkf.session"), user: null };
+  const state: SessionState = { token: readStorage("lgxpkf.session"), user: null };
   const noteId = document.body.dataset.noteId || "", authorId = document.body.dataset.authorId || "", accountNoteId = document.body.dataset.accountNoteId || "";
   const editBtn = getById<HTMLButtonElement>("edit-note"), editor = getById<HTMLElement>("editor"), editForm = getById<HTMLFormElement>("edit-form"), editValue = getById<HTMLTextAreaElement>("edit-value"), editStatus = getById<HTMLElement>("edit-status"), closeEditor = getById<HTMLButtonElement>("close-editor"), relatedList = getById<HTMLElement>("related-list"), versionCard = getById<HTMLElement>("version-card"), versionList = getById<HTMLElement>("version-list"), copyBtn = getById<HTMLButtonElement>("copy-link"), copyJsonBtn = getById<HTMLButtonElement>("copy-json"), copyStatus = getById<HTMLElement>("copy-status"), followToggle = getById<HTMLButtonElement>("follow-toggle"), followStatus = getById<HTMLElement>("follow-status"), linkForm = getById<HTMLFormElement>("link-form"), linkTarget = getById<HTMLInputElement>("link-target"), linkKind = getById<HTMLInputElement>("link-kind"), linkStatus = getById<HTMLElement>("link-status");
+
   const isAccountNote = (): boolean => Boolean(accountNoteId && accountNoteId === noteId);
   const canEdit = (): boolean => Boolean(state.token) && !isAccountNote();
   const setSignedIn = (signedIn: boolean): void => {
@@ -14,10 +18,13 @@ import { readStorage } from "./shared/storage";
     if (linkForm) linkForm.querySelectorAll("input, textarea, button").forEach((node) => ((node as HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement).disabled = !signedIn));
     if (editForm) editForm.querySelectorAll("input, textarea, button").forEach((node) => ((node as HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement).disabled = !canEdit()));
   };
-  const insertVersionItem = (note: Partial<LgxpkfNote>): void => {
+
+  const insertVersionItem = (note: LgxpkfNote): void => {
     const id = escapeHtml(note.id || "");
     if (!id) return;
-    const summary = escapeHtml(note.value || "Newer version"), created = escapeHtml(note.created_at || ""), html = `<span class="related-kind">Newer version</span><span class="related-text">${summary}</span><span class="related-meta">${created}</span><span class="related-cite">Citation: ${id}</span>`;
+    const summary = escapeHtml(note.value || "Newer version");
+    const created = escapeHtml(note.created_at || "");
+    const html = `<span class="related-kind">Newer version</span><span class="related-text">${summary}</span><span class="related-meta">${created}</span><span class="related-cite">Citation: ${id}</span>`;
     if (relatedList && !relatedList.querySelector(`a[href="/${id}"]`)) {
       const item = document.createElement("a");
       item.className = "related-item related-item-version";
@@ -34,15 +41,16 @@ import { readStorage } from "./shared/storage";
       if (versionCard) versionCard.hidden = false;
     }
   };
+
   const loadFollowState = async (): Promise<void> => {
     if (!followToggle || !followStatus) return;
     if (!state.token || !state.user) { followToggle.disabled = true; followStatus.textContent = "Sign in to follow."; return; }
     if (!authorId || state.user.user_id === authorId) { followToggle.disabled = true; followStatus.textContent = ""; return; }
     followToggle.disabled = true; followStatus.textContent = "Checking follow...";
     try {
-      const data = await apiJson<{ edges?: Array<{ user?: LgxpkfUserProfile }> }>(`/follows?user=${state.user.user_id}&direction=following`, state.token);
-      const edges = Array.isArray(data.edges) ? data.edges : [];
-      const following = edges.some((edge) => edge.user?.user_id === authorId);
+      const payload = await apiJson(`/follows?user=${state.user.user_id}&direction=following`, state.token);
+      const followIds = decodeFollowUserIds(payload);
+      const following = followIds.includes(authorId);
       followToggle.dataset.following = following ? "true" : "false";
       followToggle.textContent = following ? "Unfollow" : "Follow";
       followStatus.textContent = following ? "Following." : "Not following.";
@@ -52,10 +60,10 @@ import { readStorage } from "./shared/storage";
       followToggle.disabled = false;
     }
   };
+
   const applySession = (session: LgxpkfSession): void => { state.token = session.token; state.user = session.user; setSignedIn(Boolean(state.token)); void loadFollowState(); };
   window.addEventListener("lgxpkf:session", (event) => applySession(event.detail));
-  const existing = window.lgxpkfSession;
-  if (existing) applySession(existing); else { setSignedIn(Boolean(state.token)); void loadFollowState(); }
+  const existing = window.lgxpkfSession; if (existing) applySession(existing); else { setSignedIn(Boolean(state.token)); void loadFollowState(); }
 
   if (copyBtn) copyBtn.addEventListener("click", async () => {
     if (!navigator.clipboard) { setMessage(copyStatus, "Clipboard unavailable."); return; }
@@ -87,9 +95,7 @@ import { readStorage } from "./shared/storage";
       setMessage(followStatus, following ? "Unfollowed." : "Following.");
     } catch (err) {
       setMessage(followStatus, err instanceof Error ? err.message : "Follow failed.");
-    } finally {
-      followToggle.disabled = false;
-    }
+    } finally { followToggle.disabled = false; }
   });
 
   if (linkForm) linkForm.addEventListener("submit", async (event) => {
@@ -116,9 +122,8 @@ import { readStorage } from "./shared/storage";
     if (!value) { setMessage(editStatus, "Note text required."); return; }
     setMessage(editStatus, "Publishing version...");
     try {
-      const post = await apiJson<{ root?: LgxpkfNote }>("/notes", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value }) });
-      const root = post.root || ({} as LgxpkfNote);
-      if (!root.id) throw new Error("Missing version id");
+      const root = await apiJsonDecoded("/notes", state.token, decodePostNote, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value }) });
+      if (!root) throw new Error("Missing version id");
       await apiJson("/associations", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "version", from_id: noteId, to_id: root.id }) });
       insertVersionItem(root);
       setMessage(editStatus, "Version published.");

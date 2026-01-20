@@ -1,13 +1,10 @@
+use actix_web::{web, HttpRequest, HttpResponse};
 use serde::Deserialize;
-use uuid::Uuid;
 
-use crate::api::helpers::{parse_json, parse_query_param, require_user};
-use crate::domain::Follow;
+use crate::api::helpers::{parse_json, parse_query, parse_query_param, parse_uuid, require_user};
 use crate::domain::note::format_timestamp;
+use crate::domain::Follow;
 use crate::errors::ApiError;
-use crate::http::parser::Request;
-use crate::http::response::Response;
-use crate::http::router::parse_query;
 use crate::state::AppState;
 
 #[derive(Deserialize)]
@@ -16,18 +13,15 @@ struct FollowRequest {
 }
 
 pub async fn post_follows(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
+    req: HttpRequest,
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
     let follower = require_user(&req, &state).await?;
-    let body: FollowRequest = parse_json(&req.body)?;
-    let followee_id = parse_uuid(&body.followee_id)?;
+    let payload: FollowRequest = parse_json(body.as_ref())?;
+    let followee_id = parse_uuid(&payload.followee_id, "invalid_user_id", "Invalid user id")?;
     if followee_id == follower.user_id {
-        return Err(ApiError::unprocessable(
-            "self_follow",
-            "Cannot follow self",
-            None,
-        ));
+        return Err(ApiError::unprocessable("self_follow", "Cannot follow self", None));
     }
 
     let followee = state
@@ -43,26 +37,25 @@ pub async fn post_follows(
         .await
         .map_err(|_| ApiError::internal())?;
 
-    let created_at = created_at.ok_or_else(|| {
-        ApiError::conflict("already_following", "Already following")
-    })?;
+    let created_at = created_at
+        .ok_or_else(|| ApiError::conflict("already_following", "Already following"))?;
 
     let follow = Follow {
         follower: follower.profile(),
         followee: followee.profile(),
         created_at: format_timestamp(created_at),
     };
-    let json = serde_json::to_vec(&follow).unwrap_or_else(|_| b"{}".to_vec());
-    Ok(Response::json(201, json))
+    Ok(HttpResponse::Created().json(follow))
 }
 
 pub async fn delete_follows(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
+    req: HttpRequest,
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
     let follower = require_user(&req, &state).await?;
-    let body: FollowRequest = parse_json(&req.body)?;
-    let followee_id = parse_uuid(&body.followee_id)?;
+    let payload: FollowRequest = parse_json(body.as_ref())?;
+    let followee_id = parse_uuid(&payload.followee_id, "invalid_user_id", "Invalid user id")?;
     if followee_id == follower.user_id {
         return Err(ApiError::unprocessable(
             "self_unfollow",
@@ -81,23 +74,21 @@ pub async fn delete_follows(
         return Err(ApiError::not_found("follow_not_found", "Follow not found"));
     }
 
-    let payload = serde_json::json!({"status": "deleted"});
-    let json = serde_json::to_vec(&payload).unwrap_or_else(|_| b"{}".to_vec());
-    Ok(Response::json(200, json))
+    Ok(HttpResponse::Ok().json(serde_json::json!({"status": "deleted"})))
 }
 
 pub async fn get_follows(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
-    let params = parse_query(req.query.as_deref());
+    req: HttpRequest,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
+    let params = parse_query(&req);
     let user_id = parse_query_param(&params, "user")
         .ok_or_else(|| ApiError::bad_request("missing_user", "Missing user parameter", None))?;
     let direction = parse_query_param(&params, "direction").ok_or_else(|| {
         ApiError::bad_request("missing_direction", "Missing direction parameter", None)
     })?;
 
-    let user_id = parse_uuid(user_id)?;
+    let user_id = parse_uuid(user_id, "invalid_user_id", "Invalid user id")?;
 
     let edges = match direction {
         "followers" => state
@@ -119,13 +110,5 @@ pub async fn get_follows(
         }
     };
 
-    let payload = serde_json::json!({"edges": edges});
-    let json = serde_json::to_vec(&payload).unwrap_or_else(|_| b"{}".to_vec());
-    Ok(Response::json(200, json))
-}
-
-fn parse_uuid(value: &str) -> Result<Uuid, ApiError<serde_json::Value>> {
-    Uuid::parse_str(value).map_err(|_| {
-        ApiError::bad_request("invalid_user_id", "Invalid user id", None)
-    })
+    Ok(HttpResponse::Ok().json(serde_json::json!({"edges": edges})))
 }

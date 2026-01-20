@@ -6,6 +6,6 @@
     "typescript": "^5.6.3"
   },
   "scripts": {
-    "build:web": "tsc -p tsconfig.json --noEmit && node scripts/build-web.js"
+    "build:web": "tsc -p tsconfig.json --noEmit && rm -rf public/assets && mkdir -p public/assets && esbuild src/web/ts/app.ts src/web/ts/home.ts src/web/ts/note.ts src/web/ts/signin.ts src/web/ts/network.ts src/web/ts/redirect.ts --bundle --format=iife --platform=browser --minify --target=es2019 --outdir=public/assets"
   }
 }

@@ -14,7 +14,7 @@ use crate::config::Config;
 use crate::http::server::run_server;
 use crate::storage::Storage;
 
-#[tokio::main]
+#[actix_web::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let config = Config::from_env()?;
     let storage = Storage::connect(&config).await?;

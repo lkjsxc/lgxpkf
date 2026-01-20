@@ -1,10 +1,13 @@
-import { apiJson } from "./shared/api";
+import { apiJsonDecoded } from "./shared/api";
 import { getById } from "./shared/dom";
 import { readStorage, writeStorage } from "./shared/storage";
+import { decodeAuthUser } from "./shared/types";
+
+type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
 (() => {
   const storageKey = "lgxpkf.session";
-  const state: LgxpkfSession = { token: readStorage(storageKey), user: null };
+  const state: SessionState = { token: readStorage(storageKey), user: null };
   const signinLink = getById<HTMLAnchorElement>("signin-link");
   const postLink = getById<HTMLAnchorElement>("post-link");
   const accountToggle = getById<HTMLButtonElement>("account-toggle");
@@ -17,43 +20,27 @@ import { readStorage, writeStorage } from "./shared/storage";
     value.length > 26 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
 
   const updateSigninLink = (): void => {
-    if (!signinLink) {
-      return;
-    }
+    if (!signinLink) return;
     const next = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
     signinLink.href = `/signin?next=${next}`;
   };
 
   const setMenuOpen = (open: boolean): void => {
-    if (!accountMenu || !accountToggle) {
-      return;
-    }
+    if (!accountMenu || !accountToggle) return;
     accountMenu.hidden = !open;
     accountToggle.setAttribute("aria-expanded", open ? "true" : "false");
   };
 
   const setSignedIn = (signedIn: boolean): void => {
     document.body.dataset.signedIn = signedIn ? "true" : "false";
-    if (signinLink) {
-      signinLink.hidden = signedIn;
-    }
-    if (postLink) {
-      postLink.hidden = !signedIn;
-    }
-    if (accountToggle) {
-      accountToggle.hidden = !signedIn;
-    }
-    if (!signedIn) {
-      setMenuOpen(false);
-    }
+    if (signinLink) signinLink.hidden = signedIn;
+    if (postLink) postLink.hidden = !signedIn;
+    if (accountToggle) accountToggle.hidden = !signedIn;
+    if (!signedIn) setMenuOpen(false);
     if (signedIn && state.user) {
       const label = state.user.email || "Account";
-      if (accountLabel) {
-        accountLabel.textContent = shortLabel(label);
-      }
-      if (accountEmail) {
-        accountEmail.textContent = label;
-      }
+      if (accountLabel) accountLabel.textContent = shortLabel(label);
+      if (accountEmail) accountEmail.textContent = label;
     }
   };
 
@@ -76,10 +63,11 @@ import { readStorage, writeStorage } from "./shared/storage";
       return;
     }
     try {
-      const data = await apiJson<{ user: LgxpkfUserProfile }>("/auth/me", state.token, {
+      const user = await apiJsonDecoded("/auth/me", state.token, decodeAuthUser, {
         headers: {},
       });
-      state.user = data.user;
+      if (!user) throw new Error("Invalid session payload");
+      state.user = user;
       setSignedIn(true);
       dispatchSession();
     } catch (_) {
@@ -110,9 +98,7 @@ import { readStorage, writeStorage } from "./shared/storage";
   }
 
   document.addEventListener("click", (event) => {
-    if (!accountMenu || accountMenu.hidden) {
-      return;
-    }
+    if (!accountMenu || accountMenu.hidden) return;
     if (
       accountMenu.contains(event.target as Node) ||
       (accountToggle && accountToggle.contains(event.target as Node))
@@ -123,8 +109,6 @@ import { readStorage, writeStorage } from "./shared/storage";
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      setMenuOpen(false);
-    }
+    if (event.key === "Escape") setMenuOpen(false);
   });
 })();

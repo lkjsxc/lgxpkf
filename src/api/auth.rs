@@ -1,3 +1,5 @@
+use actix_web::http::header;
+use actix_web::{web, HttpRequest, HttpResponse};
 use serde::Deserialize;
 use std::collections::HashMap;
 use url::form_urlencoded;
@@ -5,9 +7,8 @@ use url::form_urlencoded;
 use crate::api::helpers::{parse_json, require_user};
 use crate::auth::{google, sessions};
 use crate::errors::ApiError;
-use crate::http::parser::Request;
-use crate::http::response::Response;
 use crate::state::AppState;
+use crate::web as web_views;
 
 const POLICY_VERSION: &str = "2025-02-01";
 
@@ -31,37 +32,36 @@ struct RedirectState {
 }
 
 pub async fn post_google(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
-    let body: GoogleRequest = parse_json(&req.body)?;
-    require_policy(body.policy_acceptance.as_ref())?;
-    let (user, token) = issue_session(&body.id_token, &state).await?;
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
+    let payload: GoogleRequest = parse_json(body.as_ref())?;
+    require_policy(payload.policy_acceptance.as_ref())?;
+    let (user, token) = issue_session(&payload.id_token, &state).await?;
 
-    let payload = serde_json::json!({
+    Ok(HttpResponse::Ok().json(serde_json::json!({
         "token": token,
         "user": user.profile(),
-    });
-    let json = serde_json::to_vec(&payload).unwrap_or_else(|_| b"{}".to_vec());
-    Ok(Response::json(200, json))
+    })))
 }
 
 pub async fn get_me(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
+    req: HttpRequest,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
     let user = require_user(&req, &state).await?;
-    let payload = serde_json::json!({"user": user.profile()});
-    let json = serde_json::to_vec(&payload).unwrap_or_else(|_| b"{}".to_vec());
-    Ok(Response::json(200, json))
+    Ok(HttpResponse::Ok().json(serde_json::json!({
+        "user": user.profile(),
+    })))
 }
 
 pub async fn post_google_redirect(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
-    let form = parse_form(&req.body);
-    if !csrf_valid(&form, req.headers.get("cookie")) {
+    req: HttpRequest,
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
+    let form = parse_form(body.as_ref());
+    if !csrf_valid(&form, req.headers().get(header::COOKIE)) {
         return Err(ApiError::unauthorized("csrf_invalid", "Invalid CSRF token"));
     }
     let credential = form
@@ -73,7 +73,9 @@ pub async fn post_google_redirect(
     let (target, acceptance) = parse_state(form.get("state"));
     require_policy(acceptance.as_ref())?;
     let (_user, token) = issue_session(credential, &state).await?;
-    Ok(Response::html(redirect_html(&token, &target)))
+    Ok(HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(web_views::redirect_html(&token, &target)))
 }
 
 async fn issue_session(
@@ -104,10 +106,13 @@ fn parse_form(body: &[u8]) -> HashMap<String, String> {
 
 fn csrf_valid(
     form: &HashMap<String, String>,
-    cookie_header: Option<&String>,
+    cookie_header: Option<&header::HeaderValue>,
 ) -> bool {
-    let Some(token) = form.get("g_csrf_token") else { return true };
+    let Some(token) = form.get("g_csrf_token") else {
+        return true;
+    };
     let cookie = cookie_header
+        .and_then(|header| header.to_str().ok())
         .and_then(|header| parse_cookie(header).get("g_csrf_token").cloned());
     cookie.as_deref() == Some(token.as_str())
 }
@@ -119,7 +124,11 @@ fn parse_cookie(header: &str) -> HashMap<String, String> {
             let mut parts = pair.trim().splitn(2, '=');
             let key = parts.next()?.trim();
             let value = parts.next()?.trim();
-            if key.is_empty() { None } else { Some((key.to_string(), value.to_string())) }
+            if key.is_empty() {
+                None
+            } else {
+                Some((key.to_string(), value.to_string()))
+            }
         })
         .collect()
 }
@@ -156,12 +165,4 @@ fn require_policy(
         ));
     }
     Ok(())
-}
-
-fn redirect_html(token: &str, target: &str) -> String {
-    let token_json = serde_json::to_string(token).unwrap_or_else(|_| "\"\"".to_string());
-    let target_json = serde_json::to_string(target).unwrap_or_else(|_| "\"/\"".to_string());
-    format!(
-        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#0b111c\"><title>lgxpkf</title><style>html,body{{margin:0;background:#0b111c;color:#e7eef8;font-family:sans-serif}}</style></head><body><script>localStorage.setItem(\"lgxpkf.session\", {token_json});window.location.replace({target_json});</script></body></html>"
-    )
 }

@@ -1,7 +1,6 @@
 FROM node:20-bullseye-slim AS web
 WORKDIR /web
 COPY package.json package-lock.json tsconfig.json ./
-COPY scripts ./scripts
 COPY src/web/ts ./src/web/ts
 RUN npm ci
 RUN npm run build:web
@@ -12,13 +11,14 @@ COPY Cargo.toml ./
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 COPY src ./src
-COPY --from=web /web/src/web/assets /app/src/web/assets
+COPY --from=web /web/public /app/public
 RUN find src -type f -exec touch {} + \
 	&& cargo build --release
 
 FROM gcr.io/distroless/cc-debian12:nonroot
 WORKDIR /app
 COPY --from=builder /app/target/release/lgxpkf /app/lgxpkf
+COPY --from=builder /app/public /app/public
 COPY db/migrations /app/db/migrations
 ENV BIND_ADDR=0.0.0.0:8080
 ENV MIGRATIONS_PATH=/app/db/migrations

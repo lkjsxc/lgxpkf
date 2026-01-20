@@ -1,3 +1,6 @@
+import { apiJson } from "./shared/api";
+import { decodeNotes, decodeRelatedResponse } from "./shared/types";
+
 (() => {
   const canvas = document.getElementById("network-canvas") as HTMLCanvasElement | null;
   if (!canvas) return;
@@ -6,24 +9,22 @@
 
   type Node = { id: string; label: string; x: number; y: number; vx: number; vy: number };
   type Edge = { a: string; b: string };
-  type RelatedResponse = { center?: LgxpkfNote; related?: Array<{ note?: LgxpkfNote }> };
 
-  const state: { nodes: Node[]; edges: Edge[]; hover: Node | null; nodeIndex: Map<string, Node> } = {
+  const state: {
+    nodes: Node[];
+    edges: Edge[];
+    hover: Node | null;
+    nodeIndex: Map<string, Node>;
+  } = {
     nodes: [],
     edges: [],
     hover: null,
     nodeIndex: new Map(),
   };
+
   const rand = (min: number, max: number): number => min + Math.random() * (max - min);
-  const clamp = (value: number, min: number, max: number): number => Math.min(max, Math.max(min, value));
-
-  const fetchJson = async (url: string): Promise<unknown> => {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Network load failed");
-    return res.json();
-  };
-
-  const normalizeNotes = (payload: unknown): LgxpkfNote[] => (Array.isArray(payload) ? (payload as LgxpkfNote[]) : []);
+  const clamp = (value: number, min: number, max: number): number =>
+    Math.min(max, Math.max(min, value));
 
   const resize = (): void => {
     const { clientWidth, clientHeight } = canvas;
@@ -34,7 +35,8 @@
   };
 
   const addNode = (map: Map<string, Node>, note: LgxpkfNote): Node => {
-    if (map.has(note.id)) return map.get(note.id) as Node;
+    const existing = map.get(note.id);
+    if (existing) return existing;
     const width = Math.max(canvas.clientWidth, 160);
     const height = Math.max(canvas.clientHeight, 160);
     const node = {
@@ -50,20 +52,21 @@
   };
 
   const buildGraph = async (): Promise<void> => {
-    const seed = normalizeNotes(await fetchJson("/notes/random?limit=24"));
+    const seed = decodeNotes(await apiJson("/notes/random?limit=24", null));
     const map = new Map<string, Node>();
     seed.forEach((note) => addNode(map, note));
     const edgeSet = new Set<string>();
-    const related = await Promise.all(seed.map((note) => fetchJson(`/notes/${note.id}/related`).catch(() => null)));
+    const relatedPayloads = await Promise.all(
+      seed.map((note) => apiJson(`/notes/${note.id}/related`, null).catch(() => null)),
+    );
     const edges: Edge[] = [];
-    related.forEach((resp) => {
-      const data = resp as RelatedResponse | null;
-      if (!data?.center) return;
+    relatedPayloads.forEach((payload) => {
+      if (!payload) return;
+      const data = decodeRelatedResponse(payload);
+      if (!data) return;
       const center = addNode(map, data.center);
-      const relatedItems = Array.isArray(data.related) ? data.related : [];
-      relatedItems.forEach((entry) => {
-        if (!entry?.note) return;
-        const other = addNode(map, entry.note);
+      data.related.forEach((entry) => {
+        const other = addNode(map, entry);
         const key = center.id < other.id ? `${center.id}:${other.id}` : `${other.id}:${center.id}`;
         if (edgeSet.has(key)) return;
         edgeSet.add(key);

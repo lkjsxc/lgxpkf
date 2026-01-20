@@ -1,5 +1,43 @@
 import { getById } from "./shared/dom";
 import { readStorage, writeStorage } from "./shared/storage";
+import { isRecord } from "./shared/types";
+
+type GoogleIdConfig = {
+  client_id: string;
+  ux_mode: "redirect";
+  login_uri: string;
+  state: string;
+};
+
+type GoogleButtonConfig = {
+  theme: "filled_black" | "outline";
+  size: "large" | "medium" | "small";
+  text: "signin_with";
+  shape: "pill" | "rectangular";
+};
+
+type GoogleIdentity = {
+  initialize: (config: GoogleIdConfig) => void;
+  renderButton: (element: HTMLElement, options: GoogleButtonConfig) => void;
+};
+
+type GoogleAccounts = { accounts: { id: GoogleIdentity } };
+
+const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
+  typeof value === "function";
+
+const isGoogleIdentity = (value: unknown): value is GoogleIdentity =>
+  isRecord(value) && isFunction(value.initialize) && isFunction(value.renderButton);
+
+const getGoogleAccounts = (): GoogleAccounts | null => {
+  const google = window.google;
+  if (!isRecord(google)) return null;
+  const accounts = google.accounts;
+  if (!isRecord(accounts)) return null;
+  const id = accounts.id;
+  if (!isGoogleIdentity(id)) return null;
+  return { accounts: { id } };
+};
 
 (() => {
   const policyVersion = "2025-02-01";
@@ -15,6 +53,7 @@ import { readStorage, writeStorage } from "./shared/storage";
     value && value.startsWith("/") && !value.startsWith("//") && !value.includes("://")
       ? value
       : "/";
+
   const nextParam = new URLSearchParams(window.location.search).get("next");
   const nextPath = sanitizePath(nextParam);
 
@@ -45,16 +84,16 @@ import { readStorage, writeStorage } from "./shared/storage";
     const accepted = Boolean(readConsent());
     if (consentBox) consentBox.checked = accepted;
     if (policyStatus) {
-      policyStatus.textContent = accepted ? "Consent recorded." : "Consent required before sign-in.";
+      policyStatus.textContent = accepted
+        ? "Consent recorded."
+        : "Consent required before sign-in.";
     }
   };
 
-  const getButtonTheme = (): string =>
+  const getButtonTheme = (): "filled_black" | "outline" =>
     window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "filled_black"
       : "outline";
-
-  const getGoogle = (): any => window.google as any;
 
   const initGoogle = (): void => {
     if (!clientId) {
@@ -66,8 +105,8 @@ import { readStorage, writeStorage } from "./shared/storage";
       return;
     }
     if (!readConsent() || !signinButton) return;
-    const google = getGoogle();
-    if (!google?.accounts?.id) return;
+    const google = getGoogleAccounts();
+    if (!google) return;
     google.accounts.id.initialize({
       client_id: clientId,
       ux_mode: "redirect",
@@ -84,7 +123,7 @@ import { readStorage, writeStorage } from "./shared/storage";
   };
 
   const ensureScript = (): void => {
-    if (getGoogle()?.accounts?.id) {
+    if (getGoogleAccounts()) {
       initGoogle();
       return;
     }

@@ -1,3 +1,5 @@
+use actix_web::http::StatusCode;
+use actix_web::{HttpResponse, ResponseError};
 use serde::Serialize;
 use std::fmt;
 
@@ -6,7 +8,7 @@ pub struct ErrorBody<'a, T: Serialize> {
     pub code: &'a str,
     pub message: &'a str,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub details: Option<T>,
+    pub details: Option<&'a T>,
 }
 
 pub struct ApiError<T: Serialize> {
@@ -106,4 +108,22 @@ impl<T: Serialize> ApiError<T> {
     }
 }
 
-// ApiError is translated into HTTP responses by the custom router.
+impl<T: Serialize> ResponseError for ApiError<T> {
+    fn status_code(&self) -> StatusCode {
+        StatusCode::from_u16(self.status).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
+    }
+
+    fn error_response(&self) -> HttpResponse {
+        let body = ErrorBody {
+            code: self.code,
+            message: self.message,
+            details: self.details.as_ref(),
+        };
+        let json = serde_json::to_string(&body).unwrap_or_else(|_| "{}".to_string());
+        HttpResponse::build(self.status_code())
+            .content_type("application/json")
+            .body(json)
+    }
+}
+
+// ApiError is translated into HTTP responses by Actix Web.

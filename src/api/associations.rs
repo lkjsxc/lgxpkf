@@ -1,13 +1,9 @@
+use actix_web::{web, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
-use crate::api::helpers::{parse_json, parse_query_param, require_user};
-use crate::domain::NoteId;
+use crate::api::helpers::{parse_json, parse_note_id, parse_query, parse_query_param, require_user};
 use crate::errors::ApiError;
-use crate::http::parser::Request;
-use crate::http::response::Response;
-use crate::http::router::parse_query;
 use crate::state::AppState;
-use crate::urls::base32::{decode_id, is_base32_url};
 
 #[derive(Deserialize)]
 struct CreateAssociation {
@@ -17,15 +13,16 @@ struct CreateAssociation {
 }
 
 pub async fn post_associations(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
+    req: HttpRequest,
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
     require_user(&req, &state).await?;
-    let body: CreateAssociation = parse_json(&req.body)?;
-    let kind = parse_kind(&body.kind)?;
+    let payload: CreateAssociation = parse_json(body.as_ref())?;
+    let kind = parse_kind(&payload.kind)?;
 
-    let from_id = parse_note_id(&body.from_id)?;
-    let to_id = parse_note_id(&body.to_id)?;
+    let from_id = parse_note_id(&payload.from_id)?;
+    let to_id = parse_note_id(&payload.to_id)?;
     if kind == "version" {
         let locked = state
             .storage
@@ -46,18 +43,16 @@ pub async fn post_associations(
         .create_association(&kind, from_id, to_id)
         .await
         .map_err(|_| ApiError::internal())?;
-    let json = serde_json::to_vec(&association).unwrap_or_else(|_| b"{}".to_vec());
-    Ok(Response::json(201, json))
+    Ok(HttpResponse::Created().json(association))
 }
 
 pub async fn get_associations(
-    req: Request,
-    state: AppState,
-) -> Result<Response, ApiError<serde_json::Value>> {
-    let params = parse_query(req.query.as_deref());
-    let note_id = parse_query_param(&params, "note").ok_or_else(|| {
-        ApiError::bad_request("missing_note", "Missing note parameter", None)
-    })?;
+    req: HttpRequest,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
+    let params = parse_query(&req);
+    let note_id = parse_query_param(&params, "note")
+        .ok_or_else(|| ApiError::bad_request("missing_note", "Missing note parameter", None))?;
     let note_id = parse_note_id(note_id)?;
 
     let associations = state
@@ -65,21 +60,7 @@ pub async fn get_associations(
         .list_associations(note_id)
         .await
         .map_err(|_| ApiError::internal())?;
-    let json = serde_json::to_vec(&associations).unwrap_or_else(|_| b"[]".to_vec());
-    Ok(Response::json(200, json))
-}
-
-fn parse_note_id(value: &str) -> Result<NoteId, ApiError<serde_json::Value>> {
-    if value.is_empty() || !is_base32_url(value) {
-        return Err(ApiError::bad_request(
-            "invalid_id",
-            "Invalid note id",
-            None,
-        ));
-    }
-    decode_id(value)
-        .map(NoteId::from_bytes)
-        .ok_or_else(|| ApiError::bad_request("invalid_id", "Invalid note id", None))
+    Ok(HttpResponse::Ok().json(associations))
 }
 
 fn parse_kind(value: &str) -> Result<String, ApiError<serde_json::Value>> {
