@@ -1,5 +1,5 @@
 services:
-  db:
+  lgxpkf-db:
     container_name: lgxpkf_db
     image: postgres:16
     restart: unless-stopped
@@ -12,16 +12,16 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - lgxpkf
-  app:
+  lgxpkf-app:
     container_name: lgxpkf_app
     build: .
     depends_on:
-      - db
+      - lgxpkf-db
     env_file:
       - .env
     environment:
       BIND_ADDR: 0.0.0.0:8080
-      DATABASE_URL: postgres://lgxpkf:lgxpkf@db:5432/lgxpkf
+      DATABASE_URL: postgres://lgxpkf:lgxpkf@lgxpkf-db:5432/lgxpkf
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       SESSION_TTL_SECS: 3600
       RUN_MIGRATIONS: "true"
