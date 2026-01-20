@@ -6,6 +6,7 @@
 - Immutable domain structs.
 - Small, focused modules.
 - Web UI logic is written in TypeScript with explicit types.
+- No JavaScript source files in the repository.
 
 ## Rust Guidelines
 

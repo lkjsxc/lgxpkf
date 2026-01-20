@@ -2,9 +2,9 @@
 
 ## Technology
 
-- Rust, tokio, PostgreSQL.
-- Custom HTTP server and router (no web framework).
-- Web UI served as static HTML from the same server.
+- Rust, Actix Web, PostgreSQL.
+- Web UI served as HTML with TypeScript-generated assets.
+- No JavaScript source files in the repository.
 
 ## Documentation
 

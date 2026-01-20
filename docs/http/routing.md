@@ -2,8 +2,8 @@
 
 ## Strategy
 
-- Use the custom HTTP router with explicit handlers.
-- Prefer static paths and clear parameter extraction.
+- Use Actix Web routing with explicit handlers.
+- Prefer static paths and explicit path/query extractors.
 - Keep handler modules small and functional.
 
 ## Examples

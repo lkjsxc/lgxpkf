@@ -2,12 +2,12 @@
 
 ## Scope
 
-- Unit tests for parsers and domain logic.
-- Integration tests for HTTP and DB.
+- Unit tests for domain logic and helpers.
+- Integration tests for Actix handlers and DB access.
 - Web assets compile successfully from TypeScript.
 
 ## Strategy
 
 - Pure functions tested with small fixtures.
 - Run tests in Docker Compose when possible.
-- Run `npm run build:web` before local Rust builds.
+- Run `npm run build:web` before local Rust builds when assets are needed.

@@ -2,13 +2,13 @@
 
 ## Responsibilities
 
-- Listen on TCP.
-- Accept connections.
-- Spawn tasks for request handling.
+- Bind to the configured address.
+- Initialize shared application state.
+- Serve HTTP requests with Actix Web.
 
 ## Connection Lifecycle
 
-- Read request bytes.
-- Parse HTTP request line and headers.
-- Dispatch to router.
-- Write response.
+- Accept connection and hand off to Actix worker.
+- Extract request data using Actix extractors.
+- Dispatch to handler functions.
+- Map handler results to HTTP responses.

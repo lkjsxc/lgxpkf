@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Build a minimal, high-performance SNS server using Rust and tokio, with a custom HTTP server and PostgreSQL storage.
+Build a minimal, high-performance SNS server using Rust, Actix Web, and PostgreSQL with a TypeScript-only frontend.
 
 ## Core Principles
 

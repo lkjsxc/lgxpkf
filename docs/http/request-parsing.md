@@ -2,12 +2,11 @@
 
 ## Parsing Steps
 
-- Read request line.
-- Parse headers with strict limits.
-- Enforce maximum body size.
-- Decode JSON body if applicable.
+- Use Actix extractors for path, query, and JSON bodies.
+- Apply JSON payload limits on the App configuration.
+- Validate schemas in handler-layer helpers.
 
 ## Limits
 
-- Header size and count capped.
-- Body size capped at 1 MiB.
+- Payload size capped via Actix JsonConfig.
+- Query and path parsing rely on typed extractors.

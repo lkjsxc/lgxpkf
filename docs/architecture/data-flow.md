@@ -2,7 +2,7 @@
 
 ## Note Creation
 
-- Parse request body.
+- Extract JSON payload with Actix.
 - Validate size and schema.
 - Create immutable note struct.
 - Insert note and association records.
@@ -10,6 +10,6 @@
 
 ## Note Retrieval
 
-- Parse base32 ID.
+- Extract base32 ID from path.
 - Load note by ID.
 - Return serialized note.

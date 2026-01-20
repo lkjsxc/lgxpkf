@@ -2,12 +2,12 @@
 
 ## Runtime
 
-- Tokio multi-threaded runtime.
-- One task per connection.
-- Bounded work queues for heavy operations.
+- Actix Web runs on Tokio with worker threads.
+- One task per request, with async database calls.
+- Connection handling is managed by Actix.
 
 ## Back-Pressure
 
-- Limit request body size early.
-- Use timeouts for read/write operations.
-- Reject overload with 503.
+- Limit request body size via Actix payload settings.
+- Use timeouts for downstream IO.
+- Reject overload with 503 for readiness failures.

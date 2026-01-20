@@ -2,15 +2,16 @@
 
 ## Structure
 
-- Status line
+- Status
 - Headers
 - Body
 
 ## Defaults
 
-- Content-Type: application/json
-- Connection: keep-alive
+- JSON for API payloads.
+- HTML for web views.
 
 ## Error Responses
 
 - JSON error body using stable code strings.
+- Central mapping from ApiError to HttpResponse.
