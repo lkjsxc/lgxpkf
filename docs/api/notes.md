@@ -6,6 +6,7 @@
   - body: { value: string }
   - value can exceed 1024 bytes; it will be split into 1024-byte segments.
   - returns: { root: note, segments: [base32_id] }
+  - server links the root note to the poster account note (association kind: author).
 
 - GET /notes/{base32_id}
   - returns: note (JSON)

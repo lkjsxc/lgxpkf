@@ -18,3 +18,4 @@
 
 - Response includes the base32 root note ID and segment IDs.
 - The post is accessible at /{base32_id} (the root note).
+- The root note is automatically associated with the poster account note (kind: author).

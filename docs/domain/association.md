@@ -17,4 +17,5 @@ An association links two notes with a single semantic kind token.
 - parent / child: hierarchy links.
 - reply: direct reply or quote.
 - link: generic association for loose references.
+- author: links a user account note to a note it authored.
 - next / prev are traversed recursively on the note page to concatenate a single document.
