@@ -5,37 +5,85 @@
 - Version: 2025-02-01
 - Jurisdiction: Japan
 
-## Acceptance
+## Overview
 
-- Creating an account or continuing a sign-in flow constitutes agreement to these Terms, the Privacy Policy, and the Guideline.
-- The service enforces consent collection before account creation.
+- These Terms govern access to lgxpkf, including the API, web UI, and related services.
+- If you do not agree, do not access or use the service.
+
+## Eligibility and Accounts
+
+- You must have authority to use the Google account used to authenticate.
+- You are responsible for all activity under your account.
+- You must keep access tokens and device credentials secure.
+- We may require re-authentication at any time.
 
 ## Service Scope
 
-- lgxpkf provides linked notes, associations, follows, and timelines.
-- Features may change or be discontinued without notice.
-
-## Accounts
-
-- You are responsible for activity under your account.
-- Automated abuse, scraping, or interference is prohibited.
-- Accounts may be suspended for policy violations.
+- The service provides linked notes, associations, follows, and timelines.
+- Features may be added, changed, or removed without notice.
+- Availability is not guaranteed; maintenance or outages may occur.
 
 ## User Content
 
-- You retain rights to your content and grant the service a license to host, display, and distribute it for the purpose of operating the service.
-- Do not post unlawful, infringing, or harmful content.
+- You retain ownership of your content.
+- You grant a worldwide, non-exclusive, royalty-free license to host, store, reproduce, distribute, and display content to operate and improve the service.
+- You are responsible for the legality and accuracy of your content.
 
-## Takedown and Disclosure
+## Prohibited Conduct
 
-- Content may be removed to comply with the Provider Liability Limitation Act and related guidance.
-- Lawful requests for sender identification may be processed.
+- Illegal content, fraud, or content that violates applicable law.
+- Harassment, threats, defamation, stalking, or abuse.
+- Doxxing or sharing personal data without lawful basis or consent.
+- Infringement of intellectual property or proprietary rights.
+- Malware, automated abuse, scraping, or interference with system integrity.
+- Attempts to bypass rate limits, security controls, or access restrictions.
 
-## Disclaimers and Liability
+## Content Enforcement and Safety
 
-- The service is provided "as is" without warranties.
+- We may remove or restrict content that violates these Terms, the Guideline, or law.
+- We may suspend or terminate accounts for violations or risk to safety.
+- We may retain evidence and logs for investigation and compliance.
+
+## Third-Party Services
+
+- Authentication relies on Google Identity Services.
+- Third-party terms may apply to those services.
+
+## Intellectual Property
+
+- Service software, branding, and design are owned by the operator or licensors.
+- You may not copy, reverse engineer, or distribute service software except as permitted by law.
+
+## API and Automation
+
+- API access must follow documented limits and authentication rules.
+- Bulk export, indexing, or scraping requires explicit permission.
+
+## Legal Requests and Disclosure
+
+- We respond to lawful requests under the Provider Liability Limitation Act and related guidance.
+- We may disclose information when required by law or to protect the service and users.
+
+## Disclaimers
+
+- The service is provided "as is" and "as available" without warranties.
+- We disclaim implied warranties to the extent permitted by law.
+
+## Limitation of Liability
+
 - Liability is limited to the maximum extent permitted by law.
+- We are not liable for indirect, incidental, special, or consequential damages.
+
+## Termination
+
+- You may stop using the service at any time.
+- We may suspend or terminate access for violations or security reasons.
 
 ## Changes
 
-- Policies may be updated; continued use after updates signifies agreement.
+- Policies may be updated periodically.
+- Continued use after updates indicates acceptance.
+
+## Contact
+
+- Provide a policy contact channel in operational configuration.

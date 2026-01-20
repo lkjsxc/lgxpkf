@@ -4,7 +4,7 @@
 
 - GET / serves the HTML UI.
 - GET /{id} serves the note view rendered as Markdown.
-- The UI is static HTML and inline JavaScript.
+- UI behavior is authored in TypeScript and compiled to static assets.
 
 ## Global Layout
 

@@ -28,7 +28,7 @@ button,input{font-family:inherit}
 .account-menu a,.account-menu button{border:1px solid transparent;border-radius:8px;padding:8px 10px;background:transparent;color:var(--ink);text-align:left;font-size:0.82rem;cursor:pointer}
 .account-menu a:hover,.account-menu button:hover{border-color:var(--line);background:#0b1424}
 .account-meta{font-size:0.72rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
-main{max-width:920px;margin:0 auto;padding:40px 24px 80px}
+main{max-width:960px;margin:0 auto;padding:40px 24px 80px}
 .doc{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:32px;box-shadow:0 18px 40px var(--shadow);line-height:1.7}
 .doc h1{margin:0 0 10px 0;font-size:1.2rem;text-transform:uppercase;letter-spacing:0.2em}
 .doc h2{margin:24px 0 8px;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted)}
@@ -57,30 +57,60 @@ main{max-width:920px;margin:0 auto;padding:40px 24px 80px}
 <main>
   <article class="doc">
     <h1>Privacy Policy</h1>
-    <p class="meta">Version 2025-02-01 · APPI aligned</p>
-    <h2>Data We Handle</h2>
+    <p class="meta">Version 2025-02-01 · Japan</p>
+    <h2>Scope</h2>
     <ul>
-      <li>Account data: Google subject identifier and email.</li>
-      <li>Content data: notes, associations, follows, timestamps.</li>
-      <li>Operational data: IP address, device metadata, session tokens.</li>
-      <li>Client storage: session token and policy acceptance.</li>
+      <li>This policy covers personal data processed by lgxpkf.</li>
+      <li>It applies to the web UI, API, and supporting services.</li>
+    </ul>
+    <h2>Data We Collect</h2>
+    <ul>
+      <li>Account data: Google subject identifier and email address.</li>
+      <li>Content data: notes, associations, follows, account note id.</li>
+      <li>Usage data: IP address, user agent, request metadata, timestamps.</li>
+      <li>Security data: session tokens, CSRF tokens, auth logs.</li>
+      <li>Client storage: session token, policy acceptance, redirect state.</li>
     </ul>
     <h2>Purpose of Use</h2>
     <ul>
-      <li>Authenticate users and protect sessions.</li>
-      <li>Provide timelines, links, and note retrieval.</li>
-      <li>Prevent abuse and investigate incidents.</li>
+      <li>Authenticate users and secure sessions.</li>
+      <li>Provide timelines, associations, and note retrieval.</li>
+      <li>Prevent abuse, detect fraud, and investigate incidents.</li>
+      <li>Maintain system reliability and performance.</li>
+      <li>Comply with legal obligations and lawful requests.</li>
     </ul>
-    <h2>Retention + Transfers</h2>
+    <h2>Retention</h2>
     <ul>
-      <li>Stored in PostgreSQL with bounded retention.</li>
-      <li>Backups are encrypted and retained for limited periods.</li>
-      <li>Cross-border hosting, if used, is disclosed with safeguards.</li>
+      <li>Data is stored in PostgreSQL.</li>
+      <li>Retention windows are documented and enforced.</li>
+      <li>Dormant accounts may be deleted after a defined period.</li>
+    </ul>
+    <h2>Sharing and Transfers</h2>
+    <ul>
+      <li>Google Identity Services is used for authentication.</li>
+      <li>Service providers may process data under contract.</li>
+      <li>If data is hosted outside Japan, safeguards are disclosed.</li>
+    </ul>
+    <h2>Security</h2>
+    <ul>
+      <li>Access controls and least-privilege for operational systems.</li>
+      <li>Encrypted transport between clients and services.</li>
+      <li>Monitoring for suspicious activity and abuse.</li>
     </ul>
     <h2>User Rights</h2>
     <ul>
-      <li>Access, correction, deletion, and usage suspension requests are supported.</li>
-      <li>Incident notifications follow PPC guidance.</li>
+      <li>Access, correction, deletion, and usage suspension requests.</li>
+      <li>Requests are verified and handled within reasonable timeframes.</li>
+    </ul>
+    <h2>Cookies and Local Storage</h2>
+    <ul>
+      <li>Local storage is used for session tokens and policy acceptance.</li>
+      <li>No third-party advertising cookies are set by the service.</li>
+    </ul>
+    <h2>Incident Response</h2>
+    <ul>
+      <li>Security incidents are investigated and remediated.</li>
+      <li>Notifications are made to the PPC and affected users when required.</li>
     </ul>
   </article>
 </main>

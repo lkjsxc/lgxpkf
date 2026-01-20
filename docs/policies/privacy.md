@@ -5,39 +5,82 @@
 - Version: 2025-02-01
 - Legal basis: Act on the Protection of Personal Information (APPI)
 
-## Data We Handle
+## Scope
+
+- This policy covers personal data processed by lgxpkf.
+- It applies to the web UI, API, and supporting services.
+
+## Data We Collect
 
 - Account data: Google subject identifier, email address.
-- Content data: notes, associations, follows, metadata (timestamps, IDs).
-- Operational data: IP address, device/browser metadata, session tokens.
-- Client storage: session token and policy acceptance in local storage.
+- Content data: notes, associations, follows, account note id.
+- Usage data: IP address, user agent, request metadata, timestamps.
+- Security data: session tokens, CSRF tokens, auth logs.
+- Client storage: session token, policy acceptance, redirect state.
 
 ## Purpose of Use
 
 - Authenticate users and secure sessions.
-- Provide timelines, links, and note retrieval.
-- Prevent abuse, investigate incidents, and improve reliability.
+- Provide timelines, associations, and note retrieval.
+- Prevent abuse, detect fraud, and investigate incidents.
+- Maintain system reliability and performance.
+- Comply with legal obligations and lawful requests.
 
-## Storage and Retention
+## Legal Bases
+
+- Performance of a contract (service delivery).
+- Legitimate interests (security, abuse prevention, service improvement).
+- Legal obligations (compliance and lawful requests).
+
+## Data Retention
 
 - Data is stored in PostgreSQL.
-- Retention windows are documented and enforced; dormant accounts may be deleted.
-- Backups are encrypted and retained for limited periods.
+- Retention windows are documented and enforced.
+- Dormant accounts may be deleted after a defined period.
+- Security logs are retained for audit and incident response.
 
-## Third Parties and Transfers
+## Sharing and Disclosure
 
 - Google Identity Services is used for authentication.
-- If data is hosted outside Japan, transfer safeguards and recipient information are disclosed.
+- Service providers may process data under contract for hosting or operations.
+- Data may be disclosed when required by law or to protect users.
+
+## International Transfers
+
+- If data is hosted outside Japan, safeguards and recipient details are disclosed.
+- Transfers follow APPI requirements and relevant guidelines.
+
+## Security Measures
+
+- Access controls and least-privilege for operational systems.
+- Encrypted transport between clients and services.
+- Monitoring for suspicious activity and abuse.
 
 ## User Rights
 
-- Access, correction, deletion, and usage suspension requests are supported as required by APPI.
+- Access, correction, deletion, and usage suspension requests are supported.
 - Requests are verified and handled within reasonable timeframes.
+- Certain requests may be limited by legal obligations.
+
+## Cookies and Local Storage
+
+- Local storage is used for session tokens and policy acceptance.
+- No third-party advertising cookies are set by the service.
+
+## Children
+
+- The service is not intended for children under the age required by law.
+- Accounts discovered to be underage may be removed.
 
 ## Incident Response
 
-- Security incidents are investigated and reported to the PPC and affected users when required.
+- Security incidents are investigated and remediated.
+- Notifications are made to the PPC and affected users when required.
+
+## Changes
+
+- Policy updates may be posted with an updated version.
 
 ## Contact
 
-- Provide a policy contact channel in operational configuration.
+- Provide a privacy contact channel in operational configuration.

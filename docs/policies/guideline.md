@@ -1,28 +1,54 @@
 # Guideline
 
-## Baseline
+## Purpose
 
-- Follow Japanese law and this policy.
-- Respect other users and their privacy.
+- Keep the service safe, lawful, and reliable.
+- Apply consistent standards for content and behavior.
 
-## Prohibited Content
+## Respect and Safety
 
-- Defamation, harassment, stalking, or threats.
-- Doxxing or disclosure of private/personal information.
-- Copyright or trademark infringement.
-- Obscene materials or sexual exploitation, especially involving minors.
-- Content facilitating illegal activity or fraud.
-- Hate speech or discriminatory abuse.
+- Do not harass, threaten, stalk, or intimidate others.
+- Do not encourage self-harm or violence.
+- Do not publish content targeting protected classes with hate or abuse.
+
+## Privacy and Personal Data
+
+- Do not share personal data without lawful basis or consent.
+- No doxxing, impersonation, or credential sharing.
+- Do not post location data that could enable harm.
+
+## Illegal and Harmful Content
+
+- No content that facilitates crimes, fraud, or exploitation.
+- No malware, phishing, or deceptive links.
+- No sexual exploitation, especially involving minors.
+
+## Intellectual Property
+
+- Respect copyrights, trademarks, and trade secrets.
+- Post only content you have rights to share.
 
 ## Platform Integrity
 
-- No automated abuse, spam, or manipulative behavior.
-- No attempts to bypass safety controls or rate limits.
+- No automated abuse, scraping, or bulk harvesting.
+- No attempts to bypass rate limits, abuse controls, or access restrictions.
+- No manipulation of follow graphs or timelines.
+
+## Spam and Manipulation
+
+- No repetitive, irrelevant, or deceptive posting.
+- No coordinated inauthentic behavior or fake engagement.
 
 ## Enforcement
 
-- Content may be removed; accounts may be suspended or terminated.
-- Repeat violations lead to permanent removal.
+- Content may be removed or access restricted without notice.
+- Accounts may be suspended or terminated for violations.
+- Repeat or severe violations result in permanent removal.
+
+## Reporting and Appeals
+
+- Provide a reporting channel in operational configuration.
+- Appeals are evaluated based on evidence and context.
 
 ## Legal Alignment
 
