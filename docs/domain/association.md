@@ -12,7 +12,7 @@ An association links two notes with a single semantic kind token.
 ## Semantics
 
 - next / prev: ordering links used to chain multi-note posts.
-- version: replacement link from an older note to its newer version.
+- version: replacement link from an older note to its newer version (one newer version per note).
 - new / old: optional replacement markers for external tooling.
 - parent / child: hierarchy links.
 - reply: direct reply or quote.

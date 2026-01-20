@@ -13,6 +13,7 @@
 
 - Composite index on (from_id, to_id).
 - Index on kind.
+- Unique partial index on from_id for kind = 'version'.
 
 ## Follows
 

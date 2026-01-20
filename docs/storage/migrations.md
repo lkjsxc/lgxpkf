@@ -10,3 +10,4 @@
 ## Recent Additions
 
 - users.account_note_id column (0003_account_note.sql).
+- Version uniqueness index for associations (0004_version_unique.sql).

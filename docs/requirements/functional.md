@@ -17,6 +17,7 @@
 - Notes can be linked by a kind and two note IDs.
 - Associations can represent ordering, versioning, replies, and hierarchy.
 - Version associations connect older notes to newer replacements.
+- Notes with an existing newer version cannot create another version link.
 
 ## Follows
 
