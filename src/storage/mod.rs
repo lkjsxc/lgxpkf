@@ -34,6 +34,11 @@ impl Storage {
     pub async fn run_migrations(&self, path: &str) -> Result<(), StorageError> {
         migrations::run(&self.pool, path).await
     }
+    pub async fn healthcheck(&self) -> Result<(), StorageError> {
+        let client = self.pool.get().await?;
+        client.query_one("SELECT 1", &[]).await?;
+        Ok(())
+    }
     pub async fn find_or_create_user(
         &self,
         google_sub: &str,

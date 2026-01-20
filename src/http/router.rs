@@ -1,7 +1,7 @@
 use serde::Serialize;
 use url::form_urlencoded;
 
-use crate::api::{account, associations, auth, feed, follows, notes, related, users};
+use crate::api::{account, associations, auth, feed, follows, health, notes, related, users};
 use crate::errors::{ApiError, ErrorBody};
 use crate::http::parser::Request;
 use crate::http::response::Response;
@@ -15,6 +15,8 @@ pub async fn route(req: Request, state: AppState) -> Response {
 
     let result = match (method, path) {
         ("GET", "/") => Ok(web::home(&state.config)),
+        ("GET", "/health") => health::get_health(req, state).await,
+        ("GET", "/ready") => health::get_ready(req, state).await,
         ("POST", "/auth/google") => auth::post_google(req, state).await,
         ("POST", "/auth/google/redirect") => auth::post_google_redirect(req, state).await,
         ("GET", "/auth/me") => auth::get_me(req, state).await,

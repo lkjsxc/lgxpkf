@@ -87,6 +87,15 @@ impl<T: Serialize> ApiError<T> {
         }
     }
 
+    pub fn service_unavailable(code: &'static str, message: &'static str) -> Self {
+        Self {
+            status: 503,
+            code,
+            message,
+            details: None,
+        }
+    }
+
     pub fn internal() -> Self {
         Self {
             status: 500,

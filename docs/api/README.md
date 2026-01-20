@@ -3,6 +3,7 @@
 ## Contents
 
 - [docs/api/http.md](http.md)
+- [docs/api/health.md](health.md)
 - [docs/api/auth.md](auth.md)
 - [docs/api/account.md](account.md)
 - [docs/api/notes.md](notes.md)

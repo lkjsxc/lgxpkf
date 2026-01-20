@@ -4,6 +4,7 @@
 
 - Ensure DB is healthy.
 - Start server with required env vars.
+- Confirm `GET /ready` returns 200 before routing traffic.
 
 ## Incident
 
