@@ -37,12 +37,17 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
     let related_items = render_related_items(related, &chain.center.id);
     let newer_version = render_newer_version(related, &chain.center.id);
     let client_id = escape_attr(&config.google_client_id);
+    let note_id = escape_attr(&chain.center.id);
+    let note_description = escape_attr(&note_excerpt(&chain.center.value, 160));
+    let note_url = format!("/{}", note_id);
     let base = NOTE_TEMPLATE
         .replace("{{CLIENT_ID}}", &client_id)
-        .replace("{{NOTE_ID}}", &escape_attr(&chain.center.id))
+        .replace("{{NOTE_ID}}", &note_id)
         .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
         .replace("{{CHAIN_SUMMARY}}", &escape_html(&chain_summary))
+        .replace("{{NOTE_DESCRIPTION}}", &note_description)
+        .replace("{{NOTE_URL}}", &note_url)
         .replace("{{CHAIN_ITEMS}}", "__LGXPKF_CHAIN_ITEMS__")
         .replace("{{RELATED_ITEMS}}", "__LGXPKF_RELATED_ITEMS__")
         .replace("{{NEWER_VERSION}}", "__LGXPKF_NEWER_VERSION__")

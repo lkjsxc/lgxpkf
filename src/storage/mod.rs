@@ -10,9 +10,7 @@ use crate::config::Config;
 use crate::domain::{generate_note_id, Association, FollowEdge, Note, NoteId, User};
 use crate::storage::associations::{create_association, list_associations};
 use crate::storage::follows::{create_follow, delete_follow, list_followers, list_following};
-use crate::storage::notes::{
-    create_note, find_note, find_notes_by_ids, insert_note, list_feed_notes, list_notes,
-};
+use crate::storage::notes::{create_note, find_note, find_notes_by_ids, insert_note, list_feed_notes, list_notes};
 use crate::storage::sessions::{create_session, get_session_user};
 use crate::storage::users::{create_account_note, find_or_create_user, find_user_by_id};
 use crate::urls::base32::encode_id;
@@ -73,6 +71,7 @@ impl Storage {
         &self,
         segments: &[Vec<u8>],
         author_id: uuid::Uuid,
+        account_note_id: NoteId,
     ) -> Result<(Note, Vec<String>), StorageError> {
         let mut client = self.pool.get().await?; let client_ref = &mut **client;
         let transaction = client_ref.transaction().await?;
@@ -83,6 +82,7 @@ impl Storage {
             let note_id = generate_note_id();
             if index == 0 {
                 let note = create_note(&transaction, note_id, segment, author_id).await?;
+                create_association(&transaction, "author", account_note_id, note_id).await?;
                 root_note = Some(note);
             } else {
                 insert_note(&transaction, note_id, segment, author_id).await?;

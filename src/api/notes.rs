@@ -30,9 +30,15 @@ pub async fn post_notes(
     let body: CreateNote = parse_json(&req.body)?;
     let segments = split_note_value(&body.value, 1024);
     let bytes: Vec<Vec<u8>> = segments.iter().map(|value| value.as_bytes().to_vec()).collect();
+    let account_note_id = user
+        .account_note_id
+        .as_deref()
+        .and_then(decode_id)
+        .map(NoteId::from_bytes)
+        .ok_or_else(ApiError::internal)?;
     let (root, segments) = state
         .storage
-        .create_note_chain(&bytes, user.user_id)
+        .create_note_chain(&bytes, user.user_id, account_note_id)
         .await
         .map_err(|_| ApiError::internal())?;
 
