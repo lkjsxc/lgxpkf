@@ -37,7 +37,11 @@
 
 - The server serves an HTML page for note posting, timeline, and associations.
 - The UI authenticates via Google and uses the JSON API.
-- Related notes and version tools are displayed on the note view.
+- Related notes and version tools are displayed on the note view, with citations.
+- Version associations label old vs newer posts and appear under Associations.
+- The root page explains LGXPKF when signed out and hides the Post button.
+- The note view includes follow/unfollow controls for the author.
+- Google sign-in renders in dark mode and avoids flicker on load.
 
 ## APIs
 

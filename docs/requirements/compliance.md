@@ -4,11 +4,20 @@
 
 - Persist user and note data in PostgreSQL.
 - Follow data minimization: store only required fields.
+- Avoid storing raw Google ID tokens.
+- Document data retention windows and deletion workflows.
 
 ## Auth Provider
 
 - Use Google OAuth2 OpenID Connect.
 - Validate issuer, audience, and token expiry.
+
+## Japan Privacy Alignment
+
+- Maintain a privacy notice aligned with APPI and PPC guidelines.
+- Disclose data categories, purposes, and storage region/cross-border transfers.
+- Provide a user request workflow for access, correction, and deletion.
+- Maintain incident response steps for PPC and user notifications.
 
 ## Auditability
 

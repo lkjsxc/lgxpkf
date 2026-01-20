@@ -9,7 +9,8 @@
 ## Global Layout
 
 - Top bar shows LGXPKF (link to /) and an account display.
-- Before login the account display is a Login button; after login it shows the account identity and sign-out only.
+- Before login the account display is a Google sign-in button (dark theme); after login it shows the account identity and sign-out only.
+- Sign-in button is rendered only after session validation to avoid flicker for logged-in users.
 - Background color is a solid, darker tone on html/body to avoid uneven brightness and prevent white flashes.
 - Cards and meta text enforce wrapping to prevent overflow beyond borders.
 
@@ -25,9 +26,11 @@
 - Timeline list appears immediately under the top bar.
 - Timeline uses a multi-column grid on desktop and a single column on small screens.
 - Post button is fixed to the bottom-left and opens a full-screen composer.
+- Post button is hidden entirely while signed out.
 - No association or related-note UI is presented on the home view.
 - Visual design is a bluish dark mode with bold typography.
 - Timeline cards omit the note id (metadata shows time and author only).
+- Signed-out users see a short LGXPKF explanation card on the root page.
 
 ## Note Page
 
