@@ -1,4 +1,5 @@
 mod associations; mod follows; mod migrations; mod notes; mod sessions; mod users;
+pub use crate::storage::associations::AssociationInsertError;
 use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::NoTls;
 use crate::config::Config;

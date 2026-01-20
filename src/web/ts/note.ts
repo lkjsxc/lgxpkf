@@ -8,15 +8,25 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 (() => {
   const state: SessionState = { token: readStorage("lgxpkf.session"), user: null };
   const noteId = document.body.dataset.noteId || "", authorId = document.body.dataset.authorId || "", accountNoteId = document.body.dataset.accountNoteId || "";
+  let hasNewerVersion = document.body.dataset.hasNewerVersion === "true";
   const editBtn = getById<HTMLButtonElement>("edit-note"), editor = getById<HTMLElement>("editor"), editForm = getById<HTMLFormElement>("edit-form"), editValue = getById<HTMLTextAreaElement>("edit-value"), editStatus = getById<HTMLElement>("edit-status"), closeEditor = getById<HTMLButtonElement>("close-editor"), relatedList = getById<HTMLElement>("related-list"), versionCard = getById<HTMLElement>("version-card"), versionList = getById<HTMLElement>("version-list"), copyBtn = getById<HTMLButtonElement>("copy-link"), copyJsonBtn = getById<HTMLButtonElement>("copy-json"), copyStatus = getById<HTMLElement>("copy-status"), followToggle = getById<HTMLButtonElement>("follow-toggle"), followStatus = getById<HTMLElement>("follow-status"), linkForm = getById<HTMLFormElement>("link-form"), linkTarget = getById<HTMLInputElement>("link-target"), linkKind = getById<HTMLInputElement>("link-kind"), linkStatus = getById<HTMLElement>("link-status");
 
   const isAccountNote = (): boolean => Boolean(accountNoteId && accountNoteId === noteId);
   const canEdit = (): boolean => Boolean(state.token) && !isAccountNote();
+  const canCreateVersion = (): boolean => canEdit() && !hasNewerVersion;
+  const editLockMessage = (): string => {
+    if (!state.token) return "Sign in at /signin.";
+    if (isAccountNote()) return "Editing disabled for this note.";
+    if (hasNewerVersion) return "Newer version already exists.";
+    return "Editing disabled for this note.";
+  };
   const setSignedIn = (signedIn: boolean): void => {
-    if (editBtn) editBtn.disabled = !canEdit();
+    const allowEdit = canCreateVersion();
+    if (editBtn) editBtn.disabled = !allowEdit;
     if (followToggle) followToggle.disabled = !signedIn;
     if (linkForm) linkForm.querySelectorAll("input, textarea, button").forEach((node) => ((node as HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement).disabled = !signedIn));
-    if (editForm) editForm.querySelectorAll("input, textarea, button").forEach((node) => ((node as HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement).disabled = !canEdit()));
+    if (editForm) editForm.querySelectorAll("input, textarea, button").forEach((node) => ((node as HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement).disabled = !allowEdit));
+    if (hasNewerVersion && editStatus) setMessage(editStatus, "Newer version already exists.");
   };
 
   const insertVersionItem = (note: LgxpkfNote): void => {
@@ -105,6 +115,10 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
     const target = linkTarget.value.trim(), kind = (linkKind.value || "link").trim();
     if (!target) { setMessage(linkStatus, "Target note id required."); return; }
     if (!kind) { setMessage(linkStatus, "Association kind required."); return; }
+    if (kind === "version") {
+      if (isAccountNote()) { setMessage(linkStatus, "Account bootstrap notes cannot be versioned."); return; }
+      if (hasNewerVersion) { setMessage(linkStatus, "Newer version already exists."); return; }
+    }
     setMessage(linkStatus, "Linking...");
     try {
       await apiJson("/associations", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, from_id: noteId, to_id: target }) });
@@ -117,7 +131,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
   if (editForm) editForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!canEdit()) { setMessage(editStatus, "Editing disabled for this note."); return; }
+    if (!canCreateVersion()) { setMessage(editStatus, editLockMessage()); return; }
     const value = editValue?.value.trim() || "";
     if (!value) { setMessage(editStatus, "Note text required."); return; }
     setMessage(editStatus, "Publishing version...");
@@ -126,6 +140,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
       if (!root) throw new Error("Missing version id");
       await apiJson("/associations", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "version", from_id: noteId, to_id: root.id }) });
       insertVersionItem(root);
+      hasNewerVersion = true; setSignedIn(Boolean(state.token));
       setMessage(editStatus, "Version published.");
       setModalState(editor, false); document.body.classList.remove("modal-open");
     } catch (err) {
@@ -134,7 +149,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
   });
 
   if (editBtn) editBtn.addEventListener("click", () => {
-    if (!canEdit()) { setMessage(editStatus, "Editing disabled for this note."); return; }
+    if (!canCreateVersion()) { setMessage(editStatus, editLockMessage()); return; }
     setModalState(editor, true); document.body.classList.add("modal-open"); editValue?.focus();
   });
   if (closeEditor) closeEditor.addEventListener("click", () => { setModalState(editor, false); document.body.classList.remove("modal-open"); });

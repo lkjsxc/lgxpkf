@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::api::helpers::{parse_json, parse_note_id, parse_query, parse_query_param, require_user};
 use crate::errors::ApiError;
 use crate::state::AppState;
+use crate::storage::AssociationInsertError;
 
 #[derive(Deserialize)]
 struct CreateAssociation {
@@ -42,7 +43,17 @@ pub async fn post_associations(
         .storage
         .create_association(&kind, from_id, to_id)
         .await
-        .map_err(|_| ApiError::internal())?;
+        .map_err(|err| {
+            if let Some(AssociationInsertError::VersionExists) =
+                err.downcast_ref::<AssociationInsertError>()
+            {
+                return ApiError::conflict(
+                    "version_exists",
+                    "Newer version already exists for this note",
+                );
+            }
+            ApiError::internal()
+        })?;
     Ok(HttpResponse::Created().json(association))
 }
 

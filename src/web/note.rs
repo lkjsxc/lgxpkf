@@ -12,6 +12,10 @@ pub fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -
     let chain_summary = format!("{} prev, {} next", chain.prev.len(), chain.next.len());
     let related_items = render_related_items(related, &chain.center.id);
     let version_section = render_version_section(related, &chain.center.id);
+    let has_newer_version = related
+        .iter()
+        .any(|entry| entry.association.kind == "version" && entry.association.from_id == chain.center.id);
+    let has_newer_version = if has_newer_version { "true" } else { "false" };
     let client_id = escape_attr(&config.google_client_id);
     let login_uri = escape_attr(&login_uri(config));
     let note_id_raw = &chain.center.id;
@@ -28,6 +32,7 @@ pub fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
         .replace("{{NOTE_AUTHOR_ID}}", &author_id)
         .replace("{{NOTE_ACCOUNT_NOTE_ID}}", &account_note_id)
+        .replace("{{NOTE_HAS_NEWER_VERSION}}", has_newer_version)
         .replace("{{CHAIN_SUMMARY}}", &escape_html(&chain_summary))
         .replace("{{NOTE_DESCRIPTION}}", &note_description)
         .replace("{{NOTE_URL}}", &note_url)
