@@ -9,9 +9,25 @@ use crate::http::parser::Request;
 use crate::http::response::Response;
 use crate::state::AppState;
 
+const POLICY_VERSION: &str = "2025-02-01";
+
 #[derive(Deserialize)]
 struct GoogleRequest {
     id_token: String,
+    policy_acceptance: Option<PolicyAcceptance>,
+}
+
+#[derive(Deserialize)]
+struct PolicyAcceptance {
+    accepted: bool,
+    version: String,
+    agreed_at: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct RedirectState {
+    path: Option<String>,
+    policy_acceptance: Option<PolicyAcceptance>,
 }
 
 pub async fn post_google(
@@ -19,6 +35,7 @@ pub async fn post_google(
     state: AppState,
 ) -> Result<Response, ApiError<serde_json::Value>> {
     let body: GoogleRequest = parse_json(&req.body)?;
+    require_policy(body.policy_acceptance.as_ref())?;
     let (user, token) = issue_session(&body.id_token, &state).await?;
 
     let payload = serde_json::json!({
@@ -53,8 +70,9 @@ pub async fn post_google_redirect(
         .ok_or_else(|| {
             ApiError::bad_request("missing_token", "Missing Google credential", None)
         })?;
+    let (target, acceptance) = parse_state(form.get("state"));
+    require_policy(acceptance.as_ref())?;
     let (_user, token) = issue_session(credential, &state).await?;
-    let target = sanitize_redirect(form.get("state").map(|s| s.as_str()));
     Ok(Response::html(redirect_html(&token, &target)))
 }
 
@@ -115,10 +133,35 @@ fn sanitize_redirect(state: Option<&str>) -> String {
     }
 }
 
+fn parse_state(state: Option<&String>) -> (String, Option<PolicyAcceptance>) {
+    let raw = state.map(|s| s.as_str()).unwrap_or("/");
+    if let Ok(parsed) = serde_json::from_str::<RedirectState>(raw) {
+        let path = sanitize_redirect(parsed.path.as_deref());
+        return (path, parsed.policy_acceptance);
+    }
+    (sanitize_redirect(Some(raw)), None)
+}
+
+fn require_policy(
+    acceptance: Option<&PolicyAcceptance>,
+) -> Result<(), ApiError<serde_json::Value>> {
+    let acceptance = acceptance.ok_or_else(|| {
+        ApiError::unprocessable("policy_required", "Policy acceptance required", None)
+    })?;
+    if !acceptance.accepted || acceptance.version != POLICY_VERSION {
+        return Err(ApiError::unprocessable(
+            "policy_required",
+            "Policy acceptance required",
+            None,
+        ));
+    }
+    Ok(())
+}
+
 fn redirect_html(token: &str, target: &str) -> String {
     let token_json = serde_json::to_string(token).unwrap_or_else(|_| "\"\"".to_string());
     let target_json = serde_json::to_string(target).unwrap_or_else(|_| "\"/\"".to_string());
     format!(
-        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#0b111c\"><title>LGXPKF</title><style>html,body{{margin:0;background:#0b111c;color:#e7eef8;font-family:Arial,sans-serif}}</style></head><body><script>localStorage.setItem(\"lgxpkf.session\", {token_json});window.location.replace({target_json});</script></body></html>"
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#0b111c\"><title>lgxpkf</title><style>html,body{{margin:0;background:#0b111c;color:#e7eef8;font-family:Arial,sans-serif}}</style></head><body><script>localStorage.setItem(\"lgxpkf.session\", {token_json});window.location.replace({target_json});</script></body></html>"
     )
 }
