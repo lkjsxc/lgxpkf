@@ -10,7 +10,7 @@ type GoogleIdConfig = {
 };
 
 type GoogleButtonConfig = {
-  theme: "filled_black" | "outline";
+  theme: "outline";
   size: "large" | "medium" | "small";
   text: "signin_with";
   shape: "pill" | "rectangular";
@@ -90,7 +90,7 @@ const getGoogleAccounts = (): GoogleAccounts | null => {
     }
   };
 
-  const buttonTheme: GoogleButtonConfig["theme"] = "filled_black";
+  const buttonTheme: GoogleButtonConfig["theme"] = "outline";
 
   const initGoogle = (): void => {
     if (!clientId) {
