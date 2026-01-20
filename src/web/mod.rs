@@ -9,7 +9,7 @@ use crate::urls::base32::decode_id;
 const HOME_TEMPLATE: &str = include_str!("home.html");
 const NOTE_TEMPLATE: &str = include_str!("note.html");
 pub fn home_html(config: &Config) -> String {
-    render_home(&config.google_client_id)
+    render_home(&config.google_client_id, &login_uri(config))
 }
 pub fn home(config: &Config) -> Response {
     Response::html(home_html(config))
@@ -25,9 +25,12 @@ pub async fn note_page(
     let related = fetch_related(&state, note_id).await?;
     Ok(Response::html(note_html(&state.config, &chain, &related.related)))
 }
-fn render_home(client_id: &str) -> String {
+fn render_home(client_id: &str, login_uri: &str) -> String {
     let client_id = escape_attr(client_id);
-    HOME_TEMPLATE.replace("{{CLIENT_ID}}", &client_id)
+    let login_uri = escape_attr(login_uri);
+    HOME_TEMPLATE
+        .replace("{{CLIENT_ID}}", &client_id)
+        .replace("{{LOGIN_URI}}", &login_uri)
 }
 fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> String {
     let markdown = chain_markdown(chain);
@@ -37,11 +40,14 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
     let related_items = render_related_items(related, &chain.center.id);
     let newer_version = render_newer_version(related, &chain.center.id);
     let client_id = escape_attr(&config.google_client_id);
-    let note_id = escape_attr(&chain.center.id);
+    let login_uri = escape_attr(&login_uri(config));
+    let note_id_raw = &chain.center.id;
+    let note_id = escape_attr(note_id_raw);
     let note_description = escape_attr(&note_excerpt(&chain.center.value, 160));
-    let note_url = format!("/{}", note_id);
+    let note_url = escape_attr(&format!("{}/{}", config.public_base_url, note_id_raw));
     let base = NOTE_TEMPLATE
         .replace("{{CLIENT_ID}}", &client_id)
+        .replace("{{LOGIN_URI}}", &login_uri)
         .replace("{{NOTE_ID}}", &note_id)
         .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
@@ -175,4 +181,7 @@ fn escape_attr(value: &str) -> String {
 }
 fn escape_html(value: &str) -> String {
     escape_attr(value)
+}
+fn login_uri(config: &Config) -> String {
+    format!("{}/auth/google/redirect", config.public_base_url)
 }

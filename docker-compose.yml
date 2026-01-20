@@ -23,6 +23,7 @@ services:
       BIND_ADDR: 0.0.0.0:8080
       DATABASE_URL: postgres://lgxpkf:lgxpkf@lgxpkf-db:5432/lgxpkf
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
       SESSION_TTL_SECS: 3600
       RUN_MIGRATIONS: "true"
     ports:
