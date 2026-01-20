@@ -5,6 +5,7 @@
 - Client obtains Google ID token.
 - Server validates token with Google public keys.
 - Server extracts subject and email.
+- Client submits policy acceptance alongside the token.
 
 ## Validation
 
@@ -18,3 +19,4 @@
 - The login URI is derived from `PUBLIC_BASE_URL`.
 - Add `${PUBLIC_BASE_URL}/auth/google/redirect` to authorized redirect URIs.
 - `redirect_uri_mismatch` indicates the base URL or authorized list is wrong.
+- Redirect state includes policy acceptance and the desired post-login path.

@@ -8,11 +8,12 @@
 
 ## Global Layout
 
-- Top bar shows LGXPKF (link to /) and an account display.
-- Before login the account display is a Google sign-in button (dark theme); after login it shows the account identity and sign-out only.
+- Top bar shows lgxpkf (link to /) and an account display.
+- Before login the account display includes a policy consent gate and Google sign-in button (outline theme); after login it shows the account identity and sign-out only.
 - Sign-in button is rendered only after session validation to avoid flicker for logged-in users.
 - Background color is a solid, darker tone on html/body to avoid uneven brightness and prevent white flashes.
 - Cards and meta text enforce wrapping to prevent overflow beyond borders.
+- Policy links are visible to signed-out users and in the footer.
 
 ## Authentication
 
@@ -30,7 +31,7 @@
 - No association or related-note UI is presented on the home view.
 - Visual design is a bluish dark mode with bold typography.
 - Timeline cards omit the note id (metadata shows time and author only).
-- Signed-out users see a short LGXPKF explanation card on the root page.
+- Signed-out users see a short lgxpkf explanation card on the root page.
 
 ## Note Page
 

@@ -2,9 +2,12 @@
 
 ## Applicable Laws and Guidance
 
-- Act on the Protection of Personal Information (APPI) and PPC guidelines.
-- Telecommunications Business Act obligations for service providers.
+- Act on the Protection of Personal Information (APPI), including recent amendments, and PPC guidelines.
+- Telecommunications Business Act and MIC guidance for communications services.
+- Provider Liability Limitation Act for takedown/disclosure.
+- Act on the Regulation of Transmission of Specified Electronic Mail where notifications are sent.
 - Unauthorized Computer Access Law and related security expectations.
+- Copyright Act and Penal Code (defamation, privacy violations).
 
 ## Product Implications
 
@@ -17,6 +20,7 @@
 - Disclose local storage usage for session tokens.
 - Clarify minimum age policy or guardian consent when relevant.
 - Define retention windows and deletion procedures for dormant accounts.
+- Publish community guidelines aligned with the Provider Liability Limitation Act.
 
 ## System Controls
 
