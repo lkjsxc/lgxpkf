@@ -9,7 +9,7 @@ use pulldown_cmark::{html, Event, Options, Parser};
 
 const HOME_TEMPLATE: &str = include_str!("home.html"); const NOTE_TEMPLATE: &str = include_str!("note.html"); const SIGNIN_TEMPLATE: &str = include_str!("signin.html");
 const TERMS_TEMPLATE: &str = include_str!("terms.html"); const PRIVACY_TEMPLATE: &str = include_str!("privacy.html"); const GUIDELINE_TEMPLATE: &str = include_str!("guideline.html"); const NETWORK_TEMPLATE: &str = include_str!("network.html");
-const NOTE_JS: &str = include_str!("note.js"); const APP_JS: &str = include_str!("app.js"); const HOME_JS: &str = include_str!("home.js"); const SIGNIN_JS: &str = include_str!("signin.js"); const NETWORK_JS: &str = include_str!("network.js");
+const NOTE_JS: &str = include_str!("assets/note.js"); const APP_JS: &str = include_str!("assets/app.js"); const HOME_JS: &str = include_str!("assets/home.js"); const SIGNIN_JS: &str = include_str!("assets/signin.js"); const NETWORK_JS: &str = include_str!("assets/network.js");
 const FAVICON: &[u8] = include_bytes!("assets/icon_256.ico"); const CACHE_STATIC: &str = "public, max-age=31536000, immutable";
 
 pub fn favicon() -> Response { Response::bytes(200, "image/vnd.microsoft.icon", FAVICON.to_vec()).with_header("Cache-Control", CACHE_STATIC) }

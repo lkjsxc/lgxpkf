@@ -1,0 +1,11 @@
+{
+  "name": "lgxpkf-web",
+  "private": true,
+  "devDependencies": {
+    "esbuild": "^0.23.1",
+    "typescript": "^5.6.3"
+  },
+  "scripts": {
+    "build:web": "tsc -p tsconfig.json --noEmit && node scripts/build-web.js"
+  }
+}

@@ -23,6 +23,7 @@
 html{background:var(--bg)}
 body{margin:0;font-family:sans-serif;color:var(--ink);background:radial-gradient(1200px 600px at 10% -20%,rgba(106,227,255,0.12),transparent 60%),radial-gradient(900px 500px at 90% -10%,rgba(240,179,90,0.1),transparent 55%),var(--bg);min-height:100vh}
 body.modal-open{overflow:hidden}
+body[data-signed-in="true"] #guest-hero{display:none}
 a{text-decoration:none;color:inherit}
 button,input,textarea{font-family:inherit}
 .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;background:rgba(7,11,18,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
