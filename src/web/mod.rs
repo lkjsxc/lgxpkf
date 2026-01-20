@@ -6,23 +6,17 @@ use pulldown_cmark::{html, Event, Options, Parser};
 use crate::related::{fetch_chain, fetch_related, NoteChain, RelatedEntry};
 use crate::state::AppState;
 use crate::urls::base32::decode_id;
-const HOME_TEMPLATE: &str = include_str!("home.html");
-const NOTE_TEMPLATE: &str = include_str!("note.html");
-const NOTE_JS: &str = include_str!("note.js");
+const HOME_TEMPLATE: &str = include_str!("home.html"); const NOTE_TEMPLATE: &str = include_str!("note.html"); const NOTE_JS: &str = include_str!("note.js");
+const TERMS_TEMPLATE: &str = include_str!("terms.html"); const PRIVACY_TEMPLATE: &str = include_str!("privacy.html"); const COMMUNITY_TEMPLATE: &str = include_str!("community.html");
 const FAVICON: &[u8] = include_bytes!("assets/icon_256.ico");
 
-pub fn favicon() -> Response {
-    Response::bytes(200, "image/vnd.microsoft.icon", FAVICON.to_vec())
-}
-pub fn note_js() -> Response {
-    Response::text(200, "text/javascript; charset=utf-8", NOTE_JS)
-}
-pub fn home_html(config: &Config) -> String {
-    render_home(&config.google_client_id, &login_uri(config))
-}
-pub fn home(config: &Config) -> Response {
-    Response::html(home_html(config))
-}
+pub fn favicon() -> Response { Response::bytes(200, "image/vnd.microsoft.icon", FAVICON.to_vec()) }
+pub fn note_js() -> Response { Response::text(200, "text/javascript; charset=utf-8", NOTE_JS) }
+pub fn home_html(config: &Config) -> String { render_home(&config.google_client_id, &login_uri(config)) }
+pub fn home(config: &Config) -> Response { Response::html(home_html(config)) }
+pub fn terms() -> Response { Response::html(TERMS_TEMPLATE.to_string()) }
+pub fn privacy() -> Response { Response::html(PRIVACY_TEMPLATE.to_string()) }
+pub fn community() -> Response { Response::html(COMMUNITY_TEMPLATE.to_string()) }
 pub async fn note_page(
     note_id: &str,
     state: AppState,
@@ -64,14 +58,14 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
         .replace("{{CHAIN_SUMMARY}}", &escape_html(&chain_summary))
         .replace("{{NOTE_DESCRIPTION}}", &note_description)
         .replace("{{NOTE_URL}}", &note_url)
-        .replace("{{CHAIN_ITEMS}}", "__LGXPKF_CHAIN_ITEMS__")
-        .replace("{{RELATED_ITEMS}}", "__LGXPKF_RELATED_ITEMS__")
-        .replace("{{NOTE_BODY}}", "__LGXPKF_NOTE_BODY__")
-        .replace("{{NOTE_RAW}}", "__LGXPKF_NOTE_RAW__");
-    base.replace("__LGXPKF_CHAIN_ITEMS__", &chain_items)
-        .replace("__LGXPKF_RELATED_ITEMS__", &related_items)
-        .replace("__LGXPKF_NOTE_BODY__", &body_html)
-        .replace("__LGXPKF_NOTE_RAW__", &escape_html(&markdown))
+        .replace("{{CHAIN_ITEMS}}", "__lgxpkf_chain_items__")
+        .replace("{{RELATED_ITEMS}}", "__lgxpkf_related_items__")
+        .replace("{{NOTE_BODY}}", "__lgxpkf_note_body__")
+        .replace("{{NOTE_RAW}}", "__lgxpkf_note_raw__");
+    base.replace("__lgxpkf_chain_items__", &chain_items)
+        .replace("__lgxpkf_related_items__", &related_items)
+        .replace("__lgxpkf_note_body__", &body_html)
+        .replace("__lgxpkf_note_raw__", &escape_html(&markdown))
 }
 fn chain_markdown(chain: &NoteChain) -> String {
     let mut parts = Vec::new();

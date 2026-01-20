@@ -1,34 +1,22 @@
 (() => {
-  const el = (id) => document.getElementById(id); const state = { token: localStorage.getItem("lgxpkf.session"), user: null }; const clientId = document.body.dataset.clientId || ""; const loginUri = document.body.dataset.loginUri || ""; const noteId = document.body.dataset.noteId || ""; const authorId = document.body.dataset.authorId || "";
-  const signoutBtn = el("signout"); const signinWrap = el("signin"); const accountInfo = el("account-info"); const copyBtn = el("copy-link"); const copyStatus = el("copy-status"); const followRow = el("follow-row"); const followToggle = el("follow-toggle"); const followStatus = el("follow-status"); const linkForm = el("link-form"); const linkTarget = el("link-target"); const linkKind = el("link-kind"); const linkStatus = el("link-status");
-  const editBtn = el("edit-note");
-  const editor = el("editor");
-  const editForm = el("edit-form");
-  const editValue = el("edit-value");
-  const editStatus = el("edit-status");
-  const closeEditor = el("close-editor");
-  const relatedList = el("related-list");
+  const el = (id) => document.getElementById(id);
+  const state = { token: localStorage.getItem("lgxpkf.session"), user: null }; const clientId = document.body.dataset.clientId || ""; const loginUri = document.body.dataset.loginUri || ""; const noteId = document.body.dataset.noteId || ""; const authorId = document.body.dataset.authorId || "";
+  const policyVersion = "2025-02-01"; const consentKey = "lgxpkf.policy_acceptance.v1";
+  const signoutBtn = el("signout"); const signinWrap = el("signin"); const signinPanel = el("signin-panel"); const consentBox = el("policy-consent"); const consentStatus = el("policy-status"); const accountInfo = el("account-info"); const copyBtn = el("copy-link"); const copyStatus = el("copy-status"); const followRow = el("follow-row"); const followToggle = el("follow-toggle"); const followStatus = el("follow-status"); const linkForm = el("link-form"); const linkTarget = el("link-target"); const linkKind = el("link-kind"); const linkStatus = el("link-status"); const editBtn = el("edit-note"); const editor = el("editor"); const editForm = el("edit-form"); const editValue = el("edit-value"); const editStatus = el("edit-status"); const closeEditor = el("close-editor"); const relatedList = el("related-list");
   const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
+  const readConsent = () => { const raw = localStorage.getItem(consentKey); if (!raw) { return null; } try { const data = JSON.parse(raw); return data && data.accepted === true && data.version === policyVersion ? data : null; } catch (_) { return null; } };
+  const writeConsent = (accepted) => { if (!accepted) { localStorage.removeItem(consentKey); return null; } const data = { accepted: true, version: policyVersion, agreed_at: new Date().toISOString() }; localStorage.setItem(consentKey, JSON.stringify(data)); return data; };
+  const syncConsentUi = () => { const accepted = Boolean(readConsent()); if (consentBox) { consentBox.checked = accepted; } if (consentStatus) { consentStatus.textContent = accepted ? "Consent recorded." : "Consent required before sign-in."; } };
+  const ensureSigninButton = () => { const accepted = Boolean(readConsent()); if (!accepted || !window.google || !google.accounts || !google.accounts.id) { signinWrap.hidden = true; return; } if (signinWrap.dataset.rendered !== "true") { google.accounts.id.renderButton(signinWrap, { theme: "outline", size: "large", text: "signin_with" }); signinWrap.dataset.rendered = "true"; } signinWrap.hidden = Boolean(state.token); };
+  const initGoogle = () => { if (!window.google || !google.accounts || !google.accounts.id) { return false; } const statePayload = () => JSON.stringify({ path: `${window.location.pathname}${window.location.search}`, policy_acceptance: readConsent() }); google.accounts.id.initialize({ client_id: clientId, callback: handleCredential, ux_mode: "redirect", login_uri: loginUri, state: statePayload() }); return true; };
   const setSignedIn = (signedIn) => {
-    signoutBtn.disabled = !signedIn;
-    signoutBtn.hidden = !signedIn;
-    editBtn.disabled = !signedIn;
-    accountInfo.hidden = !signedIn;
-    signinWrap.hidden = signedIn || signinWrap.dataset.rendered !== "true";
+    signoutBtn.disabled = !signedIn; signoutBtn.hidden = !signedIn; editBtn.disabled = !signedIn; accountInfo.hidden = !signedIn;
+    if (signinPanel) { signinPanel.hidden = signedIn; }
     followRow.hidden = true;
-    [linkForm, editForm].forEach((form) => {
-      if (!form) { return; }
-      form.querySelectorAll("input, textarea, button").forEach((node) => {
-        node.disabled = !signedIn;
-      });
-    });
+    [linkForm, editForm].forEach((form) => { if (!form) { return; } form.querySelectorAll("input, textarea, button").forEach((node) => { node.disabled = !signedIn; }); });
+    syncConsentUi(); ensureSigninButton();
   };
-  const storeToken = (token) => {
-    state.token = token;
-    if (token) { localStorage.setItem("lgxpkf.session", token); }
-    else { localStorage.removeItem("lgxpkf.session"); }
-    setSignedIn(Boolean(token));
-  };
+  const storeToken = (token) => { state.token = token; if (token) { localStorage.setItem("lgxpkf.session", token); } else { localStorage.removeItem("lgxpkf.session"); } setSignedIn(Boolean(token)); };
   const api = async (path, options = {}) => {
     const headers = options.headers || {};
     if (state.token) { headers.Authorization = `Bearer ${state.token}`; }
@@ -37,18 +25,10 @@
     if (!response.ok) { throw new Error(data.message || "Request failed"); }
     return data;
   };
-  const renderSigninButton = () => {
-    if (signinWrap.dataset.rendered === "true") { return; }
-    google.accounts.id.renderButton(signinWrap, { theme: "filled_black", size: "large", text: "signin_with" });
-    signinWrap.dataset.rendered = "true";
-    signinWrap.hidden = Boolean(state.token);
-  };
+  const renderSigninButton = () => { ensureSigninButton(); };
   const loadFollowState = async () => {
     if (!followRow || !followToggle || !followStatus) { return; }
-    if (!state.token || !state.user || !authorId || state.user.user_id === authorId) {
-      followRow.hidden = true;
-      return;
-    }
+    if (!state.token || !state.user || !authorId || state.user.user_id === authorId) { followRow.hidden = true; return; }
     followRow.hidden = false;
     followToggle.disabled = true;
     followStatus.textContent = "Checking follow...";
@@ -79,7 +59,9 @@
   };
   const handleCredential = async (payload) => {
     try {
-      const data = await api("/auth/google", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id_token: payload.credential }) });
+      const acceptance = readConsent();
+      if (!acceptance) { followStatus.textContent = "Consent required before sign-in."; ensureSigninButton(); return; }
+      const data = await api("/auth/google", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id_token: payload.credential, policy_acceptance: acceptance }) });
       storeToken(data.token);
       state.user = data.user;
       el("account-email").textContent = data.user.email;
@@ -176,6 +158,9 @@
   document.addEventListener("keydown", (event) => { if (event.key === "Escape" && editor.classList.contains("open")) { closeEdit(); } });
   editBtn.addEventListener("click", openEditor);
   closeEditor.addEventListener("click", closeEdit);
+  if (consentBox) {
+    consentBox.addEventListener("change", () => { writeConsent(consentBox.checked); syncConsentUi(); initGoogle(); ensureSigninButton(); });
+  }
   signoutBtn.addEventListener("click", () => {
     storeToken(null);
     state.user = null;
@@ -188,7 +173,7 @@
     if (!clientId) { setSignedIn(false); return; }
     if (!loginUri) { setSignedIn(false); return; }
     if (!window.google || !google.accounts || !google.accounts.id) { setSignedIn(false); return; }
-    google.accounts.id.initialize({ client_id: clientId, callback: handleCredential, ux_mode: "redirect", login_uri: loginUri, state: `${window.location.pathname}${window.location.search}` });
+    initGoogle();
     await refreshSession();
     if (!state.token) { renderSigninButton(); }
   });

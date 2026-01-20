@@ -15,6 +15,9 @@ pub async fn route(req: Request, state: AppState) -> Response {
 
     let result = match (method, path) {
         ("GET", "/") => Ok(web::home(&state.config)),
+        ("GET", "/terms") => Ok(web::terms()),
+        ("GET", "/privacy") => Ok(web::privacy()),
+        ("GET", "/community") => Ok(web::community()),
         ("GET", "/favicon.ico") => Ok(web::favicon()),
         ("GET", "/assets/note.js") => Ok(web::note_js()),
         ("GET", "/health") => health::get_health(req, state).await,
