@@ -10,3 +10,4 @@
 
 - Check logs for error codes.
 - Validate DB connections and pool usage.
+- For `redirect_uri_mismatch`, verify `PUBLIC_BASE_URL` and Google OAuth redirect URIs.
