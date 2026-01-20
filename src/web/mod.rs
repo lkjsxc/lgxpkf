@@ -6,14 +6,22 @@ use pulldown_cmark::{html, Event, Options, Parser};
 use crate::related::{fetch_chain, fetch_related, NoteChain, RelatedEntry};
 use crate::state::AppState;
 use crate::urls::base32::decode_id;
-const HOME_TEMPLATE: &str = include_str!("home.html"); const NOTE_TEMPLATE: &str = include_str!("note.html"); const NOTE_JS: &str = include_str!("note.js");
+const HOME_TEMPLATE: &str = include_str!("home.html"); const NOTE_TEMPLATE: &str = include_str!("note.html"); const SIGNIN_TEMPLATE: &str = include_str!("signin.html");
+const NOTE_JS: &str = include_str!("note.js"); const APP_JS: &str = include_str!("app.js"); const HOME_JS: &str = include_str!("home.js"); const SIGNIN_JS: &str = include_str!("signin.js");
 const TERMS_TEMPLATE: &str = include_str!("terms.html"); const PRIVACY_TEMPLATE: &str = include_str!("privacy.html"); const COMMUNITY_TEMPLATE: &str = include_str!("community.html");
-const FAVICON: &[u8] = include_bytes!("assets/icon_256.ico");
+const FAVICON: &[u8] = include_bytes!("assets/icon_256.ico"); const CACHE_STATIC: &str = "public, max-age=31536000, immutable";
 
-pub fn favicon() -> Response { Response::bytes(200, "image/vnd.microsoft.icon", FAVICON.to_vec()) }
-pub fn note_js() -> Response { Response::text(200, "text/javascript; charset=utf-8", NOTE_JS) }
-pub fn home_html(config: &Config) -> String { render_home(&config.google_client_id, &login_uri(config)) }
+pub fn favicon() -> Response { Response::bytes(200, "image/vnd.microsoft.icon", FAVICON.to_vec()).with_header("Cache-Control", CACHE_STATIC) }
+pub fn note_js() -> Response { Response::text(200, "text/javascript; charset=utf-8", NOTE_JS).with_header("Cache-Control", CACHE_STATIC) }
+pub fn app_js() -> Response { Response::text(200, "text/javascript; charset=utf-8", APP_JS).with_header("Cache-Control", CACHE_STATIC) }
+pub fn home_js() -> Response { Response::text(200, "text/javascript; charset=utf-8", HOME_JS).with_header("Cache-Control", CACHE_STATIC) }
+pub fn signin_js() -> Response { Response::text(200, "text/javascript; charset=utf-8", SIGNIN_JS).with_header("Cache-Control", CACHE_STATIC) }
+pub fn home_html(config: &Config) -> String { render_home(&config.google_client_id, &login_uri(config), "home") }
 pub fn home(config: &Config) -> Response { Response::html(home_html(config)) }
+pub fn me_html(config: &Config) -> String { render_home(&config.google_client_id, &login_uri(config), "me") }
+pub fn me(config: &Config) -> Response { Response::html(me_html(config)) }
+pub fn signin_html(config: &Config) -> String { render_signin(&config.google_client_id, &login_uri(config)) }
+pub fn signin(config: &Config) -> Response { Response::html(signin_html(config)) }
 pub fn terms() -> Response { Response::html(TERMS_TEMPLATE.to_string()) }
 pub fn privacy() -> Response { Response::html(PRIVACY_TEMPLATE.to_string()) }
 pub fn community() -> Response { Response::html(COMMUNITY_TEMPLATE.to_string()) }
@@ -28,12 +36,13 @@ pub async fn note_page(
     let related = fetch_related(&state, note_id).await?;
     Ok(Response::html(note_html(&state.config, &chain, &related.related)))
 }
-fn render_home(client_id: &str, login_uri: &str) -> String {
-    let client_id = escape_attr(client_id);
-    let login_uri = escape_attr(login_uri);
-    HOME_TEMPLATE
-        .replace("{{CLIENT_ID}}", &client_id)
-        .replace("{{LOGIN_URI}}", &login_uri)
+fn render_home(client_id: &str, login_uri: &str, view: &str) -> String {
+    let client_id = escape_attr(client_id); let login_uri = escape_attr(login_uri); let view = escape_attr(view);
+    HOME_TEMPLATE.replace("{{CLIENT_ID}}", &client_id).replace("{{LOGIN_URI}}", &login_uri).replace("{{VIEW}}", &view)
+}
+fn render_signin(client_id: &str, login_uri: &str) -> String {
+    let client_id = escape_attr(client_id); let login_uri = escape_attr(login_uri);
+    SIGNIN_TEMPLATE.replace("{{CLIENT_ID}}", &client_id).replace("{{LOGIN_URI}}", &login_uri)
 }
 fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> String {
     let markdown = chain_markdown(chain);

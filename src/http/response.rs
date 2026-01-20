@@ -27,6 +27,11 @@ impl Response {
         Self::text(200, "text/html; charset=utf-8", &body)
     }
 
+    pub fn with_header(mut self, key: &str, value: &str) -> Self {
+        self.headers.insert(key.to_string(), value.to_string());
+        self
+    }
+
     pub fn empty(status: u16) -> Self {
         Self::bytes(status, "application/json", Vec::new())
     }
