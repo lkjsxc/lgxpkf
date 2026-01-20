@@ -2,12 +2,12 @@
   const el = (id) => document.getElementById(id);
   const state = { token: localStorage.getItem("lgxpkf.session"), user: null };
   const signinLink = el("signin-link");
+  const postLink = el("post-link");
   const accountToggle = el("account-toggle");
   const accountLabel = el("account-label");
   const accountMenu = el("account-menu");
   const accountEmail = el("account-email");
   const signoutBtn = el("account-signout");
-  const postsLink = el("account-posts");
   const shortLabel = (value) => value.length > 26 ? `${value.slice(0, 12)}...${value.slice(-8)}` : value;
   const updateSigninLink = () => {
     if (!signinLink) { return; }
@@ -21,6 +21,7 @@
   };
   const setSignedIn = (signedIn) => {
     if (signinLink) { signinLink.hidden = signedIn; }
+    if (postLink) { postLink.hidden = !signedIn; }
     if (accountToggle) { accountToggle.hidden = !signedIn; }
     if (!signedIn) { setMenuOpen(false); }
     if (signedIn && state.user) {
@@ -62,7 +63,6 @@
   };
   updateSigninLink();
   hydrate();
-  if (postsLink) { postsLink.href = "/me"; }
   if (accountToggle) {
     accountToggle.addEventListener("click", (event) => {
       event.stopPropagation();

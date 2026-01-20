@@ -162,6 +162,6 @@ fn redirect_html(token: &str, target: &str) -> String {
     let token_json = serde_json::to_string(token).unwrap_or_else(|_| "\"\"".to_string());
     let target_json = serde_json::to_string(target).unwrap_or_else(|_| "\"/\"".to_string());
     format!(
-        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#0b111c\"><title>lgxpkf</title><style>html,body{{margin:0;background:#0b111c;color:#e7eef8;font-family:Arial,sans-serif}}</style></head><body><script>localStorage.setItem(\"lgxpkf.session\", {token_json});window.location.replace({target_json});</script></body></html>"
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><meta name=\"theme-color\" content=\"#0b111c\"><title>lgxpkf</title><style>html,body{{margin:0;background:#0b111c;color:#e7eef8;font-family:sans-serif}}</style></head><body><script>localStorage.setItem(\"lgxpkf.session\", {token_json});window.location.replace({target_json});</script></body></html>"
     )
 }

@@ -18,13 +18,162 @@
 <title>lgxpkf note {{NOTE_ID}}</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="canonical" href="{{NOTE_URL}}">
-<style>:root{--bg:#070b12;--ink:#e7eef8;--muted:#93a2bb;--panel:#0d1523;--panel-2:#0b1321;--line:#1d2738;--accent:#6ae3ff;--accent-2:#f0b35a;--shadow:rgba(3,6,12,0.6);--mono:"JetBrains Mono",monospace;--sans:"Space Grotesk",sans-serif;--serif:"Newsreader",serif;--radius-sm:8px;--radius-md:10px;--radius-lg:12px}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;font-family:var(--serif);color:var(--ink);background:radial-gradient(1200px 600px at 10% -20%,rgba(106,227,255,0.12),transparent 60%),var(--bg);min-height:100vh}body.modal-open{overflow:hidden}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(7,11,18,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);font-family:var(--sans)}.brand{font-size:1.05rem;letter-spacing:0.32em;font-weight:700}.account{position:relative;display:flex;align-items:center;gap:12px}.signin-link{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:0.82rem;color:var(--ink)}.account-toggle{border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:transparent;color:var(--ink);font-size:0.82rem;cursor:pointer}.account-menu{position:absolute;right:0;top:calc(100% + 8px);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);padding:10px;min-width:210px;display:flex;flex-direction:column;gap:8px;box-shadow:0 18px 40px var(--shadow);font-family:var(--sans)}.account-menu a,.account-menu button{border:1px solid transparent;border-radius:var(--radius-sm);padding:8px 10px;background:transparent;color:var(--ink);text-align:left;font-size:0.82rem;cursor:pointer}.account-menu a:hover,.account-menu button:hover{border-color:var(--line);background:#0b1424}.account-meta{font-size:0.72rem;color:var(--muted);font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word}button{border:none;border-radius:var(--radius-md);padding:8px 16px;font-weight:600;background:var(--accent);color:#071019;cursor:pointer;font-family:var(--sans)}button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}button:disabled{opacity:0.6;cursor:not-allowed}main{max-width:1100px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:18px;animation:fade 0.6s ease both}.note-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:32px;box-shadow:0 24px 60px var(--shadow);display:flex;flex-direction:column;gap:18px;overflow-wrap:anywhere;word-break:break-word}.note-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:0.2em;font-size:0.7rem;color:var(--accent)}.meta{display:flex;flex-wrap:wrap;gap:12px;font-size:0.85rem;color:var(--muted);font-family:var(--sans);overflow-wrap:anywhere;word-break:break-word}.meta .mono{font-family:var(--mono)}.content-card{display:flex;flex-direction:column;gap:14px}.article-body{line-height:1.8;font-size:1.08rem;overflow-wrap:anywhere;word-break:break-word} .article-body h1,.article-body h2,.article-body h3{font-family:var(--sans);letter-spacing:-0.01em} .article-body pre{background:#070d16;color:#e7eef8;padding:16px;border-radius:var(--radius-md);overflow:auto;font-size:0.9rem} .article-body code{font-family:var(--mono)} .article-body blockquote{border-left:3px solid var(--accent);padding-left:16px;color:#c3cfdf}.card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:0 14px 34px var(--shadow);overflow-wrap:anywhere;word-break:break-word}.card-title{font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);font-family:var(--sans)}.meta-grid{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr);gap:8px;font-size:0.85rem;color:var(--muted)}.meta-grid .mono{font-family:var(--mono);color:var(--ink);overflow-wrap:anywhere;word-break:break-word}.action-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.chain-list,.related-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}.chain-item,.related-item{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:#070d16;color:var(--ink);overflow-wrap:anywhere;word-break:break-word}.chain-label,.related-kind{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent)}.chain-text,.related-text{font-size:0.85rem;color:var(--muted);font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word}.related-meta{font-size:0.75rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}.related-item-version{border-color:rgba(240,179,90,0.5);box-shadow:0 18px 40px rgba(240,179,90,0.15)}.related-cite{font-size:0.72rem;color:var(--muted);font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word} input,textarea{width:100%;margin-top:10px;border-radius:var(--radius-md);border:1px solid var(--line);padding:12px 14px;font-family:var(--mono);font-size:0.9rem;background:#070d16;color:var(--ink)} textarea{min-height:180px;resize:vertical;overflow-wrap:anywhere;word-break:break-word} label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);font-family:var(--sans)} .helper{font-size:0.8rem;color:var(--muted);margin-top:8px;overflow-wrap:anywhere;word-break:break-word} .helper.mono{font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word} .empty{font-size:0.85rem;color:var(--muted)}.composer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,9,20,0.7);opacity:0;pointer-events:none;transition:opacity 0.2s ease}.composer.open{opacity:1;pointer-events:auto}.composer-panel{width:min(760px,92vw);background:#0b1321;border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;box-shadow:0 30px 70px rgba(3,6,12,0.5);animation:fade 0.4s ease both}.composer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.composer-head h2{margin:0;font-size:1.6rem} .composer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}@media (max-width:720px){.topbar{flex-direction:column;align-items:flex-start;gap:12px}.note-card{padding:26px}.meta-grid{grid-template-columns:1fr}}</style>
+<style>
+:root{--bg:#070b12;--ink:#e7eef8;--muted:#93a2bb;--panel:#0d1523;--panel-2:#0b1321;--line:#1d2738;--accent:#6ae3ff;--accent-2:#f0b35a;--shadow:rgba(3,6,12,0.6);--radius-sm:8px;--radius-md:10px;--radius-lg:12px}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font-family:sans-serif;color:var(--ink);background:radial-gradient(1200px 600px at 10% -20%,rgba(106,227,255,0.12),transparent 60%),var(--bg);min-height:100vh}
+body.modal-open{overflow:hidden}
+a{text-decoration:none;color:inherit}
+button,input,textarea{font-family:inherit}
+.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 24px;background:rgba(7,11,18,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+.brand{font-size:1.05rem;letter-spacing:0.28em;font-weight:700;white-space:nowrap}
+.post-link{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:0.82rem;background:transparent;color:var(--ink);cursor:pointer;white-space:nowrap}
+.account{position:relative;display:flex;align-items:center;gap:12px}
+.signin-link{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:0.82rem;color:var(--ink);white-space:nowrap}
+.account-toggle{border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:transparent;color:var(--ink);font-size:0.82rem;cursor:pointer;white-space:nowrap}
+.account-menu{position:absolute;right:0;top:calc(100% + 8px);background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-md);padding:10px;min-width:210px;display:flex;flex-direction:column;gap:8px;box-shadow:0 18px 40px var(--shadow)}
+.account-menu[hidden]{display:none}
+.account-menu a,.account-menu button{border:1px solid transparent;border-radius:var(--radius-sm);padding:8px 10px;background:transparent;color:var(--ink);text-align:left;font-size:0.82rem;cursor:pointer}
+.account-menu a:hover,.account-menu button:hover{border-color:var(--line);background:#0b1424}
+.account-meta{font-size:0.72rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
+button{border:none;border-radius:var(--radius-md);padding:8px 16px;font-weight:600;background:var(--accent);color:#071019;cursor:pointer}
+button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button:disabled{opacity:0.6;cursor:not-allowed}
+main{max-width:1100px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:18px;animation:fade 0.6s ease both}
+.note-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:32px;box-shadow:0 24px 60px var(--shadow);display:flex;flex-direction:column;gap:18px;overflow-wrap:anywhere;word-break:break-word}
+.note-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.eyebrow{text-transform:uppercase;letter-spacing:0.2em;font-size:0.7rem;color:var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:12px;font-size:0.85rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
+.meta .mono{overflow-wrap:anywhere;word-break:break-word}
+.content-card{display:flex;flex-direction:column;gap:14px}
+.article-body{line-height:1.8;font-size:1.08rem;overflow-wrap:anywhere;word-break:break-word}
+.article-body h1,.article-body h2,.article-body h3{letter-spacing:-0.01em}
+.article-body pre{background:#070d16;color:#e7eef8;padding:16px;border-radius:var(--radius-md);overflow:auto;font-size:0.9rem}
+.article-body code{font-family:inherit}
+.article-body blockquote{border-left:3px solid var(--accent);padding-left:16px;color:#c3cfdf}
+.card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:0 14px 34px var(--shadow);overflow-wrap:anywhere;word-break:break-word}
+.card-title{font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted)}
+.meta-grid{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr);gap:8px;font-size:0.85rem;color:var(--muted)}
+.meta-grid .mono{color:var(--ink);overflow-wrap:anywhere;word-break:break-word}
+.action-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.chain-list,.related-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}
+.chain-item,.related-item{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:#070d16;color:var(--ink);overflow-wrap:anywhere;word-break:break-word;transition:border-color 0.2s ease}
+.chain-item:hover,.related-item:hover{border-color:rgba(106,227,255,0.6)}
+.chain-label,.related-kind{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent)}
+.chain-text,.related-text{font-size:0.85rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
+.related-meta{font-size:0.75rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
+.related-item-version{border-color:rgba(240,179,90,0.5);box-shadow:0 18px 40px rgba(240,179,90,0.15)}
+.related-cite{font-size:0.72rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
+input,textarea{width:100%;margin-top:10px;border-radius:var(--radius-md);border:1px solid var(--line);padding:12px 14px;font-size:0.9rem;background:#070d16;color:var(--ink)}
+textarea{min-height:180px;resize:vertical;overflow-wrap:anywhere;word-break:break-word}
+label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted)}
+.helper{font-size:0.8rem;color:var(--muted);margin-top:8px;overflow-wrap:anywhere;word-break:break-word}
+.empty{font-size:0.85rem;color:var(--muted)}
+.composer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,9,20,0.7);opacity:0;pointer-events:none;transition:opacity 0.2s ease}
+.composer.open{opacity:1;pointer-events:auto}
+.composer-panel{width:min(760px,92vw);background:#0b1321;border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;box-shadow:0 30px 70px rgba(3,6,12,0.5);animation:fade 0.4s ease both}
+.composer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.composer-head h2{margin:0;font-size:1.6rem}
+.composer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+@media (max-width:720px){.topbar{padding:12px 16px}.brand{font-size:0.95rem;letter-spacing:0.2em}.account{gap:8px}.signin-link,.account-toggle,.post-link{padding:6px 10px;font-size:0.75rem}.note-card{padding:26px}.meta-grid{grid-template-columns:1fr}}
+</style>
 <script src="/assets/app.js" defer></script>
 <script src="/assets/note.js" defer></script>
 </head>
-<body data-client-id="{{CLIENT_ID}}" data-login-uri="{{LOGIN_URI}}" data-note-id="{{NOTE_ID}}" data-author-id="{{NOTE_AUTHOR_ID}}">
-<header class="topbar"><a class="brand" href="/">lgxpkf</a><div class="account"><a class="signin-link" id="signin-link" href="/signin">Sign in</a><button class="account-toggle" id="account-toggle" type="button" hidden aria-expanded="false" aria-controls="account-menu"><span id="account-label">Account</span></button><div class="account-menu" id="account-menu" hidden><div class="account-meta" id="account-email"></div><a href="/me" id="account-posts">My posts</a><button id="account-signout" type="button">Sign out</button></div></div></header>
-<main><article class="note-card"><div class="note-head"><div><div class="eyebrow">Note</div><div class="meta"><span>{{NOTE_CREATED_AT}}</span><span>{{NOTE_AUTHOR}}</span><span class="mono">{{NOTE_ID}}</span></div></div><button class="ghost" id="edit-note" type="button">Edit</button></div><div class="meta-grid"><div>Note ID</div><div class="mono">{{NOTE_ID}}</div><div>Author</div><div class="mono">{{NOTE_AUTHOR}}</div><div>Created</div><div class="mono">{{NOTE_CREATED_AT}}</div><div>Chain</div><div class="mono">{{CHAIN_SUMMARY}}</div></div><div class="action-row"><button class="ghost" id="copy-link" type="button">Copy link</button><a class="ghost" href="/notes/{{NOTE_ID}}">JSON</a></div><div class="action-row" id="follow-row" hidden><button class="ghost" id="follow-toggle" type="button">Follow</button><div class="helper" id="follow-status"></div></div><div class="helper" id="copy-status"></div></article><section class="card content-card"><div class="card-title">Content</div><div class="article-body">{{NOTE_BODY}}</div></section><section class="card"><div class="card-title">Associations</div><div class="related-list" id="related-list">{{RELATED_ITEMS}}</div></section><section class="card"><div class="card-title">Chain</div><div class="helper">{{CHAIN_SUMMARY}}</div><div class="chain-list">{{CHAIN_ITEMS}}</div></section><section class="card"><div class="card-title">Link note</div><form id="link-form"><label for="link-target">Target ID</label><input id="link-target" type="text" placeholder="Base32 note id"><label for="link-kind">Kind</label><input id="link-kind" type="text" list="link-kinds" placeholder="link"><datalist id="link-kinds"><option value="link"></option><option value="reply"></option><option value="quote"></option><option value="parent"></option><option value="child"></option></datalist><div class="action-row"><button id="link-submit" type="submit">Create link</button></div><div class="helper" id="link-status"></div></form></section></main>
-<div class="composer" id="editor" aria-hidden="true" inert><div class="composer-panel"><div class="composer-head"><h2>Edit note</h2><button class="ghost" id="close-editor" type="button">Close</button></div><form id="edit-form"><label for="edit-value">Note text</label><textarea id="edit-value" placeholder="Markdown supported. Unlimited length; chained automatically.">{{NOTE_RAW}}</textarea><div class="composer-actions"><div class="helper" id="edit-status">Idle.</div><button id="edit-submit" type="submit">Publish version</button></div></form></div></div>
+<body data-client-id="{{CLIENT_ID}}" data-login-uri="{{LOGIN_URI}}" data-note-id="{{NOTE_ID}}" data-author-id="{{NOTE_AUTHOR_ID}}" data-account-note-id="{{NOTE_ACCOUNT_NOTE_ID}}">
+<header class="topbar">
+  <div class="topbar-left">
+    <a class="brand" href="/">lgxpkf</a>
+    <a class="post-link" id="post-link" href="/?compose=1" hidden>Post</a>
+  </div>
+  <div class="account">
+    <a class="signin-link" id="signin-link" href="/signin">Sign in</a>
+    <button class="account-toggle" id="account-toggle" type="button" hidden aria-expanded="false" aria-controls="account-menu"><span id="account-label">Account</span></button>
+    <div class="account-menu" id="account-menu" hidden>
+      <div class="account-meta" id="account-email"></div>
+      <button id="account-signout" type="button">Sign out</button>
+    </div>
+  </div>
+</header>
+<main>
+  <article class="note-card">
+    <div class="note-head">
+      <div>
+        <div class="eyebrow">Note</div>
+        <div class="meta"><span>{{NOTE_CREATED_AT}}</span><span>{{NOTE_AUTHOR}}</span><span class="mono">{{NOTE_ID}}</span></div>
+      </div>
+    </div>
+    <div class="meta-grid">
+      <div>Note ID</div>
+      <div class="mono">{{NOTE_ID}}</div>
+      <div>Author</div>
+      <div class="mono">{{NOTE_AUTHOR}}</div>
+      <div>Created</div>
+      <div class="mono">{{NOTE_CREATED_AT}}</div>
+      <div>Chain</div>
+      <div class="mono">{{CHAIN_SUMMARY}}</div>
+    </div>
+    <div class="action-row">
+      <button class="ghost" id="copy-link" type="button">Copy link</button>
+      <button class="ghost" id="copy-json" type="button">Copy JSON</button>
+      <button class="ghost" id="follow-toggle" type="button">Follow</button>
+      <button class="ghost" id="edit-note" type="button">Edit</button>
+    </div>
+    <div class="helper" id="copy-status"></div>
+    <div class="helper" id="follow-status"></div>
+  </article>
+  {{VERSION_SECTION}}
+  <section class="card content-card">
+    <div class="card-title">Content</div>
+    <div class="article-body">{{NOTE_BODY}}</div>
+  </section>
+  <section class="card">
+    <div class="card-title">Associations</div>
+    <div class="related-list" id="related-list">{{RELATED_ITEMS}}</div>
+  </section>
+  <section class="card">
+    <div class="card-title">Chain</div>
+    <div class="helper">{{CHAIN_SUMMARY}}</div>
+    <div class="chain-list">{{CHAIN_ITEMS}}</div>
+  </section>
+  <section class="card">
+    <div class="card-title">Link note</div>
+    <form id="link-form">
+      <label for="link-target">Target ID</label>
+      <input id="link-target" type="text" placeholder="Base32 note id">
+      <label for="link-kind">Kind</label>
+      <input id="link-kind" type="text" list="link-kinds" placeholder="link">
+      <datalist id="link-kinds">
+        <option value="link"></option>
+        <option value="reply"></option>
+        <option value="quote"></option>
+        <option value="parent"></option>
+        <option value="child"></option>
+      </datalist>
+      <div class="action-row"><button id="link-submit" type="submit">Create link</button></div>
+      <div class="helper" id="link-status"></div>
+    </form>
+  </section>
+</main>
+<div class="composer" id="editor" aria-hidden="true" inert>
+  <div class="composer-panel">
+    <div class="composer-head">
+      <h2>Edit note</h2>
+      <button class="ghost" id="close-editor" type="button">Close</button>
+    </div>
+    <form id="edit-form">
+      <label for="edit-value">Note text</label>
+      <textarea id="edit-value" placeholder="Markdown supported. Unlimited length; chained automatically.">{{NOTE_RAW}}</textarea>
+      <div class="composer-actions">
+        <div class="helper" id="edit-status">Idle.</div>
+        <button id="edit-submit" type="submit">Publish version</button>
+      </div>
+    </form>
+  </div>
+</div>
 </body>
 </html>
