@@ -90,10 +90,7 @@ const getGoogleAccounts = (): GoogleAccounts | null => {
     }
   };
 
-  const getButtonTheme = (): "filled_black" | "outline" =>
-    window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "filled_black"
-      : "outline";
+  const buttonTheme: GoogleButtonConfig["theme"] = "filled_black";
 
   const initGoogle = (): void => {
     if (!clientId) {
@@ -114,7 +111,7 @@ const getGoogleAccounts = (): GoogleAccounts | null => {
       state: JSON.stringify({ path: nextPath, policy_acceptance: readConsent() }),
     });
     google.accounts.id.renderButton(signinButton, {
-      theme: getButtonTheme(),
+      theme: buttonTheme,
       size: "large",
       text: "signin_with",
       shape: "pill",
