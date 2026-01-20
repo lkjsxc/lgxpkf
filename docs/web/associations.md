@@ -7,4 +7,5 @@
 - Associations are still created via POST /associations for automation or tooling.
 - next and prev are used to build recursive note chains on the note page.
 - Association cards wrap text and use a multi-column grid layout on desktop.
-- Association cards show citations (note IDs) and distinguish VERSION entries as old/new.
+- Association cards show citations (note IDs) and distinguish newer vs older versions.
+- Reply associations label direction (Reply to / Reply from).

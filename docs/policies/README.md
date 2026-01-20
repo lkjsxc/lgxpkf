@@ -4,4 +4,4 @@
 
 - [docs/policies/terms.md](terms.md)
 - [docs/policies/privacy.md](privacy.md)
-- [docs/policies/community-guidelines.md](community-guidelines.md)
+- [docs/policies/guideline.md](guideline.md)

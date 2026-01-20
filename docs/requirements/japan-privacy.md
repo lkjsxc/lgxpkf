@@ -20,7 +20,7 @@
 - Disclose local storage usage for session tokens.
 - Clarify minimum age policy or guardian consent when relevant.
 - Define retention windows and deletion procedures for dormant accounts.
-- Publish community guidelines aligned with the Provider Liability Limitation Act.
+- Publish Guideline aligned with the Provider Liability Limitation Act.
 
 ## System Controls
 

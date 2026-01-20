@@ -8,7 +8,7 @@
 
 ## Global Layout
 
-- Top bar shows lgxpkf (link to /) and an account display.
+- Top bar shows lgxpkf, a Post button (hidden while signed out), and the account display.
 - Before login the account area shows a Sign in link; after login it shows the account display and menu only.
 - Account display is hydrated after session validation to avoid flicker for logged-in users.
 - Background color is a solid, darker tone on html/body to avoid uneven brightness and prevent white flashes.
@@ -26,22 +26,27 @@
 
 - Timeline list appears immediately under the top bar.
 - Timeline uses a multi-column grid on desktop and a single column on small screens.
-- Post button is fixed to the bottom-left and opens a full-screen composer.
+- Post button lives next to the brand and opens a full-screen composer.
 - Post button is hidden entirely while signed out.
 - No association or related-note UI is presented on the home view.
 - Visual design is a bluish dark mode with bold typography.
 - Timeline cards omit the note id (metadata shows time and author only).
-- Signed-out users see a full hero and a random timeline on the root page.
+- Signed-out users see a hero and a random timeline on the root page.
 
 ## Note Page
 
 - Server assembles prev/next chains recursively, concatenates them into a single markdown document, and renders it.
-- Newer version banners, context, and chain sections sit beneath the main note.
-- Sections are vertically ordered: note, content, associations, chain, link note.
+- Newer versions appear between the Note and Content sections and again under Associations.
+- Sections are vertically ordered: note, version panel, content, associations, chain, link note.
 - Associations and chain lists use multi-column grids (about three columns on desktop).
 - Note title is not duplicated; the body is presented as a continuous document.
-- Edit button opens the same composer UI used on the home page.
+- Edit is available from the action row at the bottom of the note card (except for account bootstrap notes).
 - Page uses the dark palette with reduced corner roundness.
+
+## Network View
+
+- GET /network renders a 2D canvas of notes and their associations.
+- Nodes are positioned by a light force layout with simple interaction on hover.
 
 ## Performance + Metadata
 

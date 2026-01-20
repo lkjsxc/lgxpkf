@@ -1,4 +1,4 @@
-# Community Guidelines
+# Guideline
 
 ## Baseline
 

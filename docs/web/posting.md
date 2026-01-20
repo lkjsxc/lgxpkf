@@ -4,9 +4,11 @@
 
 - Sign in from the top bar Login button.
 - Exchange the Google ID token for a session token.
-- Tap Post (bottom-left) to open the full-screen composer (hidden while signed out).
+- Tap Post (next to the brand) to open the full-screen composer (hidden while signed out).
+- Shortcut: press `n` to open the composer when Post is visible.
+- Shortcut: press Ctrl+Enter to submit the composer.
 - POST /notes with the session token in the Authorization header.
-- On note pages, Edit opens the same composer prefilled with the current note content.
+- On note pages, Edit opens the same composer prefilled with the current note content (except account bootstrap notes).
 
 ## Payload
 

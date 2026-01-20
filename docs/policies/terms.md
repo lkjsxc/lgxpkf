@@ -7,7 +7,7 @@
 
 ## Acceptance
 
-- Creating an account or continuing a sign-in flow constitutes agreement to these Terms, the Privacy Policy, and the Community Guidelines.
+- Creating an account or continuing a sign-in flow constitutes agreement to these Terms, the Privacy Policy, and the Guideline.
 - The service enforces consent collection before account creation.
 
 ## Service Scope

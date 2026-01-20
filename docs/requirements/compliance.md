@@ -18,12 +18,12 @@
 - Disclose data categories, purposes, and storage region/cross-border transfers.
 - Provide a user request workflow for access, correction, and deletion.
 - Maintain incident response steps for PPC and user notifications.
-- Publish Terms of Service and Community Guidelines consistent with Japanese law.
+- Publish Terms of Service and Guideline consistent with Japanese law.
 - Require policy acceptance before account creation and sign-in completion.
 
 ## Policy Surface
 
-- Serve /terms, /privacy, and /community on the web UI.
+- Serve /terms, /privacy, and /guideline on the web UI.
 - Link to policy pages from signed-out and signed-in experiences.
 
 ## Auditability

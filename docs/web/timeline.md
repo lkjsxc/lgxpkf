@@ -11,3 +11,4 @@
 - Notes with newer versions are hidden from the timeline.
 - Auto-refresh runs after posting.
 - Signed-out root view uses GET /notes/random for a sample timeline.
+- Hover styling updates borders without moving cards.

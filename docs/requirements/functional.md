@@ -42,8 +42,8 @@
 - The root page explains lgxpkf when signed out and hides the Post button.
 - The note view includes follow/unfollow controls for the author.
 - Google sign-in renders with a high-contrast theme for dark mode and avoids flicker on load.
-- Users must accept Terms, Privacy, and Community Guidelines before sign-in can proceed.
-- Policy pages are available at /terms, /privacy, and /community.
+- Users must accept Terms, Privacy, and Guideline before sign-in can proceed.
+- Policy pages are available at /terms, /privacy, and /guideline.
 - The top bar is identical across pages and shows either Sign in or the account menu.
 - Account menu provides My posts and Sign out.
 - A sign-in page exists at /signin and handles policy consent.
