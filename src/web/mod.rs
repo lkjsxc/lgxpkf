@@ -8,6 +8,11 @@ use crate::state::AppState;
 use crate::urls::base32::decode_id;
 const HOME_TEMPLATE: &str = include_str!("home.html");
 const NOTE_TEMPLATE: &str = include_str!("note.html");
+const FAVICON: &[u8] = include_bytes!("assets/icon_256.ico");
+
+pub fn favicon() -> Response {
+    Response::bytes(200, "image/x-icon", FAVICON.to_vec())
+}
 pub fn home_html(config: &Config) -> String {
     render_home(&config.google_client_id, &login_uri(config))
 }
