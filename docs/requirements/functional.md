@@ -41,7 +41,7 @@
 - Version associations label old vs newer posts and appear under Associations.
 - The root page explains lgxpkf when signed out and hides the Post button.
 - The note view includes follow/unfollow controls for the author.
-- Google sign-in renders with a high-contrast theme for dark mode and avoids flicker on load.
+- Google sign-in renders with a white outline theme and avoids flicker on load.
 - Users must accept Terms, Privacy, and Guideline before sign-in can proceed.
 - Policy pages are available at /terms, /privacy, and /guideline.
 - The top bar is identical across pages and shows either Sign in or the account menu.

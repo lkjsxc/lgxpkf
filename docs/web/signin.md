@@ -14,5 +14,5 @@
 
 ## Theme
 
-- The sign-in view is always rendered in dark mode.
-- The Google button theme is forced to `filled_black` to avoid light-theme re-renders.
+- The sign-in view stays on the dark palette to match the rest of the site.
+- The Google button uses the white outline theme (`outline`) for a clean light appearance.

@@ -14,7 +14,7 @@
 - Background color is a solid, darker tone on html/body to avoid uneven brightness and prevent white flashes.
 - Cards and meta text enforce wrapping to prevent overflow beyond borders.
 - Policy links are visible on the sign-in page.
-- Color scheme is locked to dark to avoid light-mode flashes in embedded UI.
+- Color scheme stays dark overall, while the Google sign-in button uses a white outline theme.
 
 ## Authentication
 
