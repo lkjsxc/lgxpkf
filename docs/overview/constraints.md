@@ -17,3 +17,5 @@
 - Source files under 200 lines.
 - Functional style and performance-oriented patterns.
 - No backward compatibility requirements.
+- Distroless runtime images with baked migrations.
+- Images published automatically to GHCR.

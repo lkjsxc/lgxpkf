@@ -5,6 +5,7 @@
 - Versioned SQL migrations.
 - Immutable migrations once applied.
 - Run on startup when configured.
+- Container image includes `/app/db/migrations` for runtime execution.
 
 ## Recent Additions
 

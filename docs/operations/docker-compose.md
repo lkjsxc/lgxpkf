@@ -1,11 +1,16 @@
 # Docker Compose
 
+## Services
+
+- `app` runs the distroless image with baked migrations at `/app/db/migrations`.
+- `db` stores data in the named volume `db_data` (no bind mounts).
+
 ## Usage
 
-- Compose includes app and PostgreSQL services.
-- Environment variables control DB connection.
+- `docker compose build` builds the app image.
+- `docker compose up -d` starts the stack.
 
 ## Verification
 
-- Use compose to build and run.
-- Smoke test the HTTP server endpoint.
+- `GET /health` for process liveness.
+- `GET /ready` for database readiness.

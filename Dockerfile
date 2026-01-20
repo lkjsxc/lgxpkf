@@ -10,5 +10,7 @@ RUN find src -type f -exec touch {} + \
 FROM gcr.io/distroless/cc-debian12:nonroot
 WORKDIR /app
 COPY --from=builder /app/target/release/lgxpkf /app/lgxpkf
+COPY db/migrations /app/db/migrations
 ENV BIND_ADDR=0.0.0.0:8080
+ENV MIGRATIONS_PATH=/app/db/migrations
 CMD ["/app/lgxpkf"]

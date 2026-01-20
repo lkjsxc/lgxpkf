@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: lgxpkf
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     networks:
       - lgxpkf
   app:
@@ -25,13 +25,12 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       SESSION_TTL_SECS: 3600
       RUN_MIGRATIONS: "true"
-      MIGRATIONS_PATH: /app/db/migrations
     ports:
       - "8080:8080"
-    volumes:
-      - ./db/migrations:/app/db/migrations:ro
     networks:
       - lgxpkf
+volumes:
+  db_data:
 networks:
   lgxpkf:
     driver: bridge
