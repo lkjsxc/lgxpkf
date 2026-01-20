@@ -16,6 +16,7 @@ pub async fn route(req: Request, state: AppState) -> Response {
     let result = match (method, path) {
         ("GET", "/") => Ok(web::home(&state.config)),
         ("GET", "/favicon.ico") => Ok(web::favicon()),
+        ("GET", "/assets/note.js") => Ok(web::note_js()),
         ("GET", "/health") => health::get_health(req, state).await,
         ("GET", "/ready") => health::get_ready(req, state).await,
         ("POST", "/auth/google") => auth::post_google(req, state).await,

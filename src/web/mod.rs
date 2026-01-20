@@ -8,10 +8,14 @@ use crate::state::AppState;
 use crate::urls::base32::decode_id;
 const HOME_TEMPLATE: &str = include_str!("home.html");
 const NOTE_TEMPLATE: &str = include_str!("note.html");
+const NOTE_JS: &str = include_str!("note.js");
 const FAVICON: &[u8] = include_bytes!("assets/icon_256.ico");
 
 pub fn favicon() -> Response {
-    Response::bytes(200, "image/x-icon", FAVICON.to_vec())
+    Response::bytes(200, "image/vnd.microsoft.icon", FAVICON.to_vec())
+}
+pub fn note_js() -> Response {
+    Response::text(200, "text/javascript; charset=utf-8", NOTE_JS)
 }
 pub fn home_html(config: &Config) -> String {
     render_home(&config.google_client_id, &login_uri(config))
@@ -43,11 +47,11 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
     let chain_items = render_chain_items(&chain.prev, &chain.next);
     let chain_summary = format!("{} prev, {} next", chain.prev.len(), chain.next.len());
     let related_items = render_related_items(related, &chain.center.id);
-    let newer_version = render_newer_version(related, &chain.center.id);
     let client_id = escape_attr(&config.google_client_id);
     let login_uri = escape_attr(&login_uri(config));
     let note_id_raw = &chain.center.id;
     let note_id = escape_attr(note_id_raw);
+    let author_id = escape_attr(&chain.center.author.user_id.to_string());
     let note_description = escape_attr(&note_excerpt(&chain.center.value, 160));
     let note_url = escape_attr(&format!("{}/{}", config.public_base_url, note_id_raw));
     let base = NOTE_TEMPLATE
@@ -56,17 +60,16 @@ fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -> St
         .replace("{{NOTE_ID}}", &note_id)
         .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
+        .replace("{{NOTE_AUTHOR_ID}}", &author_id)
         .replace("{{CHAIN_SUMMARY}}", &escape_html(&chain_summary))
         .replace("{{NOTE_DESCRIPTION}}", &note_description)
         .replace("{{NOTE_URL}}", &note_url)
         .replace("{{CHAIN_ITEMS}}", "__LGXPKF_CHAIN_ITEMS__")
         .replace("{{RELATED_ITEMS}}", "__LGXPKF_RELATED_ITEMS__")
-        .replace("{{NEWER_VERSION}}", "__LGXPKF_NEWER_VERSION__")
         .replace("{{NOTE_BODY}}", "__LGXPKF_NOTE_BODY__")
         .replace("{{NOTE_RAW}}", "__LGXPKF_NOTE_RAW__");
     base.replace("__LGXPKF_CHAIN_ITEMS__", &chain_items)
         .replace("__LGXPKF_RELATED_ITEMS__", &related_items)
-        .replace("__LGXPKF_NEWER_VERSION__", &newer_version)
         .replace("__LGXPKF_NOTE_BODY__", &body_html)
         .replace("__LGXPKF_NOTE_RAW__", &escape_html(&markdown))
 }
@@ -104,46 +107,44 @@ fn render_chain_item(note: &crate::domain::Note, label: &str) -> String {
 fn render_related_items(related: &[RelatedEntry], center_id: &str) -> String {
     let items: Vec<String> = related
         .iter()
-        .filter(|entry| match entry.association.kind.as_str() {
-            "next" | "prev" => false,
-            "version" if entry.association.from_id == center_id => false,
-            _ => true,
-        })
-        .map(|entry| render_related_item(entry))
+        .filter(|entry| !matches!(entry.association.kind.as_str(), "next" | "prev"))
+        .map(|entry| render_related_item(entry, center_id))
         .collect();
     if items.is_empty() {
         return "<div class=\"empty\">No linked notes.</div>".to_string();
     }
     items.join("")
 }
-fn render_related_item(entry: &RelatedEntry) -> String {
+fn render_related_item(entry: &RelatedEntry, center_id: &str) -> String {
     let note_id = escape_attr(&entry.note.id);
     let summary = escape_html(&note_excerpt(&entry.note.value, 120));
     let created = escape_html(&entry.note.created_at);
-    let kind = escape_html(&entry.association.kind);
+    let kind = escape_html(&association_label(&entry.association, center_id));
+    let citation = escape_html(&entry.note.id);
+    let version_class = if entry.association.kind == "version" {
+        " related-item-version"
+    } else {
+        ""
+    };
     format!(
-        "<a class=\"related-item\" href=\"/{note_id}\">\
+        "<a class=\"related-item{version_class}\" href=\"/{note_id}\">\
          <span class=\"related-kind\">{kind}</span>\
          <span class=\"related-text\">{summary}</span>\
          <span class=\"related-meta\">{created}</span>\
+         <span class=\"related-cite\">Citation: {citation}</span>\
          </a>"
     )
 }
-fn render_newer_version(related: &[RelatedEntry], center_id: &str) -> String {
-    let newer = related.iter().find(|entry| {
-        entry.association.kind == "version" && entry.association.from_id == center_id
-    });
-    let Some(entry) = newer else { return String::new() };
-    let note_id = escape_attr(&entry.note.id);
-    let summary = escape_html(&note_excerpt(&entry.note.value, 96));
-    let created = escape_html(&entry.note.created_at);
-    format!(
-        "<div class=\"card version-card\" id=\"version-card\">\
-         <div class=\"card-title\">Newer version</div>\
-         <a class=\"version-link\" href=\"/{note_id}\">{summary}</a>\
-         <div class=\"helper mono\">{created} · {note_id}</div>\
-         </div>"
-    )
+fn association_label(association: &crate::domain::Association, center_id: &str) -> String {
+    if association.kind == "version" {
+        if association.from_id == center_id {
+            "VERSION (newer)".to_string()
+        } else {
+            "VERSION (old)".to_string()
+        }
+    } else {
+        association.kind.clone()
+    }
 }
 fn note_excerpt(value: &str, max_len: usize) -> String {
     let mut excerpt = String::new();

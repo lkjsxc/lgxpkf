@@ -17,6 +17,8 @@
 <meta name="twitter:description" content="{{NOTE_DESCRIPTION}}">
 <title>LGXPKF Note {{NOTE_ID}}</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="icon" type="image/x-icon" sizes="any" href="/favicon.ico">
 <link rel="canonical" href="{{NOTE_URL}}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,161 +27,13 @@
 <link rel="dns-prefetch" href="//fonts.gstatic.com">
 <link rel="dns-prefetch" href="//accounts.google.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<style>:root{--bg:#070b12;--ink:#e7eef8;--muted:#93a2bb;--panel:#0d1523;--panel-2:#0b1321;--line:#1d2738;--accent:#4aa3ff;--accent-2:#6ae3ff;--accent-3:#f0b35a;--shadow:rgba(3,6,12,0.6);--mono:"JetBrains Mono",monospace;--sans:"Space Grotesk",sans-serif;--serif:"Newsreader",serif;--radius-sm:8px;--radius-md:10px;--radius-lg:12px}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;font-family:var(--serif);color:var(--ink);background:var(--bg);min-height:100vh}body.modal-open{overflow:hidden}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:var(--sans)}.brand{font-size:1.05rem;letter-spacing:0.32em;font-weight:700}.account{display:flex;align-items:center;gap:12px}.account-info{display:flex;align-items:center;gap:10px;font-size:0.85rem}.account-info span{font-family:var(--mono);font-size:0.75rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}button{border:none;border-radius:var(--radius-md);padding:8px 16px;font-weight:600;background:var(--accent);color:#071019;cursor:pointer;font-family:var(--sans)}button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}button:disabled{opacity:0.6;cursor:not-allowed}main{max-width:1100px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:18px;animation:fade 0.6s ease both}.note-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:32px;box-shadow:0 24px 60px var(--shadow);display:flex;flex-direction:column;gap:18px;overflow-wrap:anywhere;word-break:break-word}.note-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:0.2em;font-size:0.7rem;color:var(--accent-2)}.meta{display:flex;flex-wrap:wrap;gap:12px;font-size:0.85rem;color:var(--muted);font-family:var(--sans);overflow-wrap:anywhere;word-break:break-word}.meta .mono{font-family:var(--mono)}.content-card{display:flex;flex-direction:column;gap:14px}.article-body{line-height:1.8;font-size:1.08rem;overflow-wrap:anywhere;word-break:break-word} .article-body h1,.article-body h2,.article-body h3{font-family:var(--sans);letter-spacing:-0.01em} .article-body pre{background:#070d16;color:#e7eef8;padding:16px;border-radius:var(--radius-md);overflow:auto;font-size:0.9rem} .article-body code{font-family:var(--mono)} .article-body blockquote{border-left:3px solid var(--accent);padding-left:16px;color:#c3cfdf}.card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:0 14px 34px var(--shadow);overflow-wrap:anywhere;word-break:break-word}.card-title{font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);font-family:var(--sans)}.meta-grid{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr);gap:8px;font-size:0.85rem;color:var(--muted)}.meta-grid .mono{font-family:var(--mono);color:var(--ink);overflow-wrap:anywhere;word-break:break-word}.action-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.chain-list,.related-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}.chain-item,.related-item{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:#070d16;color:var(--ink);overflow-wrap:anywhere;word-break:break-word}.chain-label,.related-kind{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent)}.chain-text,.related-text{font-size:0.85rem;color:var(--muted);font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word}.related-meta{font-size:0.75rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word} input,textarea{width:100%;margin-top:10px;border-radius:var(--radius-md);border:1px solid var(--line);padding:12px 14px;font-family:var(--mono);font-size:0.9rem;background:#070d16;color:var(--ink)} textarea{min-height:180px;resize:vertical;overflow-wrap:anywhere;word-break:break-word} label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);font-family:var(--sans)} .version-card{border-color:rgba(74,163,255,0.4);box-shadow:0 20px 50px rgba(74,163,255,0.2)} .version-link{display:block;margin-top:8px;font-family:var(--sans);font-size:1.05rem;color:var(--accent-2)} .helper{font-size:0.8rem;color:var(--muted);margin-top:8px;overflow-wrap:anywhere;word-break:break-word} .helper.mono{font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word} .empty{font-size:0.85rem;color:var(--muted)}.composer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,9,20,0.7);opacity:0;pointer-events:none;transition:opacity 0.2s ease}.composer.open{opacity:1;pointer-events:auto}.composer-panel{width:min(760px,92vw);background:#0b1321;border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;box-shadow:0 30px 70px rgba(3,6,12,0.5);animation:fade 0.4s ease both}.composer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.composer-head h2{margin:0;font-size:1.6rem} .composer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}@media (max-width:720px){.topbar{flex-direction:column;align-items:flex-start;gap:12px}.note-card{padding:26px}.meta-grid{grid-template-columns:1fr}}</style>
+<style>:root{--bg:#070b12;--ink:#e7eef8;--muted:#93a2bb;--panel:#0d1523;--panel-2:#0b1321;--line:#1d2738;--accent:#4aa3ff;--accent-2:#6ae3ff;--accent-3:#f0b35a;--shadow:rgba(3,6,12,0.6);--mono:"JetBrains Mono",monospace;--sans:"Space Grotesk",sans-serif;--serif:"Newsreader",serif;--radius-sm:8px;--radius-md:10px;--radius-lg:12px}*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;font-family:var(--serif);color:var(--ink);background:var(--bg);min-height:100vh}body.modal-open{overflow:hidden}a{text-decoration:none;color:inherit}.topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:var(--bg);border-bottom:1px solid var(--line);font-family:var(--sans)}.brand{font-size:1.05rem;letter-spacing:0.32em;font-weight:700}.account{display:flex;align-items:center;gap:12px}.account-info{display:flex;align-items:center;gap:10px;font-size:0.85rem}.account-info span{font-family:var(--mono);font-size:0.75rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}button{border:none;border-radius:var(--radius-md);padding:8px 16px;font-weight:600;background:var(--accent);color:#071019;cursor:pointer;font-family:var(--sans)}button.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}button:disabled{opacity:0.6;cursor:not-allowed}main{max-width:1100px;margin:0 auto;padding:40px 24px 120px;display:flex;flex-direction:column;gap:18px;animation:fade 0.6s ease both}.note-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:32px;box-shadow:0 24px 60px var(--shadow);display:flex;flex-direction:column;gap:18px;overflow-wrap:anywhere;word-break:break-word}.note-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:0.2em;font-size:0.7rem;color:var(--accent-2)}.meta{display:flex;flex-wrap:wrap;gap:12px;font-size:0.85rem;color:var(--muted);font-family:var(--sans);overflow-wrap:anywhere;word-break:break-word}.meta .mono{font-family:var(--mono)}.content-card{display:flex;flex-direction:column;gap:14px}.article-body{line-height:1.8;font-size:1.08rem;overflow-wrap:anywhere;word-break:break-word} .article-body h1,.article-body h2,.article-body h3{font-family:var(--sans);letter-spacing:-0.01em} .article-body pre{background:#070d16;color:#e7eef8;padding:16px;border-radius:var(--radius-md);overflow:auto;font-size:0.9rem} .article-body code{font-family:var(--mono)} .article-body blockquote{border-left:3px solid var(--accent);padding-left:16px;color:#c3cfdf}.card{background:var(--panel-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px;box-shadow:0 14px 34px var(--shadow);overflow-wrap:anywhere;word-break:break-word}.card-title{font-size:0.9rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);font-family:var(--sans)}.meta-grid{display:grid;grid-template-columns:minmax(110px,150px) minmax(0,1fr);gap:8px;font-size:0.85rem;color:var(--muted)}.meta-grid .mono{font-family:var(--mono);color:var(--ink);overflow-wrap:anywhere;word-break:break-word}.action-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}.chain-list,.related-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px}.chain-item,.related-item{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--line);background:#070d16;color:var(--ink);overflow-wrap:anywhere;word-break:break-word}.chain-label,.related-kind{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent)}.chain-text,.related-text{font-size:0.85rem;color:var(--muted);font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word}.related-meta{font-size:0.75rem;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}.related-item-version{border-color:rgba(240,179,90,0.5);box-shadow:0 18px 40px rgba(240,179,90,0.15)}.related-cite{font-size:0.72rem;color:var(--muted);font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word} input,textarea{width:100%;margin-top:10px;border-radius:var(--radius-md);border:1px solid var(--line);padding:12px 14px;font-family:var(--mono);font-size:0.9rem;background:#070d16;color:var(--ink)} textarea{min-height:180px;resize:vertical;overflow-wrap:anywhere;word-break:break-word} label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--muted);font-family:var(--sans)} .helper{font-size:0.8rem;color:var(--muted);margin-top:8px;overflow-wrap:anywhere;word-break:break-word} .helper.mono{font-family:var(--mono);overflow-wrap:anywhere;word-break:break-word} .empty{font-size:0.85rem;color:var(--muted)}.composer{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,9,20,0.7);opacity:0;pointer-events:none;transition:opacity 0.2s ease}.composer.open{opacity:1;pointer-events:auto}.composer-panel{width:min(760px,92vw);background:#0b1321;border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;box-shadow:0 30px 70px rgba(3,6,12,0.5);animation:fade 0.4s ease both}.composer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.composer-head h2{margin:0;font-size:1.6rem} .composer-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}@media (max-width:720px){.topbar{flex-direction:column;align-items:flex-start;gap:12px}.note-card{padding:26px}.meta-grid{grid-template-columns:1fr}}</style>
 </head>
-<body data-client-id="{{CLIENT_ID}}" data-login-uri="{{LOGIN_URI}}" data-note-id="{{NOTE_ID}}">
-<header class="topbar"><a class="brand" href="/">LGXPKF</a><div class="account"><div id="signin"></div><div class="account-info" id="account-info" hidden><span id="account-email"></span><button class="ghost" id="signout" type="button">Sign out</button></div></div></header>
-<main><div id="version-slot">{{NEWER_VERSION}}</div><article class="note-card"><div class="note-head"><div><div class="eyebrow">Note</div><div class="meta"><span>{{NOTE_CREATED_AT}}</span><span>{{NOTE_AUTHOR}}</span><span class="mono">{{NOTE_ID}}</span></div></div><button class="ghost" id="edit-note" type="button">Edit</button></div><div class="meta-grid"><div>Note ID</div><div class="mono">{{NOTE_ID}}</div><div>Author</div><div class="mono">{{NOTE_AUTHOR}}</div><div>Created</div><div class="mono">{{NOTE_CREATED_AT}}</div><div>Chain</div><div class="mono">{{CHAIN_SUMMARY}}</div></div><div class="action-row"><button class="ghost" id="copy-link" type="button">Copy link</button><a class="ghost" href="/notes/{{NOTE_ID}}">JSON</a></div><div class="helper" id="copy-status"></div></article><section class="card content-card"><div class="card-title">Content</div><div class="article-body">{{NOTE_BODY}}</div></section><section class="card"><div class="card-title">Associations</div><div class="related-list">{{RELATED_ITEMS}}</div></section><section class="card"><div class="card-title">Chain</div><div class="helper">{{CHAIN_SUMMARY}}</div><div class="chain-list">{{CHAIN_ITEMS}}</div></section><section class="card"><div class="card-title">Link note</div><form id="link-form"><label for="link-target">Target ID</label><input id="link-target" type="text" placeholder="Base32 note id"><label for="link-kind">Kind</label><input id="link-kind" type="text" list="link-kinds" placeholder="link"><datalist id="link-kinds"><option value="link"></option><option value="reply"></option><option value="quote"></option><option value="parent"></option><option value="child"></option></datalist><div class="action-row"><button id="link-submit" type="submit">Create link</button></div><div class="helper" id="link-status"></div></form></section></main>
+<body data-client-id="{{CLIENT_ID}}" data-login-uri="{{LOGIN_URI}}" data-note-id="{{NOTE_ID}}" data-author-id="{{NOTE_AUTHOR_ID}}">
+<header class="topbar"><a class="brand" href="/">LGXPKF</a><div class="account"><div id="signin" hidden></div><div class="account-info" id="account-info" hidden><span id="account-email"></span><button class="ghost" id="signout" type="button">Sign out</button></div></div></header>
+<main><article class="note-card"><div class="note-head"><div><div class="eyebrow">Note</div><div class="meta"><span>{{NOTE_CREATED_AT}}</span><span>{{NOTE_AUTHOR}}</span><span class="mono">{{NOTE_ID}}</span></div></div><button class="ghost" id="edit-note" type="button">Edit</button></div><div class="meta-grid"><div>Note ID</div><div class="mono">{{NOTE_ID}}</div><div>Author</div><div class="mono">{{NOTE_AUTHOR}}</div><div>Created</div><div class="mono">{{NOTE_CREATED_AT}}</div><div>Chain</div><div class="mono">{{CHAIN_SUMMARY}}</div></div><div class="action-row"><button class="ghost" id="copy-link" type="button">Copy link</button><a class="ghost" href="/notes/{{NOTE_ID}}">JSON</a></div><div class="action-row" id="follow-row" hidden><button class="ghost" id="follow-toggle" type="button">Follow</button><div class="helper" id="follow-status"></div></div><div class="helper" id="copy-status"></div></article><section class="card content-card"><div class="card-title">Content</div><div class="article-body">{{NOTE_BODY}}</div></section><section class="card"><div class="card-title">Associations</div><div class="related-list" id="related-list">{{RELATED_ITEMS}}</div></section><section class="card"><div class="card-title">Chain</div><div class="helper">{{CHAIN_SUMMARY}}</div><div class="chain-list">{{CHAIN_ITEMS}}</div></section><section class="card"><div class="card-title">Link note</div><form id="link-form"><label for="link-target">Target ID</label><input id="link-target" type="text" placeholder="Base32 note id"><label for="link-kind">Kind</label><input id="link-kind" type="text" list="link-kinds" placeholder="link"><datalist id="link-kinds"><option value="link"></option><option value="reply"></option><option value="quote"></option><option value="parent"></option><option value="child"></option></datalist><div class="action-row"><button id="link-submit" type="submit">Create link</button></div><div class="helper" id="link-status"></div></form></section></main>
 <div class="composer" id="editor" aria-hidden="true"><div class="composer-panel"><div class="composer-head"><h2>Edit note</h2><button class="ghost" id="close-editor" type="button">Close</button></div><form id="edit-form"><label for="edit-value">Note text</label><textarea id="edit-value" placeholder="Markdown supported. Unlimited length; chained automatically.">{{NOTE_RAW}}</textarea><div class="composer-actions"><div class="helper" id="edit-status">Idle.</div><button id="edit-submit" type="submit">Publish version</button></div></form></div></div>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-(() => {
-  const el = (id) => document.getElementById(id);
-  const state = { token: localStorage.getItem("lgxpkf.session"), user: null };
-  const clientId = document.body.dataset.clientId || "";
-  const loginUri = document.body.dataset.loginUri || "";
-  const noteId = document.body.dataset.noteId || "";
-  const signoutBtn = el("signout");
-  const signinWrap = el("signin");
-  const accountInfo = el("account-info");
-  const copyBtn = el("copy-link");
-  const copyStatus = el("copy-status");
-  const linkForm = el("link-form");
-  const linkTarget = el("link-target");
-  const linkKind = el("link-kind");
-  const linkStatus = el("link-status");
-  const editBtn = el("edit-note");
-  const editor = el("editor");
-  const editForm = el("edit-form");
-  const editValue = el("edit-value");
-  const editStatus = el("edit-status");
-  const closeEditor = el("close-editor");
-  const versionSlot = el("version-slot");
-  const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#39;");
-  const setSignedIn = (signedIn) => {
-    signoutBtn.disabled = !signedIn;
-    signoutBtn.hidden = !signedIn;
-    editBtn.disabled = !signedIn;
-    accountInfo.hidden = !signedIn;
-    signinWrap.hidden = signedIn;
-    [linkForm, editForm].forEach((form) => {
-      if (!form) { return; }
-      form.querySelectorAll("input, textarea, button").forEach((node) => {
-        node.disabled = !signedIn;
-      });
-    });
-  };
-  const storeToken = (token) => {
-    state.token = token;
-    if (token) { localStorage.setItem("lgxpkf.session", token); }
-    else { localStorage.removeItem("lgxpkf.session"); }
-    setSignedIn(Boolean(token));
-  };
-  const api = async (path, options = {}) => {
-    const headers = options.headers || {};
-    if (state.token) { headers.Authorization = `Bearer ${state.token}`; }
-    const response = await fetch(path, { ...options, headers });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) { throw new Error(data.message || "Request failed"); }
-    return data;
-  };
-  const refreshSession = async () => {
-    if (!state.token) { setSignedIn(false); return; }
-    try {
-      const data = await api("/auth/me", { headers: {} });
-      state.user = data.user;
-      el("account-email").textContent = data.user.email;
-      setSignedIn(true);
-    } catch (_) {
-      storeToken(null);
-    }
-  };
-  const handleCredential = async (payload) => {
-    try {
-      const data = await api("/auth/google", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id_token: payload.credential }) });
-      storeToken(data.token);
-      state.user = data.user;
-      el("account-email").textContent = data.user.email;
-    } catch (_) {
-      storeToken(null);
-    }
-  };
-  const renderVersionCard = (note) => {
-    if (!note || !versionSlot) { return; }
-    const summary = esc(note.value || "New version");
-    const created = esc(note.created_at || "");
-    const id = esc(note.id || "");
-    versionSlot.innerHTML = `<div class="card version-card" id="version-card"><div class="card-title">Newer version</div><a class="version-link" href="/${id}">${summary}</a><div class="helper mono">${created} · ${id}</div></div>`;
-  };
-  const openEditor = () => {
-    if (!state.token) { editStatus.textContent = "Sign in to edit."; return; }
-    editor.classList.add("open");
-    editor.setAttribute("aria-hidden", "false");
-    document.body.classList.add("modal-open");
-    editValue.focus();
-  };
-  const closeEdit = () => {
-    editor.classList.remove("open");
-    editor.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("modal-open");
-  };
-  copyBtn.addEventListener("click", async () => {
-    if (!navigator.clipboard) { copyStatus.textContent = "Clipboard unavailable."; return; }
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      copyStatus.textContent = "Link copied.";
-    } catch (_) {
-      copyStatus.textContent = "Copy failed.";
-    }
-  });
-  linkForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!state.token) { linkStatus.textContent = "Sign in to link notes."; return; }
-    const target = linkTarget.value.trim();
-    const kind = (linkKind.value || "link").trim();
-    if (!target) { linkStatus.textContent = "Target note id required."; return; }
-    if (!kind) { linkStatus.textContent = "Association kind required."; return; }
-    linkStatus.textContent = "Linking...";
-    try {
-      await api("/associations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, from_id: noteId, to_id: target }) });
-      linkStatus.textContent = "Link created. Reload to view.";
-      linkTarget.value = "";
-    } catch (err) {
-      linkStatus.textContent = err.message;
-    }
-  });
-  editForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (!state.token) { editStatus.textContent = "Sign in to edit."; return; }
-    const value = editValue.value.trim();
-    if (!value) { editStatus.textContent = "Note text required."; return; }
-    editStatus.textContent = "Publishing version...";
-    try {
-      const post = await api("/notes", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value }) });
-      const root = post.root || {};
-      if (!root.id) { throw new Error("Missing version id"); }
-      await api("/associations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind: "version", from_id: noteId, to_id: root.id }) });
-      renderVersionCard(root);
-      editStatus.textContent = "Version published.";
-      closeEdit();
-    } catch (err) {
-      editStatus.textContent = err.message;
-    }
-  });
-  editor.addEventListener("click", (event) => { if (event.target === editor) { closeEdit(); } });
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && editor.classList.contains("open")) { closeEdit(); } });
-  editBtn.addEventListener("click", openEditor);
-  closeEditor.addEventListener("click", closeEdit);
-  signoutBtn.addEventListener("click", () => { storeToken(null); state.user = null; el("account-email").textContent = ""; });
-  window.addEventListener("load", () => {
-    if (!clientId) { setSignedIn(false); return; }
-    if (!loginUri) { setSignedIn(false); return; }
-    if (!window.google || !google.accounts || !google.accounts.id) { setSignedIn(false); return; }
-    google.accounts.id.initialize({ client_id: clientId, callback: handleCredential, ux_mode: "redirect", login_uri: loginUri, state: `${window.location.pathname}${window.location.search}` });
-    google.accounts.id.renderButton(signinWrap, { theme: "outline", size: "large", text: "signin_with" });
-    refreshSession();
-  });
-})();
-</script>
+<script src="/assets/note.js" defer></script>
 </body>
 </html>
