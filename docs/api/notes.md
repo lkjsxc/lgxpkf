@@ -17,6 +17,9 @@
 - GET /notes?author={id}&from={ts}&to={ts}
   - returns: list of notes
 
+- GET /notes/random?limit={n}
+  - returns: list of random notes
+
 ## Note View
 
 - GET /{base32_id}

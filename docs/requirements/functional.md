@@ -44,6 +44,10 @@
 - Google sign-in renders with a high-contrast theme for dark mode and avoids flicker on load.
 - Users must accept Terms, Privacy, and Community Guidelines before sign-in can proceed.
 - Policy pages are available at /terms, /privacy, and /community.
+- The top bar is identical across pages and shows either Sign in or the account menu.
+- Account menu provides My posts and Sign out.
+- A sign-in page exists at /signin and handles policy consent.
+- Signed-out root view shows a random timeline.
 
 ## APIs
 

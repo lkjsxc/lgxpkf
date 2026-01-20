@@ -1,0 +1,13 @@
+# Sign-in Page
+
+## Purpose
+
+- Centralized sign-in experience at `/signin`.
+- Policy acceptance is collected before account creation.
+- Google Identity Services is loaded only on the sign-in page.
+
+## Flow
+
+- Signed-out users are directed to `/signin?next={path}`.
+- Sign-in page stores policy acceptance in local storage.
+- On success, the session token is saved and the user is redirected to `next`.
