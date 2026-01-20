@@ -7,13 +7,8 @@ COPY src ./src
 RUN find src -type f -exec touch {} + \
 	&& cargo build --release
 
-FROM debian:bookworm-slim
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends libssl3 ca-certificates \
-	&& rm -rf /var/lib/apt/lists/*
-RUN useradd -m appuser
+FROM gcr.io/distroless/cc-debian12:nonroot
 WORKDIR /app
 COPY --from=builder /app/target/release/lgxpkf /app/lgxpkf
-USER appuser
 ENV BIND_ADDR=0.0.0.0:8080
 CMD ["/app/lgxpkf"]
