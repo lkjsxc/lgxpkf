@@ -16,8 +16,9 @@
 - The note body is presented as a single continuous document without visible segment boundaries.
 - Action row at the bottom of the note card contains Copy link, Copy JSON, Follow, Edit.
 - Edit action opens a modal composer prefilled with the current post content (except account bootstrap notes).
-- Edit is disabled when the note already has a newer version.
-- Link note form supports kinds: link, reply, quote, parent, child, next, prev.
+- Edit is disabled when the note already has a newer version or the viewer is not the author.
+- Link note form supports kinds: link, reply, quote, parent, child.
+- Link note form is disabled for non-authors and accepts note URLs for targets.
 - The palette is a darker, solid-color base with slightly reduced corner roundness.
 - Card content enforces text wrapping to avoid overflow.
 - Reply associations are labeled as Reply to or Reply from depending on direction.

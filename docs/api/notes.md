@@ -8,6 +8,9 @@
   - returns: { root: note, segments: [base32_id] }
   - server links the root note to the poster account note (association kind: author).
 
+- POST /notes/{base32_id}/versions
+  - creates a new version of the specified note (see docs/api/versions.md).
+
 - GET /notes/{base32_id}
   - returns: note (JSON)
 

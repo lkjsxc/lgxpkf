@@ -9,6 +9,8 @@
 - Shortcut: press Ctrl+Enter to submit the composer.
 - POST /notes with the session token in the Authorization header.
 - On note pages, Edit opens the same composer prefilled with the current note content (except account bootstrap notes).
+- Edit submits via POST /notes/{id}/versions and is allowed only for the note author.
+- Ctrl+Enter also submits the edit form.
 
 ## Payload
 

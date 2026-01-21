@@ -14,9 +14,10 @@
 
 ## Associations
 
-- Notes can be linked by a kind and two note IDs.
-- Associations can represent ordering, versioning, replies, and hierarchy.
-- Version associations connect older notes to newer replacements.
+- Notes can be linked by a kind and two note IDs or URLs (target only).
+- User-created associations require ownership of the source note.
+- User associations are limited to link, reply, quote, parent, child kinds.
+- Version associations connect older notes to newer replacements and are created atomically.
 - Notes with an existing newer version cannot create another version link.
 
 ## Follows
@@ -49,6 +50,8 @@
 - Account menu provides My posts and Sign out.
 - A sign-in page exists at /signin and handles policy consent.
 - Signed-out root view shows a random timeline.
+- Timeline cards show the Google account icon plus reply/share actions.
+- Ctrl+Enter submits both composer and edit forms.
 
 ## APIs
 
