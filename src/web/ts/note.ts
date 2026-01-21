@@ -7,18 +7,19 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
 (() => {
   const state: SessionState = { token: readStorage("lgxpkf.session"), user: null };
-  const noteId = document.body.dataset.noteId || "", authorId = document.body.dataset.authorId || "", accountNoteId = document.body.dataset.accountNoteId || "";
+  const noteId = document.body.dataset.noteId || "", postId = document.body.dataset.postId || noteId, authorId = document.body.dataset.authorId || "", accountNoteId = document.body.dataset.accountNoteId || "";
   let hasNewerVersion = document.body.dataset.hasNewerVersion === "true";
   const editBtn = getById<HTMLButtonElement>("edit-note"), editor = getById<HTMLElement>("editor"), editForm = getById<HTMLFormElement>("edit-form"), editValue = getById<HTMLTextAreaElement>("edit-value"), editStatus = getById<HTMLElement>("edit-status"), closeEditor = getById<HTMLButtonElement>("close-editor"), relatedList = getById<HTMLElement>("related-list"), versionCard = getById<HTMLElement>("version-card"), versionList = getById<HTMLElement>("version-list"), copyBtn = getById<HTMLButtonElement>("copy-link"), copyJsonBtn = getById<HTMLButtonElement>("copy-json"), copyStatus = getById<HTMLElement>("copy-status"), followToggle = getById<HTMLButtonElement>("follow-toggle"), followStatus = getById<HTMLElement>("follow-status"), linkForm = getById<HTMLFormElement>("link-form"), linkTarget = getById<HTMLInputElement>("link-target"), linkKind = getById<HTMLInputElement>("link-kind"), linkStatus = getById<HTMLElement>("link-status");
-  const allowedKinds = new Set(["link", "reply", "quote", "parent", "child"]);
+  const blockedKinds = new Set(["version", "author"]);
 
-  const isAccountNote = (): boolean => Boolean(accountNoteId && accountNoteId === noteId);
+  const isAccountNote = (): boolean => Boolean(accountNoteId && accountNoteId === postId);
   const isOwner = (): boolean => Boolean(state.user && authorId && state.user.user_id === authorId);
-  const canEdit = (): boolean => Boolean(state.token) && isOwner() && !isAccountNote();
-  const canLink = (): boolean => Boolean(state.token) && isOwner() && !isAccountNote();
+  const canEdit = (): boolean => Boolean(state.token) && isOwner() && !isAccountNote() && Boolean(postId);
+  const canLink = (): boolean => Boolean(state.token) && isOwner() && !isAccountNote() && Boolean(postId);
   const canCreateVersion = (): boolean => canEdit() && !hasNewerVersion;
   const editLockMessage = (): string => {
     if (canCreateVersion()) return "";
+    if (!postId) return "Missing post id.";
     if (!state.token) return "Sign in at /signin.";
     if (!isOwner()) return "Only the author can edit this note.";
     if (isAccountNote()) return "Editing disabled for this note.";
@@ -27,6 +28,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
   };
   const linkLockMessage = (): string => {
     if (canLink()) return "";
+    if (!postId) return "Missing post id.";
     if (!state.token) return "Sign in at /signin.";
     if (!isOwner()) return "Only the author can link this note.";
     if (isAccountNote()) return "Linking disabled for this note.";
@@ -130,10 +132,10 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
     const kind = (linkKind.value || "link").trim().toLowerCase();
     if (!target) { setMessage(linkStatus, "Target note id or URL required."); return; }
     if (!kind) { setMessage(linkStatus, "Association kind required."); return; }
-    if (!allowedKinds.has(kind)) { setMessage(linkStatus, kind === "version" ? "Use Edit for versions." : "Unsupported association kind."); return; }
+    if (blockedKinds.has(kind)) { setMessage(linkStatus, kind === "version" ? "Use Edit for versions." : "Unsupported association kind."); return; }
     setMessage(linkStatus, "Linking...");
     try {
-      await apiJson("/associations", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, from_id: noteId, to_id: target }) });
+      await apiJson("/associations", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, from_id: postId, to_id: target }) });
       setMessage(linkStatus, "Link created. Reload to view.");
       linkTarget.value = "";
     } catch (err) {
@@ -148,7 +150,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
     if (!value) { setMessage(editStatus, "Note text required."); return; }
     setMessage(editStatus, "Publishing version...");
     try {
-      const root = await apiJsonDecoded(`/notes/${noteId}/versions`, state.token, decodePostNote, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value }) });
+      const root = await apiJsonDecoded(`/notes/${postId}/versions`, state.token, decodePostNote, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value }) });
       if (!root) throw new Error("Missing version id");
       insertVersionItem(root);
       hasNewerVersion = true; setSignedIn(Boolean(state.token));

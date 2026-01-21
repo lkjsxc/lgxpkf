@@ -10,11 +10,14 @@ pub fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -
     let body_html = render_markdown(&markdown);
     let chain_items = render_chain_items(&chain.prev, &chain.next);
     let chain_summary = format!("{} prev, {} next", chain.prev.len(), chain.next.len());
-    let related_items = render_related_items(related, &chain.center.id);
-    let version_section = render_version_section(related, &chain.center.id);
+    let post_note = chain.prev.first().unwrap_or(&chain.center);
+    let post_id_raw = &post_note.id;
+    let post_id = escape_attr(post_id_raw);
+    let related_items = render_related_items(related, post_id_raw);
+    let version_section = render_version_section(related, post_id_raw);
     let has_newer_version = related
         .iter()
-        .any(|entry| entry.association.kind == "version" && entry.association.from_id == chain.center.id);
+        .any(|entry| entry.association.kind == "version" && entry.association.from_id == *post_id_raw);
     let has_newer_version = if has_newer_version { "true" } else { "false" };
     let client_id = escape_attr(&config.google_client_id);
     let login_uri = escape_attr(&login_uri(config));
@@ -28,6 +31,7 @@ pub fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -
         .replace("{{CLIENT_ID}}", &client_id)
         .replace("{{LOGIN_URI}}", &login_uri)
         .replace("{{NOTE_ID}}", &note_id)
+        .replace("{{POST_ID}}", &post_id)
         .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
         .replace("{{NOTE_AUTHOR_ID}}", &author_id)

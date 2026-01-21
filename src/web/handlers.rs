@@ -62,7 +62,13 @@ pub async fn note_page(
     let note_id = parse_note_id(&raw)
         .map_err(|_| ApiError::not_found("not_found", "Route not found"))?;
     let chain = fetch_chain(&state, note_id).await?;
-    let related = fetch_related(&state, note_id).await?;
+    let post_id = chain
+        .prev
+        .first()
+        .map(|note| note.id.as_str())
+        .unwrap_or(&chain.center.id);
+    let post_id = parse_note_id(post_id).map_err(|_| ApiError::internal())?;
+    let related = fetch_related(&state, post_id).await?;
     Ok(HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(note_html(&state.config, &chain, &related.related)))
