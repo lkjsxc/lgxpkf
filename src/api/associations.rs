@@ -115,7 +115,7 @@ fn parse_kind(value: &str) -> Result<String, ApiError<serde_json::Value>> {
 fn is_allowed_kind(kind: &str) -> bool {
     matches!(
         kind,
-        "link" | "reply" | "quote" | "parent" | "child" | "next" | "prev"
+        "link" | "reply" | "quote" | "parent" | "child" | "next" | "prev" | "version"
     )
 }
 
@@ -145,6 +145,13 @@ fn ensure_association_allowed(
         return Err(ApiError::unprocessable(
             "account_note_locked",
             "Account notes cannot create associations",
+            None,
+        ));
+    }
+    if kind == "version" && is_account_note(user, to_note) {
+        return Err(ApiError::unprocessable(
+            "account_note_locked",
+            "Account notes cannot be versioned",
             None,
         ));
     }

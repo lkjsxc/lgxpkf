@@ -15,6 +15,6 @@
 - Prepared statements and parameter binding.
 - 32-byte IDs with high entropy.
 - Ownership checks for association creation and version edits.
-- System-only kinds are rejected on the public association endpoint.
+- System-only kind (author) is rejected on the public association endpoint.
 - Structural kinds (parent/child/next/prev/version) require same-author notes and are ignored across authors.
 - Versioning resolves to the chain head to avoid orphaned edits.

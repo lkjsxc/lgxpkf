@@ -8,6 +8,7 @@
 - The link form is only enabled for the author of the current note.
 - Target accepts a base32 note id or full note URL.
 - Structural kinds (parent/child/next/prev) require notes by the same author.
+- Version links are allowed for the note author and show as newer/older entries.
 - next and prev are used to build recursive note chains on the note page.
 - Association cards wrap text and use a multi-column grid layout on desktop.
 - Association cards show citations (note IDs) and distinguish newer vs older versions.

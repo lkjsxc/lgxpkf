@@ -10,7 +10,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
   const noteId = document.body.dataset.noteId || "", postId = document.body.dataset.postId || noteId, noteAuthorId = document.body.dataset.authorId || "", postAuthorId = document.body.dataset.postAuthorId || noteAuthorId, accountNoteId = document.body.dataset.accountNoteId || "";
   let hasNewerVersion = document.body.dataset.hasNewerVersion === "true";
   const editBtn = getById<HTMLButtonElement>("edit-note"), editor = getById<HTMLElement>("editor"), editForm = getById<HTMLFormElement>("edit-form"), editValue = getById<HTMLTextAreaElement>("edit-value"), editStatus = getById<HTMLElement>("edit-status"), closeEditor = getById<HTMLButtonElement>("close-editor"), relatedList = getById<HTMLElement>("related-list"), versionCard = getById<HTMLElement>("version-card"), versionList = getById<HTMLElement>("version-list"), copyBtn = getById<HTMLButtonElement>("copy-link"), copyJsonBtn = getById<HTMLButtonElement>("copy-json"), copyStatus = getById<HTMLElement>("copy-status"), followToggle = getById<HTMLButtonElement>("follow-toggle"), followStatus = getById<HTMLElement>("follow-status"), linkForm = getById<HTMLFormElement>("link-form"), linkTarget = getById<HTMLInputElement>("link-target"), linkKind = getById<HTMLInputElement>("link-kind"), linkStatus = getById<HTMLElement>("link-status");
-  const blockedKinds = new Set(["version", "author"]);
+  const blockedKinds = new Set(["author"]);
 
   const isAccountNote = (): boolean => Boolean(accountNoteId && accountNoteId === postId);
   const isOwner = (): boolean => Boolean(state.user && postAuthorId && state.user.user_id === postAuthorId);
@@ -126,13 +126,18 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
   if (linkForm) linkForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (!canLink()) { setMessage(linkStatus, linkLockMessage()); return; }
     if (!linkTarget || !linkKind) { setMessage(linkStatus, "Link form unavailable."); return; }
     const target = normalizeTarget(linkTarget.value);
     const kind = (linkKind.value || "link").trim().toLowerCase();
     if (!target) { setMessage(linkStatus, "Target note id or URL required."); return; }
     if (!kind) { setMessage(linkStatus, "Association kind required."); return; }
-    if (blockedKinds.has(kind)) { setMessage(linkStatus, kind === "version" ? "Use Edit for versions." : "Unsupported association kind."); return; }
+    if (blockedKinds.has(kind)) { setMessage(linkStatus, "Unsupported association kind."); return; }
+    if (kind === "version") {
+      if (!canCreateVersion()) { setMessage(linkStatus, editLockMessage()); return; }
+    } else if (!canLink()) {
+      setMessage(linkStatus, linkLockMessage());
+      return;
+    }
     setMessage(linkStatus, "Linking...");
     try {
       await apiJson("/associations", state.token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ kind, from_id: postId, to_id: target }) });
