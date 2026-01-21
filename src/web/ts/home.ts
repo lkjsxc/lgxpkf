@@ -1,5 +1,6 @@
 import { apiJson } from "./shared/api";
-import { escapeHtml, getById, isTypingTarget, setMessage, setModalState } from "./shared/dom";
+import { getById, isTypingTarget, setMessage, setModalState } from "./shared/dom";
+import { bindNoteCardActions, renderNoteCard } from "./shared/note_cards";
 import { readStorage } from "./shared/storage";
 import { decodeNotes } from "./shared/types";
 
@@ -18,14 +19,8 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
     if (timelineBlock) timelineBlock.hidden = !signedIn;
   };
 
-  const renderNote = (note: LgxpkfNote): HTMLAnchorElement => {
-    const card = document.createElement("a");
-    const author = note.author?.email || "Unknown";
-    card.className = "note";
-    card.href = `/${escapeHtml(note.id || "")}`;
-    card.innerHTML = `<div class="note-meta"><span>${escapeHtml(note.created_at || "")}</span><span>${escapeHtml(author)}</span></div><div class="note-value">${escapeHtml(note.value || "")}</div>`;
-    return card;
-  };
+  if (randomList) bindNoteCardActions(randomList);
+  if (timelineList) bindNoteCardActions(timelineList);
 
   const loadList = async (path: string, list: HTMLElement | null, status: HTMLElement | null, emptyText: string): Promise<void> => {
     if (!list || !status) return;
@@ -39,7 +34,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
         return;
       }
       status.textContent = "";
-      items.forEach((note) => list.appendChild(renderNote(note)));
+      items.forEach((note) => list.appendChild(renderNoteCard(note)));
     } catch (err) {
       status.textContent = err instanceof Error ? err.message : "Timeline failed.";
     }
@@ -62,7 +57,7 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
         return;
       }
       randomStatus.textContent = "";
-      items.forEach((note) => randomList.appendChild(renderNote(note)));
+      items.forEach((note) => randomList.appendChild(renderNoteCard(note)));
     } catch (_) {
       randomStatus.textContent = "Random timeline unavailable.";
     }

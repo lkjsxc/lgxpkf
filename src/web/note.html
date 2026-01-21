@@ -143,8 +143,8 @@ label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(
   <section class="card">
     <div class="card-title">Link note</div>
     <form id="link-form">
-      <label for="link-target">Target ID</label>
-      <input id="link-target" type="text" placeholder="Base32 note id">
+      <label for="link-target">Target ID or URL</label>
+      <input id="link-target" type="text" placeholder="Base32 note id or note URL">
       <label for="link-kind">Kind</label>
       <input id="link-kind" type="text" list="link-kinds" placeholder="link">
       <datalist id="link-kinds">
@@ -153,8 +153,6 @@ label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(
         <option value="quote"></option>
         <option value="parent"></option>
         <option value="child"></option>
-        <option value="next"></option>
-        <option value="prev"></option>
       </datalist>
       <div class="action-row"><button id="link-submit" type="submit">Create link</button></div>
       <div class="helper" id="link-status"></div>
