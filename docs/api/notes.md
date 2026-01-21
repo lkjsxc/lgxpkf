@@ -10,6 +10,7 @@
 
 - POST /notes/{base32_id}/versions
   - creates a new version of the specified note (see docs/api/versions.md).
+  - the head note is used when the id is part of a chain.
 
 - GET /notes/{base32_id}
   - returns: note (JSON)

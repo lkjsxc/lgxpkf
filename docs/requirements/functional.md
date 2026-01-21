@@ -16,9 +16,11 @@
 
 - Notes can be linked by a kind and two note IDs or URLs (target only).
 - User-created associations require ownership of the source note.
-- User associations are limited to link, reply, quote, parent, child kinds.
+- User associations are limited to link, reply, quote, parent, child, next, prev kinds.
+- parent/child/next/prev require both notes to share the same author.
+- Account notes cannot be used as association sources.
 - Version associations connect older notes to newer replacements and are created atomically.
-- Notes with an existing newer version cannot create another version link.
+- Notes with an existing newer version (post head) cannot create another version link.
 
 ## Follows
 
@@ -41,6 +43,7 @@
 - The UI authenticates via Google and uses the JSON API.
 - Related notes and version tools are displayed on the note view, with citations.
 - Version associations label old vs newer posts and appear under Associations.
+- Version edits target the post head even when viewing a chained segment.
 - The root page explains lgxpkf when signed out and hides the Post button.
 - The note view includes follow/unfollow controls for the author.
 - Google sign-in renders with a white outline theme and avoids flicker on load.

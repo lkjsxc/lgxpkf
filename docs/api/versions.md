@@ -7,7 +7,8 @@
   - body: { value: string }
   - behavior:
     - Only the author of the source note can create a version.
-    - Rejects if the source note already has a newer version.
+    - Uses the head note when the source is part of a chain.
+    - Rejects if the head note already has a newer version.
     - Creates the new note chain and the version association atomically.
   - returns: { root: note, segments: [base32_id] }
 

@@ -23,5 +23,7 @@ An association links two notes with a single semantic kind token.
 ## Ownership Rules
 
 - User-created associations require the caller to own the source note (from_id).
-- System-only kinds (author, next, prev, version) are created by the backend.
+- Cross-author associations are limited to link, reply, quote.
+- parent/child/next/prev require both notes to share the same author.
+- System-only kinds (author, version) are created by the backend.
 - Version associations always connect two notes by the same author.
