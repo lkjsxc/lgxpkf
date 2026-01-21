@@ -29,16 +29,72 @@ pub async fn post_notes(
     let payload: CreateNote = parse_json(body.as_ref())?;
     let segments = split_note_value(&payload.value, 1024);
     let bytes: Vec<Vec<u8>> = segments.iter().map(|value| value.as_bytes().to_vec()).collect();
-    let account_note_id = user
-        .account_note_id
-        .as_deref()
-        .and_then(|value| parse_note_id(value).ok())
-        .ok_or_else(ApiError::internal)?;
+    let account_note_id = account_note_id(&user)?;
     let (root, segments) = state
         .storage
         .create_note_chain(&bytes, user.user_id, account_note_id)
         .await
         .map_err(|_| ApiError::internal())?;
+
+    Ok(HttpResponse::Created().json(PostResponse { root, segments }))
+}
+
+pub async fn post_note_version(
+    path: web::Path<String>,
+    req: HttpRequest,
+    body: web::Bytes,
+    state: web::Data<AppState>,
+) -> Result<HttpResponse, ApiError<serde_json::Value>> {
+    let user = require_user(&req, &state).await?;
+    let source_id = parse_note_id(path.as_str())?;
+    let payload: CreateNote = parse_json(body.as_ref())?;
+
+    let source_note = state
+        .storage
+        .find_note(source_id)
+        .await
+        .map_err(|_| ApiError::internal())?
+        .ok_or_else(|| ApiError::not_found("note_not_found", "Note not found"))?;
+
+    if source_note.author.user_id != user.user_id {
+        return Err(ApiError::forbidden(
+            "edit_forbidden",
+            "Cannot edit this note",
+        ));
+    }
+
+    let locked = state
+        .storage
+        .is_account_note_id(source_id)
+        .await
+        .map_err(|_| ApiError::internal())?;
+    if locked {
+        return Err(ApiError::unprocessable(
+            "account_note_locked",
+            "Account bootstrap notes cannot be versioned",
+            None,
+        ));
+    }
+
+    let segments = split_note_value(&payload.value, 1024);
+    let bytes: Vec<Vec<u8>> = segments.iter().map(|value| value.as_bytes().to_vec()).collect();
+    let account_note_id = account_note_id(&user)?;
+
+    let (root, segments) = state
+        .storage
+        .create_note_version_chain(source_id, &bytes, user.user_id, account_note_id)
+        .await
+        .map_err(|err| {
+            if let Some(crate::storage::AssociationInsertError::VersionExists) =
+                err.downcast_ref::<crate::storage::AssociationInsertError>()
+            {
+                return ApiError::conflict(
+                    "version_exists",
+                    "Newer version already exists for this note",
+                );
+            }
+            ApiError::internal()
+        })?;
 
     Ok(HttpResponse::Created().json(PostResponse { root, segments }))
 }
@@ -115,4 +171,11 @@ fn split_note_value(value: &str, max_bytes: usize) -> Vec<String> {
         chunks.push(value[start..].to_string());
     }
     chunks
+}
+
+fn account_note_id(user: &crate::domain::User) -> Result<crate::domain::NoteId, ApiError<serde_json::Value>> {
+    user.account_note_id
+        .as_deref()
+        .and_then(|value| parse_note_id(value).ok())
+        .ok_or_else(ApiError::internal)
 }

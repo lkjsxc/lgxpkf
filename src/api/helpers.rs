@@ -83,6 +83,29 @@ pub fn parse_note_id(value: &str) -> Result<NoteId, ApiError<serde_json::Value>>
         .ok_or_else(|| ApiError::bad_request("invalid_id", "Invalid note id", None))
 }
 
+pub fn parse_note_reference(value: &str) -> Result<NoteId, ApiError<serde_json::Value>> {
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        return Err(ApiError::bad_request("invalid_id", "Invalid note id", None));
+    }
+    if is_base32_url(trimmed) {
+        return parse_note_id(trimmed);
+    }
+    let mut candidate = trimmed;
+    if let Some((left, _)) = candidate.split_once('#') {
+        candidate = left;
+    }
+    if let Some((left, _)) = candidate.split_once('?') {
+        candidate = left;
+    }
+    let candidate = candidate.trim_end_matches('/');
+    let segment = candidate.rsplit('/').next().unwrap_or("");
+    if segment.is_empty() || !is_base32_url(segment) {
+        return Err(ApiError::bad_request("invalid_id", "Invalid note id", None));
+    }
+    parse_note_id(segment)
+}
+
 pub fn parse_uuid(
     value: &str,
     code: &'static str,

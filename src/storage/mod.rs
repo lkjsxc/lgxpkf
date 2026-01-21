@@ -47,6 +47,32 @@ impl Storage {
         let segments = ids.iter().map(|id| encode_id(id.to_bytes())).collect();
         Ok((root, segments))
     }
+    pub async fn create_note_version_chain(&self, source_id: NoteId, segments: &[Vec<u8>], author_id: uuid::Uuid, account_note_id: NoteId) -> Result<(Note, Vec<String>), StorageError> {
+        let mut client = self.pool.get().await?; let client_ref = &mut **client; let transaction = client_ref.transaction().await?;
+        let source_bytes = source_id.to_bytes();
+        let exists = transaction.query_opt(
+            "SELECT 1 FROM associations WHERE kind = 'version' AND from_id = $1",
+            &[&source_bytes.to_vec()],
+        ).await?;
+        if exists.is_some() { return Err(Box::new(AssociationInsertError::VersionExists)); }
+        let mut ids = Vec::with_capacity(segments.len()); let mut root_note = None; let mut root_id: Option<NoteId> = None; let mut prev_id: Option<NoteId> = None;
+        for (index, segment) in segments.iter().enumerate() {
+            let note_id = generate_note_id();
+            if index == 0 {
+                let note = create_note(&transaction, note_id, segment, author_id).await?;
+                create_association(&transaction, "author", account_note_id, note_id).await?;
+                root_note = Some(note); root_id = Some(note_id);
+            } else { insert_note(&transaction, note_id, segment, author_id).await?; }
+            if let Some(prev) = prev_id { create_association(&transaction, "next", prev, note_id).await?; }
+            prev_id = Some(note_id); ids.push(note_id);
+        }
+        let root = root_note.ok_or_else(|| std::io::Error::new(std::io::ErrorKind::Other, "missing_root_note"))?;
+        let root_id = root_id.ok_or_else(|| std::io::Error::new(std::io::ErrorKind::Other, "missing_root_note_id"))?;
+        create_association(&transaction, "version", source_id, root_id).await?;
+        transaction.commit().await?;
+        let segments = ids.iter().map(|id| encode_id(id.to_bytes())).collect();
+        Ok((root, segments))
+    }
     pub async fn find_note(&self, note_id: NoteId) -> Result<Option<Note>, StorageError> { let client = self.pool.get().await?; find_note(&client, note_id).await }
     pub async fn find_notes_by_ids(&self, note_ids: &[NoteId]) -> Result<Vec<Note>, StorageError> { let client = self.pool.get().await?; find_notes_by_ids(&client, note_ids).await }
     pub async fn list_notes(&self, author: Option<uuid::Uuid>, from: Option<time::OffsetDateTime>, to: Option<time::OffsetDateTime>) -> Result<Vec<Note>, StorageError> { let client = self.pool.get().await?; list_notes(&client, author, from, to).await }

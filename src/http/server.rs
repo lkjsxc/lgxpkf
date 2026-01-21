@@ -45,6 +45,7 @@ pub async fn run_server(
                     .route(web::post().to(notes::post_notes))
                     .route(web::get().to(notes::get_notes)),
             )
+            .service(web::resource("/notes/{id}/versions").route(web::post().to(notes::post_note_version)))
             .service(web::resource("/notes/random").route(web::get().to(notes::get_random_notes)))
             .service(web::resource("/feed").route(web::get().to(feed::get_feed)))
             .service(

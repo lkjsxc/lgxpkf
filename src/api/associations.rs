@@ -1,7 +1,9 @@
 use actix_web::{web, HttpRequest, HttpResponse};
 use serde::Deserialize;
 
-use crate::api::helpers::{parse_json, parse_note_id, parse_query, parse_query_param, require_user};
+use crate::api::helpers::{
+    parse_json, parse_note_id, parse_note_reference, parse_query, parse_query_param, require_user,
+};
 use crate::errors::ApiError;
 use crate::state::AppState;
 use crate::storage::AssociationInsertError;
@@ -18,25 +20,49 @@ pub async fn post_associations(
     body: web::Bytes,
     state: web::Data<AppState>,
 ) -> Result<HttpResponse, ApiError<serde_json::Value>> {
-    require_user(&req, &state).await?;
+    let user = require_user(&req, &state).await?;
     let payload: CreateAssociation = parse_json(body.as_ref())?;
-    let kind = parse_kind(&payload.kind)?;
+    let kind = parse_kind(&payload.kind)?.to_ascii_lowercase();
+    if !is_user_kind(&kind) {
+        return Err(ApiError::unprocessable(
+            "invalid_kind",
+            "Association kind is not allowed",
+            None,
+        ));
+    }
 
     let from_id = parse_note_id(&payload.from_id)?;
-    let to_id = parse_note_id(&payload.to_id)?;
-    if kind == "version" {
-        let locked = state
-            .storage
-            .is_account_note_id(from_id)
-            .await
-            .map_err(|_| ApiError::internal())?;
-        if locked {
-            return Err(ApiError::unprocessable(
-                "account_note_locked",
-                "Account bootstrap notes cannot be versioned",
-                None,
-            ));
-        }
+    let to_id = parse_note_reference(&payload.to_id)?;
+    if from_id == to_id {
+        return Err(ApiError::unprocessable(
+            "invalid_target",
+            "Source and target must differ",
+            None,
+        ));
+    }
+
+    let from_note = state
+        .storage
+        .find_note(from_id)
+        .await
+        .map_err(|_| ApiError::internal())?
+        .ok_or_else(|| ApiError::not_found("note_not_found", "Note not found"))?;
+
+    if from_note.author.user_id != user.user_id {
+        return Err(ApiError::forbidden(
+            "association_forbidden",
+            "Cannot create associations for this note",
+        ));
+    }
+
+    let to_note_exists = state
+        .storage
+        .find_note(to_id)
+        .await
+        .map_err(|_| ApiError::internal())?
+        .is_some();
+    if !to_note_exists {
+        return Err(ApiError::not_found("note_not_found", "Note not found"));
     }
 
     let association = state
@@ -91,4 +117,8 @@ fn parse_kind(value: &str) -> Result<String, ApiError<serde_json::Value>> {
         ));
     }
     Ok(trimmed.to_string())
+}
+
+fn is_user_kind(kind: &str) -> bool {
+    matches!(kind, "link" | "reply" | "quote" | "parent" | "child")
 }

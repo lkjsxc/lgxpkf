@@ -1,5 +1,6 @@
 use std::fmt;
 use tokio_postgres::{Client, GenericClient};
+use tokio_postgres::error::SqlState;
 use uuid::Uuid;
 
 use crate::domain::{Association, NoteId};
@@ -41,11 +42,17 @@ where
                 "INSERT INTO associations (id, kind, from_id, to_id, created_at) SELECT $1, $2, $3, $4, NOW() WHERE NOT EXISTS (SELECT 1 FROM associations WHERE kind = 'version' AND from_id = $3) RETURNING kind, from_id, to_id, created_at",
                 &[&Uuid::new_v4(), &kind, &from_vec, &to_vec],
             )
-            .await?;
-        if let Some(row) = row {
-            return Ok(map_association(&row));
+            .await;
+        match row {
+            Ok(Some(row)) => return Ok(map_association(&row)),
+            Ok(None) => return Err(Box::new(AssociationInsertError::VersionExists)),
+            Err(err) => {
+                if err.code() == Some(&SqlState::UNIQUE_VIOLATION) {
+                    return Err(Box::new(AssociationInsertError::VersionExists));
+                }
+                return Err(Box::new(err));
+            }
         }
-        return Err(Box::new(AssociationInsertError::VersionExists));
     }
     client
         .execute(
