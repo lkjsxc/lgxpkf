@@ -6,7 +6,7 @@
   - auth: required (Bearer token).
   - body: { value: string }
   - behavior:
-    - Only the author of the source note can create a version.
+    - Only the author of the post head can create a version.
     - Uses the head note when the source is part of a chain.
     - Rejects if the head note already has a newer version.
     - Creates the new note chain and the version association atomically.
