@@ -7,13 +7,13 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
 (() => {
   const state: SessionState = { token: readStorage("lgxpkf.session"), user: null };
-  const noteId = document.body.dataset.noteId || "", postId = document.body.dataset.postId || noteId, authorId = document.body.dataset.authorId || "", accountNoteId = document.body.dataset.accountNoteId || "";
+  const noteId = document.body.dataset.noteId || "", postId = document.body.dataset.postId || noteId, noteAuthorId = document.body.dataset.authorId || "", postAuthorId = document.body.dataset.postAuthorId || noteAuthorId, accountNoteId = document.body.dataset.accountNoteId || "";
   let hasNewerVersion = document.body.dataset.hasNewerVersion === "true";
   const editBtn = getById<HTMLButtonElement>("edit-note"), editor = getById<HTMLElement>("editor"), editForm = getById<HTMLFormElement>("edit-form"), editValue = getById<HTMLTextAreaElement>("edit-value"), editStatus = getById<HTMLElement>("edit-status"), closeEditor = getById<HTMLButtonElement>("close-editor"), relatedList = getById<HTMLElement>("related-list"), versionCard = getById<HTMLElement>("version-card"), versionList = getById<HTMLElement>("version-list"), copyBtn = getById<HTMLButtonElement>("copy-link"), copyJsonBtn = getById<HTMLButtonElement>("copy-json"), copyStatus = getById<HTMLElement>("copy-status"), followToggle = getById<HTMLButtonElement>("follow-toggle"), followStatus = getById<HTMLElement>("follow-status"), linkForm = getById<HTMLFormElement>("link-form"), linkTarget = getById<HTMLInputElement>("link-target"), linkKind = getById<HTMLInputElement>("link-kind"), linkStatus = getById<HTMLElement>("link-status");
   const blockedKinds = new Set(["version", "author"]);
 
   const isAccountNote = (): boolean => Boolean(accountNoteId && accountNoteId === postId);
-  const isOwner = (): boolean => Boolean(state.user && authorId && state.user.user_id === authorId);
+  const isOwner = (): boolean => Boolean(state.user && postAuthorId && state.user.user_id === postAuthorId);
   const canEdit = (): boolean => Boolean(state.token) && isOwner() && !isAccountNote() && Boolean(postId);
   const canLink = (): boolean => Boolean(state.token) && isOwner() && !isAccountNote() && Boolean(postId);
   const canCreateVersion = (): boolean => canEdit() && !hasNewerVersion;
@@ -71,12 +71,12 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
   const loadFollowState = async (): Promise<void> => {
     if (!followToggle || !followStatus) return;
     if (!state.token || !state.user) { followToggle.disabled = true; followStatus.textContent = "Sign in to follow."; return; }
-    if (!authorId || state.user.user_id === authorId) { followToggle.disabled = true; followStatus.textContent = ""; return; }
+    if (!noteAuthorId || state.user.user_id === noteAuthorId) { followToggle.disabled = true; followStatus.textContent = ""; return; }
     followToggle.disabled = true; followStatus.textContent = "Checking follow...";
     try {
       const payload = await apiJson(`/follows?user=${state.user.user_id}&direction=following`, state.token);
       const followIds = decodeFollowUserIds(payload);
-      const following = followIds.includes(authorId);
+      const following = followIds.includes(noteAuthorId);
       followToggle.dataset.following = following ? "true" : "false";
       followToggle.textContent = following ? "Unfollow" : "Follow";
       followStatus.textContent = following ? "Following." : "Not following.";
@@ -111,11 +111,11 @@ type SessionState = { token: string | null; user: LgxpkfUserProfile | null };
 
   if (followToggle) followToggle.addEventListener("click", async () => {
     if (!state.token) { setMessage(followStatus, "Sign in at /signin."); return; }
-    if (!authorId) { setMessage(followStatus, "Missing author id."); return; }
+    if (!noteAuthorId) { setMessage(followStatus, "Missing author id."); return; }
     const following = followToggle.dataset.following === "true";
     followToggle.disabled = true; setMessage(followStatus, following ? "Unfollowing..." : "Following...");
     try {
-      await apiJson("/follows", state.token, { method: following ? "DELETE" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ followee_id: authorId }) });
+      await apiJson("/follows", state.token, { method: following ? "DELETE" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ followee_id: noteAuthorId }) });
       followToggle.dataset.following = following ? "false" : "true";
       followToggle.textContent = following ? "Follow" : "Unfollow";
       setMessage(followStatus, following ? "Unfollowed." : "Following.");

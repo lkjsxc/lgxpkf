@@ -52,7 +52,8 @@ pub async fn post_note_version(
 
     let chain = fetch_chain(&state, source_id).await?;
 
-    if chain.center.author.user_id != user.user_id {
+    let head_note = chain.prev.first().unwrap_or(&chain.center);
+    if head_note.author.user_id != user.user_id {
         return Err(ApiError::forbidden(
             "edit_forbidden",
             "Cannot edit this note",

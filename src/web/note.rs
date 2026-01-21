@@ -24,6 +24,7 @@ pub fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -
     let note_id_raw = &chain.center.id;
     let note_id = escape_attr(note_id_raw);
     let author_id = escape_attr(&chain.center.author.user_id.to_string());
+    let post_author_id = escape_attr(&post_note.author.user_id.to_string());
     let account_note_id = escape_attr(chain.center.author.account_note_id.as_deref().unwrap_or(""));
     let note_description = escape_attr(&note_excerpt(&chain.center.value, 160));
     let note_url = escape_attr(&format!("{}/{}", config.public_base_url, note_id_raw));
@@ -35,6 +36,7 @@ pub fn note_html(config: &Config, chain: &NoteChain, related: &[RelatedEntry]) -
         .replace("{{NOTE_CREATED_AT}}", &escape_html(&chain.center.created_at))
         .replace("{{NOTE_AUTHOR}}", &escape_html(&chain.center.author.email))
         .replace("{{NOTE_AUTHOR_ID}}", &author_id)
+        .replace("{{POST_AUTHOR_ID}}", &post_author_id)
         .replace("{{NOTE_ACCOUNT_NOTE_ID}}", &account_note_id)
         .replace("{{NOTE_HAS_NEWER_VERSION}}", has_newer_version)
         .replace("{{CHAIN_SUMMARY}}", &escape_html(&chain_summary))
