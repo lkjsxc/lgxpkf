@@ -44,6 +44,7 @@
 - Related notes and version tools are displayed on the note view, with citations.
 - Version associations label old vs newer posts and appear under Associations.
 - Version edits target the post head even when viewing a chained segment.
+- Edit is only enabled for the author and when the post head has no newer version.
 - The root page explains lgxpkf when signed out and hides the Post button.
 - The note view includes follow/unfollow controls for the author.
 - Google sign-in renders with a white outline theme and avoids flicker on load.

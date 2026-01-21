@@ -18,6 +18,7 @@
 - Edit action opens a modal composer prefilled with the current post content (except account bootstrap notes).
 - Edit targets the post head even when viewing a chained segment.
 - Edit is disabled when the post head already has a newer version or the viewer is not the author.
+- Edit remains disabled until the client confirms ownership and version availability.
 - Link note form supports kinds: link, reply, quote, parent, child, next, prev.
 - Link note form is disabled for non-authors and accepts note URLs for targets; structural kinds require same-author notes.
 - The palette is a darker, solid-color base with slightly reduced corner roundness.
