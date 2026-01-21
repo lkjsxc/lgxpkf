@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::api::helpers::{
     parse_json, parse_note_id, parse_note_reference, parse_query, parse_query_param, require_user,
 };
+use crate::domain::{Note, User};
 use crate::errors::ApiError;
 use crate::state::AppState;
 use crate::storage::AssociationInsertError;
@@ -23,7 +24,7 @@ pub async fn post_associations(
     let user = require_user(&req, &state).await?;
     let payload: CreateAssociation = parse_json(body.as_ref())?;
     let kind = parse_kind(&payload.kind)?.to_ascii_lowercase();
-    if !is_user_kind(&kind) {
+    if !is_allowed_kind(&kind) {
         return Err(ApiError::unprocessable(
             "invalid_kind",
             "Association kind is not allowed",
@@ -48,22 +49,14 @@ pub async fn post_associations(
         .map_err(|_| ApiError::internal())?
         .ok_or_else(|| ApiError::not_found("note_not_found", "Note not found"))?;
 
-    if from_note.author.user_id != user.user_id {
-        return Err(ApiError::forbidden(
-            "association_forbidden",
-            "Cannot create associations for this note",
-        ));
-    }
-
-    let to_note_exists = state
+    let to_note = state
         .storage
         .find_note(to_id)
         .await
         .map_err(|_| ApiError::internal())?
-        .is_some();
-    if !to_note_exists {
-        return Err(ApiError::not_found("note_not_found", "Note not found"));
-    }
+        .ok_or_else(|| ApiError::not_found("note_not_found", "Note not found"))?;
+
+    ensure_association_allowed(&kind, &from_note, &to_note, &user)?;
 
     let association = state
         .storage
@@ -119,6 +112,47 @@ fn parse_kind(value: &str) -> Result<String, ApiError<serde_json::Value>> {
     Ok(trimmed.to_string())
 }
 
-fn is_user_kind(kind: &str) -> bool {
-    matches!(kind, "link" | "reply" | "quote" | "parent" | "child")
+fn is_allowed_kind(kind: &str) -> bool {
+    matches!(
+        kind,
+        "link" | "reply" | "quote" | "parent" | "child" | "next" | "prev"
+    )
+}
+
+fn allows_cross_author(kind: &str) -> bool {
+    matches!(kind, "link" | "reply" | "quote")
+}
+
+fn is_account_note(user: &User, note: &Note) -> bool {
+    user.account_note_id
+        .as_deref()
+        .is_some_and(|id| id == note.id)
+}
+
+fn ensure_association_allowed(
+    kind: &str,
+    from_note: &Note,
+    to_note: &Note,
+    user: &User,
+) -> Result<(), ApiError<serde_json::Value>> {
+    if from_note.author.user_id != user.user_id {
+        return Err(ApiError::forbidden(
+            "association_forbidden",
+            "Cannot create associations for this note",
+        ));
+    }
+    if is_account_note(user, from_note) {
+        return Err(ApiError::unprocessable(
+            "account_note_locked",
+            "Account notes cannot create associations",
+            None,
+        ));
+    }
+    if !allows_cross_author(kind) && from_note.author.user_id != to_note.author.user_id {
+        return Err(ApiError::forbidden(
+            "association_forbidden",
+            "Cannot link notes owned by different authors",
+        ));
+    }
+    Ok(())
 }

@@ -7,6 +7,7 @@ use crate::api::helpers::{
 };
 use crate::domain::Note;
 use crate::errors::ApiError;
+use crate::related::fetch_chain;
 use crate::state::AppState;
 
 #[derive(Deserialize)]
@@ -49,23 +50,25 @@ pub async fn post_note_version(
     let source_id = parse_note_id(path.as_str())?;
     let payload: CreateNote = parse_json(body.as_ref())?;
 
-    let source_note = state
-        .storage
-        .find_note(source_id)
-        .await
-        .map_err(|_| ApiError::internal())?
-        .ok_or_else(|| ApiError::not_found("note_not_found", "Note not found"))?;
+    let chain = fetch_chain(&state, source_id).await?;
 
-    if source_note.author.user_id != user.user_id {
+    if chain.center.author.user_id != user.user_id {
         return Err(ApiError::forbidden(
             "edit_forbidden",
             "Cannot edit this note",
         ));
     }
 
+    let head_id = chain
+        .prev
+        .first()
+        .map(|note| note.id.as_str())
+        .unwrap_or(&chain.center.id);
+    let head_id = parse_note_id(head_id).map_err(|_| ApiError::internal())?;
+
     let locked = state
         .storage
-        .is_account_note_id(source_id)
+        .is_account_note_id(head_id)
         .await
         .map_err(|_| ApiError::internal())?;
     if locked {
@@ -82,7 +85,7 @@ pub async fn post_note_version(
 
     let (root, segments) = state
         .storage
-        .create_note_version_chain(source_id, &bytes, user.user_id, account_note_id)
+        .create_note_version_chain(head_id, &bytes, user.user_id, account_note_id)
         .await
         .map_err(|err| {
             if let Some(crate::storage::AssociationInsertError::VersionExists) =
